@@ -1,46 +1,58 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
 class AppTheme {
-  // STML-friendly colors
-  static const Color primary = Color(0xFF1E88E5); // calm blue
-  static const Color secondary = Color(0xFF43A047); // success green
-  static const Color danger = Color(0xFFE53935); // emergency red
-  static const Color background = Color(0xFFF9FAFB);
-  static const Color surface = Colors.white;
-  static const Color textPrimary = Color(0xFF212121);
+  static ThemeData get lightTheme {
+    final base = ThemeData.light(useMaterial3: true);
 
-  static ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    scaffoldBackgroundColor: background,
-
-    colorScheme: const ColorScheme.light(
-      primary: primary,
-      secondary: secondary,
-      error: danger,
-      surface: surface,
-    ),
-
-    appBarTheme: const AppBarTheme(
-      backgroundColor: primary,
-      foregroundColor: Colors.white,
-      centerTitle: true,
-      elevation: 0,
-    ),
-
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 56), // big touch target
-        textStyle: const TextStyle(fontSize: 18),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    return base.copyWith(
+      scaffoldBackgroundColor: Colors.white,
+      colorScheme: base.colorScheme.copyWith(
+        primary: AppColors.primary,
+        surface: AppColors.surface,
+      ),
+      textTheme: base.textTheme.copyWith(
+        // CareConnect title
+        headlineLarge: const TextStyle(
+          fontFamily: 'Arial',
+          fontSize: 48,
+          fontWeight: FontWeight.w700,
+          height: 1.0,
+          color: AppColors.textPrimary,
+        ),
+        // Big primary button text
+        headlineMedium: const TextStyle(
+          fontFamily: 'Arial',
+          fontSize: 36,
+          fontWeight: FontWeight.w700,
+          height: 40 / 36,
+          color: Colors.white,
+        ),
+        // Secondary button text
+        titleLarge: const TextStyle(
+          fontFamily: 'Arial',
+          fontSize: 30,
+          fontWeight: FontWeight.w700,
+          height: 36 / 30,
+          color: AppColors.textPrimary,
+        ),
+        // Helper subtext
+        bodyLarge: const TextStyle(
+          fontFamily: 'Arial',
+          fontSize: 24,
+          fontWeight: FontWeight.w400,
+          height: 32 / 24,
+          color: AppColors.textSecondary,
+        ),
+        // Info card text (you didn’t paste typography here, so I matched body sizing)
+        bodyMedium: const TextStyle(
+          fontFamily: 'Arial',
+          fontSize: 24,
+          fontWeight: FontWeight.w400,
+          height: 32 / 24,
+          color: AppColors.primary, // looks like your screenshot uses blue-ish text
         ),
       ),
-    ),
-
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(fontSize: 18, color: textPrimary),
-      bodyMedium: TextStyle(fontSize: 16, color: textPrimary),
-      titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-    ),
-  );
+    );
+  }
 }

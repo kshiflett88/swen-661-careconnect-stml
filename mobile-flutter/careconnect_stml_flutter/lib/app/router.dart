@@ -22,7 +22,7 @@ class AppRoutes {
 
 GoRouter createRouter() {
   return GoRouter(
-    initialLocation: AppRoutes.dashboard,
+    initialLocation: AppRoutes.welcomeLogin,
     routes: [
       GoRoute(
         path: AppRoutes.welcomeLogin,
