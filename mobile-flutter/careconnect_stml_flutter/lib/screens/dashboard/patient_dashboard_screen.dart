@@ -3,6 +3,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/router.dart';
 import '../../shared/theme/app_colors.dart';
+import '../../shared/mocks/mock_tasks.dart';
+import '../../shared/storage/task_status_store.dart';
+import '../../data/models/task.dart';
+
+//Today's date label
+String _todayLabel(DateTime dt) {
+    const weekdays = [
+      'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+    ];
+    const months = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+    return 'Today: ${weekdays[dt.weekday - 1]}, \n'
+        '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+  }
 
 class PatientDashboardScreen extends StatelessWidget {
   const PatientDashboardScreen({super.key});
@@ -12,12 +28,51 @@ class PatientDashboardScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
 
     // Mock data (UI only)
-    final dateLine1 = 'Monday, January';
-    final dateLine2 = '26, 2026';
     final locationLabel = 'Home';
 
-    final nextTaskTitle = 'Take Morning\nMedication';
-    final nextTaskTime = '9:00 AM';
+    //final nextTaskTitle = 'Take Morning\nMedication';
+    //final nextTaskTime = '9:00 AM';
+
+    // Add at the top of your State class with other instance variables
+final TaskStatusStore _taskStore = TaskStatusStore();
+
+// Add this helper method to get the next incomplete task
+Future<Task?> _getNextIncompleteTask() async {
+  final now = DateTime.now();
+  
+  // Sort tasks by scheduled time
+  final sortedTasks = [...mockTasks]
+    ..sort((a, b) {
+      final at = a.scheduledAt;
+      final bt = b.scheduledAt;
+      if (at == null && bt == null) return 0;
+      if (at == null) return 1;
+      if (bt == null) return -1;
+      return at.compareTo(bt);
+    });
+
+  // Find first incomplete task
+  for (final task in sortedTasks) {
+    final completedAt = await _taskStore.getCompletedAt(task.id);
+    if (completedAt == null) {
+      return task; // This is the next incomplete task
+    }
+  }
+
+  return null; // All tasks are complete
+}
+
+// This helper should already exist in your file, but if not, add it:
+String _formatTime(DateTime? dt) {
+  if (dt == null) return '';
+  int hour = dt.hour;
+  final minute = dt.minute;
+  final suffix = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  if (hour == 0) hour = 12;
+  final mm = minute.toString().padLeft(2, '0');
+  return '$hour:$mm $suffix';
+}
 
     return Scaffold(
       body: SafeArea(
@@ -32,7 +87,8 @@ class PatientDashboardScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '$dateLine1\n$dateLine2',
+                      //'$dateLine1\n$dateLine2',
+                      _todayLabel(DateTime.now()),
                       style: t.titleLarge?.copyWith(
                         color: AppColors.textPrimary,
                         height: 1.15,
@@ -124,66 +180,95 @@ class PatientDashboardScreen extends StatelessWidget {
               const SizedBox(height: 14),
 
               // Next Task card
-              Container(
-                padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(width: 2, color: AppColors.primary),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Next Task',
-                      style: t.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
+              FutureBuilder<Task?>(
+                future: _getNextIncompleteTask(),
+                builder: (context, snapshot) {
+                  // Show loading or placeholder while fetching
+                  if (!snapshot.hasData) {
+                    return Container(
+                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(width: 2, color: AppColors.primary),
+                        color: Colors.white,
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      nextTaskTitle,
-                      style: t.headlineMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w900,
-                        height: 1.05,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      nextTaskTime,
-                      style: t.titleLarge?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Start button (green)
-                    SizedBox(
-                      height: 72,
-                      child: ElevatedButton(
-                        onPressed: () => context.go(AppRoutes.taskDetail.replaceFirst(':id', '1')),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF16A34A), // green
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 6,
-                        ),
+                      child: const Center(
                         child: Text(
-                          'Start',
-                          style: t.headlineSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                          'No tasks scheduled',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
+                    );
+                  }
+
+                  final nextTask = snapshot.data!;
+                  final timeLabel = _formatTime(nextTask.scheduledAt);
+
+                  return Container(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(width: 2, color: AppColors.primary),
+                      color: Colors.white,
                     ),
-                  ],
-                ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Next Task',
+                          style: t.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          nextTask.title,
+                          style: t.headlineMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w900,
+                            height: 1.05,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          timeLabel,
+                          style: t.titleLarge?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Start button (green)
+                        SizedBox(
+                          height: 72,
+                          child: ElevatedButton(
+                            onPressed: () => context.go(AppRoutes.taskDetail.replaceFirst(':id', nextTask.id)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF16A34A), // green
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 6,
+                            ),
+                            child: Text(
+                              'Start',
+                              style: t.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 16),

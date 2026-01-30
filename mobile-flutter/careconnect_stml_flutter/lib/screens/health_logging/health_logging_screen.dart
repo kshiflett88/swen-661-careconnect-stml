@@ -21,7 +21,7 @@ const String kHomePath = AppRoutes.dashboard;     // <-- change to your dashboar
 ///font sizes
 const double dButtonFontSize = 28;
 const double dMsgFontSize = 18;
-const double dTitleFontSize = 22;
+const double dTitleFontSize = 32;
 const double dCardFontSize = 30; 
 const double dButtonHeight = 92;  
 
@@ -54,7 +54,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
       'January','February','March','April','May','June',
       'July','August','September','October','November','December'
     ];
-    return 'Today: ${weekdays[dt.weekday - 1]}, '
+    return 'Today: ${weekdays[dt.weekday - 1]}, \n'
         '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 
@@ -138,7 +138,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
 
   Future<void> _save() async {
     if (_selectedMood == null) {
-      // Gentle, clear feedback (also accessible)
+      // Gentle, clear feedback 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please choose how you feel.')),
       );
@@ -157,7 +157,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
 
     if (!mounted) return;
 
-    // Reset form (optional; keeps state clean after save)
+    // Reset form 
     setState(() {
       _selectedMood = null;
       _noteController.clear();
@@ -171,7 +171,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
     final now = DateTime.now();
 
     // High contrast + simple palette
-    const blue = Color(0xFF1E5BFF);
+    const blue = AppColors.primary;
     const borderGrey = Color(0xFFD1D5DB);
     const subtleText = Color(0xFF4B5563);
 
@@ -187,7 +187,8 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                 _todayLabel(now),
                 style: const TextStyle(
                   fontSize: dTitleFontSize,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 14),
@@ -216,7 +217,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
 
               const SizedBox(height: 20),
 
-              // Large mood cards (STML-friendly)
+              // Large mood cards 
               _MoodCard(
                 emoji: '😊',
                 label: 'Happy',
@@ -259,12 +260,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                   children: [
                     const Text(
                       'Optional Note',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'You can say or write how you feel.',
-                      style: TextStyle(fontSize: 20, color: subtleText),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                     ),
                     const SizedBox(height: 10),
                     TextField(
@@ -273,7 +269,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                       maxLines: 4,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        hintText: 'Type here…',
+                        hintText: 'You can say or write how you feel.',
                         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
                         counterText: '',
                         enabledBorder: OutlineInputBorder(
@@ -291,7 +287,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                     const SizedBox(height: 6),
                     Text(
                       '${_noteController.text.length}/$_maxChars characters',
-                      style: const TextStyle(fontSize: 13, color: subtleText),
+                      style: const TextStyle(fontSize: 18, color: subtleText),
                     ),
                   ],
                 ),
@@ -304,7 +300,6 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                 height: dButtonHeight,
                 child: ElevatedButton.icon(
                   onPressed: _save,
-                  icon: const Icon(Icons.save, size: 38),
                   label: const Text('Save'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue,
@@ -328,7 +323,6 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                 height: dButtonHeight,
                 child: OutlinedButton.icon(
                   onPressed: _goHome,
-                  icon: const Icon(Icons.home, size: 38),
                   label: const Text('Return to Home'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
@@ -404,6 +398,7 @@ class _MoodCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: dCardFontSize,
                     fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),

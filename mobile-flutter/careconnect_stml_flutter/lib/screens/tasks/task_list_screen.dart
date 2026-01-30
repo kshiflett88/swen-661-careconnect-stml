@@ -85,7 +85,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       'January','February','March','April','May','June',
       'July','August','September','October','November','December'
     ];
-    return 'Today: ${weekdays[dt.weekday - 1]}, '
+    return 'Today: ${weekdays[dt.weekday - 1]}, \n'
         '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 
@@ -130,15 +130,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 Text(
                   _todayLabel(now),
                   style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
                 ),
                 const SizedBox(height: 14),
 
                 // Progress pill: You are on: Tasks
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(14),
@@ -225,7 +226,6 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const blue = AppColors.primary;
     const borderGrey = Color(0xFFD1D5DB);
     const green = Color(0xFF16A34A);
 
@@ -236,7 +236,7 @@ class _TaskCard extends StatelessWidget {
       container: true,
       label: 'Task card: $title. ${isDone ? "Done" : "Not started"} at $timeLabel.',
       child: Container(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+        padding: const EdgeInsets.fromLTRB(36, 18, 18, 36),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: borderColor, width: 2.6),
@@ -263,15 +263,16 @@ class _TaskCard extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 26,
+                          fontSize: 36,
                           fontWeight: FontWeight.w900,
+                          color : AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         timeLabel,
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 24,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF6B7280),
                         ),
@@ -300,7 +301,7 @@ class _TaskCard extends StatelessWidget {
                 child: Text(
                   statusText,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 26,
                     fontWeight: FontWeight.w800,
                     color: isDone ? const Color(0xFF065F46) : const Color(0xFF374151),
                   ),
@@ -316,7 +317,7 @@ class _TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 58), // 44 (icon) + 14 (gap) ≈ text start
                 child: SizedBox(
                   width: 260,
-                  height: 54,
+                  height: 64,
                   child: OutlinedButton(
                     onPressed: onView,
                     style: OutlinedButton.styleFrom(
@@ -327,7 +328,7 @@ class _TaskCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       textStyle: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 32,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -340,7 +341,7 @@ class _TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 58), // 44 (icon) + 14 (gap) ≈ text start
                 child: SizedBox(
                   width: 260,
-                  height: 62,
+                  height: 92,
                   child: ElevatedButton(
                     onPressed: onStart,
                     style: ElevatedButton.styleFrom(
@@ -351,7 +352,7 @@ class _TaskCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       textStyle: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 32,
                         fontWeight: FontWeight.w900,
                       ),
                     ),

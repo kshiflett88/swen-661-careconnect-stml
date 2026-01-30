@@ -100,25 +100,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       'January','February','March','April','May','June',
       'July','August','September','October','November','December'
     ];
-    return 'Today: ${weekdays[dt.weekday - 1]}, '
+    return 'Today: ${weekdays[dt.weekday - 1]}, \n'
         '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
-  }
-
-  void _goHome() {
-    try {
-      if (kHomeRouteName.isNotEmpty) {
-        context.goNamed(kHomeRouteName);
-        return;
-      }
-    } catch (_) {}
-    try {
-      if (kHomePath.isNotEmpty) {
-        context.go(kHomePath);
-        return;
-      }
-    } catch (_) {
-      Navigator.popUntil(context, (route) => route.isFirst);
-    }
   }
 
   void _goTasks() {
@@ -342,15 +325,19 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Today label
-              Text(
-                _todayLabel(now),
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header: Today
+                Text(
+                  _todayLabel(now),
+                  style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+                ),
+                const SizedBox(height: 14),
 
               // "You are on: Task Step" pill
               Container(
@@ -383,6 +370,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   fontSize: 30,
                   height: 1.1,
                   fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
                 ),
               ),
 
@@ -403,6 +391,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -443,23 +432,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   children: [
                     imageWidget,
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Step label "Step 1"
+                          // Step label "Step 1"S
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 124, vertical: 14),
                             decoration: BoxDecoration(
                               border: Border.all(color: const Color(0xFF93C5FD), width: 2),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(16),
                               color: const Color(0xFFEFF6FF),
                             ),
                             child: Text(
                               _stepTitle(),
                               style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
                                 color: Color(0xFF1E3A8A),
                               ),
                             ),
@@ -476,9 +465,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           Text(
                             _currentStepText().isEmpty ? _task.description : _currentStepText(),
                             style: const TextStyle(
-                              fontSize: 26,
+                              fontSize: 32,
                               height: 1.25,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
                             ),
                           ),
 
@@ -507,7 +497,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               // - If DONE: show "Next" until last step, then hide it
               if (!_isDone || showNextWhenDone) ...[
                 SizedBox(
-                  height: 72,
+                  height: 92,
                   child: ElevatedButton(
                     onPressed: _isDone ? _nextWhenDone : _nextNormal,
                     style: ElevatedButton.styleFrom(
@@ -518,7 +508,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       textStyle: const TextStyle(
-                        fontSize: 26,
+                        fontSize: 32,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -534,7 +524,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
               // Return to Tasks
               SizedBox(
-                height: 72,
+                height: 92,
                 child: OutlinedButton(
                   onPressed: _goTasks,
                   style: OutlinedButton.styleFrom(
@@ -544,7 +534,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     textStyle: const TextStyle(
-                      fontSize: 26,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -553,27 +543,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               ),
 
               const SizedBox(height: 18),
-
-              // Return Home (to dashboard)
-              SizedBox(
-                height: 72,
-                child: OutlinedButton.icon(
-                  onPressed: _goHome,
-                  icon: const Icon(Icons.home, size: 26),
-                  label: const Text('Return Home'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(color: borderGrey, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
+              
             ],
           ),
         ),
