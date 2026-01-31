@@ -247,6 +247,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                 decoration: BoxDecoration(
                   border: Border.all(color: borderGrey, width: 1.8),
                   borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x12000000),
@@ -378,6 +379,7 @@ class _MoodCard extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(color: borderColor, width: 2.8),
             borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
             boxShadow: const [
               BoxShadow(
                 color: Color(0x12000000),

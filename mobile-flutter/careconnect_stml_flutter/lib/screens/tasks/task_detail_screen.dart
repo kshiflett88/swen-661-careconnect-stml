@@ -419,6 +419,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: blue, width: 3),
+                  color: Colors.white,
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x12000000),

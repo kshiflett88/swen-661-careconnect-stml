@@ -240,6 +240,7 @@ class _TaskCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: borderColor, width: 2.6),
+          color: Colors.white,
           boxShadow: const [
             BoxShadow(
               color: Color(0x12000000),
