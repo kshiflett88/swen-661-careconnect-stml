@@ -41,6 +41,7 @@ class PatientDashboardScreen extends StatelessWidget {
                     ),
                   ),
                   _CircleIconButton(
+                    key: const Key('profile_settings_button'),
                     icon: Icons.person_outline,
                     onPressed: () => context.go(AppRoutes.settings),
                   ),
@@ -51,6 +52,7 @@ class PatientDashboardScreen extends StatelessWidget {
 
               // "You are on: Home" info card
               Container(
+                key: const Key('location_card'),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -93,6 +95,7 @@ class PatientDashboardScreen extends StatelessWidget {
 
               // Feeling card
               _CardButton(
+                key: const Key('feeling_button'),
                 height: 140,
                 onPressed: () {
                   // Later: route to mood logging (for now can go to health logging)
@@ -164,6 +167,7 @@ class PatientDashboardScreen extends StatelessWidget {
                     SizedBox(
                       height: 72,
                       child: ElevatedButton(
+                        key: const Key('start_task_button'),
                         onPressed: () => context.go(AppRoutes.taskDetail.replaceFirst(':id', '1')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF16A34A), // green
@@ -190,6 +194,7 @@ class PatientDashboardScreen extends StatelessWidget {
 
               // Schedule button
               _CardButton(
+                key: const Key('schedule_button'),
                 height: 92,
                 onPressed: () {
                   // Later: calendar/schedule screen
@@ -209,6 +214,7 @@ class PatientDashboardScreen extends StatelessWidget {
 
               // Messages button
               _CardButton(
+                key: const Key('messages_button'),
                 height: 92,
                 onPressed: () {
                   // Later: messaging screen (if you add route)
@@ -230,6 +236,7 @@ class PatientDashboardScreen extends StatelessWidget {
               SizedBox(
                 height: 78,
                 child: ElevatedButton(
+                  key: const Key('emergency_help_button'),
                   onPressed: () => context.go(AppRoutes.sos),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFDC2626),
@@ -261,6 +268,7 @@ class _CircleIconButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _CircleIconButton({
+    super.key,
     required this.icon,
     required this.onPressed,
   });
@@ -289,6 +297,7 @@ class _CardButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _CardButton({
+    super.key,
     required this.height,
     required this.child,
     required this.onPressed,
@@ -312,4 +321,3 @@ class _CardButton extends StatelessWidget {
     );
   }
 }
-

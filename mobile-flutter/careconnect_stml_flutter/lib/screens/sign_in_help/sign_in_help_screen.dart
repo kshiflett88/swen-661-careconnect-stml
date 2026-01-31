@@ -72,6 +72,7 @@ class SignInHelpScreen extends StatelessWidget {
 
               // Buttons
               _LargeActionButton(
+                key: Key('call_caregiver_button'),
                 variant: _ActionVariant.success,
                 icon: Icons.call,
                 label: 'Call my\ncaregiver',
@@ -86,6 +87,7 @@ class SignInHelpScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               _LargeActionButton(
+                key: Key('send_message_button'),
                 variant: _ActionVariant.primary,
                 icon: Icons.chat_bubble_outline,
                 label: 'Send a\nmessage to\nmy caregiver',
@@ -100,6 +102,7 @@ class SignInHelpScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               _LargeActionButton(
+                key: Key('face_id_button'),
                 variant: _ActionVariant.outlined,
                 icon: CupertinoIcons.viewfinder,
                 label: 'Try Face\nID again',
@@ -153,6 +156,7 @@ class _LargeActionButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _LargeActionButton({
+    super.key,
     required this.variant,
     required this.icon,
     required this.label,
