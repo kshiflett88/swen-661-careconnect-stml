@@ -20,19 +20,22 @@ const String kHomePath = AppRoutes.dashboard;
 
 
 class TaskListScreen extends StatefulWidget {
-  const TaskListScreen({super.key});
+  final TaskStatusStore? store;
+
+  const TaskListScreen({super.key, this.store});
 
   @override
   State<TaskListScreen> createState() => _TaskListScreenState();
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  final TaskStatusStore _store = TaskStatusStore();
+  late final TaskStatusStore _store;
   final Map<String, DateTime?> _completedAt = {};
 
   @override
   void initState() {
     super.initState();
+    _store = widget.store ?? SharedPrefsTaskStatusStore();
     _loadStatuses();
   }
 
@@ -183,6 +186,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
                 // Return to Home
                 SizedBox(
+                  key: const Key('return_home_button'),
                   height: 92,
                   child: OutlinedButton(
                     onPressed: _goHome,
@@ -199,6 +203,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ),
                     child: const Text('Return to Home'),
                   ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _store.clearAll();
+                    // force rebuild
+                    (context as Element).markNeedsBuild();
+                  },
+                  child: const Text('Reset Tasks (Dev)'),
                 ),
               ],
             ),

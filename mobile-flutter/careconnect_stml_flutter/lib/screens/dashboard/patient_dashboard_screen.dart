@@ -21,28 +21,19 @@ String _todayLabel(DateTime dt) {
   }
 
 class PatientDashboardScreen extends StatelessWidget {
-  const PatientDashboardScreen({super.key});
+  final TaskStatusStore taskStore;
+  final List<Task> tasks;
 
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
+  PatientDashboardScreen({
+    super.key,
+    TaskStatusStore? taskStore,
+    List<Task>? tasks,
+  })  : taskStore = taskStore ?? SharedPrefsTaskStatusStore(),
+        tasks = tasks ?? mockTasks;
 
-    // Mock data (UI only)
-    final locationLabel = 'Home';
-
-    //final nextTaskTitle = 'Take Morning\nMedication';
-    //final nextTaskTime = '9:00 AM';
-
-    // Add at the top of your State class with other instance variables
-final TaskStatusStore _taskStore = TaskStatusStore();
-
-// Add this helper method to get the next incomplete task
-Future<Task?> _getNextIncompleteTask() async {
-  final now = DateTime.now();
-  
-  // Sort tasks by scheduled time
-  final sortedTasks = [...mockTasks]
-    ..sort((a, b) {
+  // Add this helper method to get the next incomplete task
+  Future<Task?> _getNextIncompleteTask() async {
+    final sortedTasks = [...tasks]..sort((a, b) {
       final at = a.scheduledAt;
       final bt = b.scheduledAt;
       if (at == null && bt == null) return 0;
@@ -51,16 +42,21 @@ Future<Task?> _getNextIncompleteTask() async {
       return at.compareTo(bt);
     });
 
-  // Find first incomplete task
-  for (final task in sortedTasks) {
-    final completedAt = await _taskStore.getCompletedAt(task.id);
-    if (completedAt == null) {
-      return task; // This is the next incomplete task
+    for (final task in sortedTasks) {
+      final completedAt = await taskStore.getCompletedAt(task.id);
+      if (completedAt == null) return task;
     }
+    return null;
   }
 
-  return null; // All tasks are complete
-}
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+
+    // Mock data (UI only)
+    final locationLabel = 'Home';
+
+
 
 // This helper should already exist in your file, but if not, add it:
 String _formatTime(DateTime? dt) {
@@ -97,6 +93,7 @@ String _formatTime(DateTime? dt) {
                     ),
                   ),
                   _CircleIconButton(
+                    key: const Key('profile_settings_button'),
                     icon: Icons.person_outline,
                     onPressed: () => context.go(AppRoutes.settings),
                   ),
@@ -107,6 +104,7 @@ String _formatTime(DateTime? dt) {
 
               // "You are on: Home" info card
               Container(
+                key: const Key('location_card'),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -149,6 +147,7 @@ String _formatTime(DateTime? dt) {
 
               // Feeling card
               _CardButton(
+                key: const Key('feeling_button'),
                 height: 140,
                 onPressed: () {
                   // Later: route to mood logging (for now can go to health logging)
@@ -183,6 +182,26 @@ String _formatTime(DateTime? dt) {
               FutureBuilder<Task?>(
                 future: _getNextIncompleteTask(),
                 builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    // For dev: show something visible so you don’t silently mask errors
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(width: 2, color: AppColors.primary),
+                        color: Colors.white,
+                      ),
+                      child: Text(
+                        'Error loading tasks:\n${snapshot.error}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+
                   // Show loading or placeholder while fetching
                   if (!snapshot.hasData) {
                     return Container(
@@ -247,6 +266,7 @@ String _formatTime(DateTime? dt) {
                         SizedBox(
                           height: 72,
                           child: ElevatedButton(
+                            key: const Key('start_task_button'),
                             onPressed: () => context.go(AppRoutes.taskDetail.replaceFirst(':id', nextTask.id)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF16A34A), // green
@@ -275,6 +295,7 @@ String _formatTime(DateTime? dt) {
 
               // Schedule button
               _CardButton(
+                key: const Key('schedule_button'),
                 height: 92,
                 onPressed: () {
                   // Later: calendar/schedule screen
@@ -294,6 +315,7 @@ String _formatTime(DateTime? dt) {
 
               // Messages button
               _CardButton(
+                key: const Key('messages_button'),
                 height: 92,
                 onPressed: () {
                   // Later: messaging screen (if you add route)
@@ -315,6 +337,7 @@ String _formatTime(DateTime? dt) {
               SizedBox(
                 height: 78,
                 child: ElevatedButton(
+                  key: const Key('emergency_help_button'),
                   onPressed: () => context.go(AppRoutes.sos),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFDC2626),
@@ -346,6 +369,7 @@ class _CircleIconButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _CircleIconButton({
+    super.key,
     required this.icon,
     required this.onPressed,
   });
@@ -374,6 +398,7 @@ class _CardButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _CardButton({
+    super.key,
     required this.height,
     required this.child,
     required this.onPressed,
@@ -397,4 +422,3 @@ class _CardButton extends StatelessWidget {
     );
   }
 }
-

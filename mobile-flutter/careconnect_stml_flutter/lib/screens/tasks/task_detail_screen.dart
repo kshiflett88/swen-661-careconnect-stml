@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/router.dart';
 import '../../data/models/task.dart';
 import '../../shared/mocks/mock_tasks.dart';
 import '../../shared/storage/task_status_store.dart';
@@ -12,21 +13,18 @@ import '../../shared/theme/app_colors.dart';
 ///   - Step content shows a GREEN "Completed" with a check icon
 ///   - Primary blue button becomes "Next" (advances steps)
 ///   - On the LAST step, the blue button disappears
-/// - Return Home goes back to main dashboard (go_router)
-/// - Image is tailored to task (asset if available, else keyword map, else placeholder)
-///
-/// IMPORTANT: Set these to match your router.dart
-const String kHomeRouteName = 'dashboard'; // <-- dashboard route NAME (preferred)
-const String kHomePath = '/dashboard';     // <-- or dashboard PATH
-const String kTasksRouteName = 'tasks';    // <-- task list route NAME (preferred)
-const String kTasksPath = '/tasks';        // <-- or task list PATH
-
+/// - Return to Tasks goes back to tasks list (go_router)
+/// - Image uses asset if available; otherwise placeholder (NO network images)
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
+
+  /// ✅ Inject store so widget tests can use InMemoryTaskStatusStore
+  final TaskStatusStore? store;
 
   const TaskDetailScreen({
     super.key,
     required this.taskId,
+    this.store,
   });
 
   @override
@@ -34,16 +32,19 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
-  final TaskStatusStore _store = TaskStatusStore();
+  late final TaskStatusStore _store;
 
   late final Task _task;
   late final List<String> _steps;
+
   int _stepIndex = 0;
   DateTime? _completedAt;
 
   @override
   void initState() {
     super.initState();
+
+    _store = widget.store ?? SharedPrefsTaskStatusStore();
 
     _task = mockTasks.firstWhere(
       (t) => t.id == widget.taskId,
@@ -94,32 +95,33 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   String _todayLabel(DateTime dt) {
     const weekdays = [
-      'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
     ];
     const months = [
-      'January','February','March','April','May','June',
-      'July','August','September','October','November','December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return 'Today: ${weekdays[dt.weekday - 1]}, \n'
         '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 
-  void _goTasks() {
-    try {
-      if (kTasksRouteName.isNotEmpty) {
-        context.goNamed(kTasksRouteName);
-        return;
-      }
-    } catch (_) {}
-    try {
-      if (kTasksPath.isNotEmpty) {
-        context.go(kTasksPath);
-        return;
-      }
-    } catch (_) {
-      Navigator.pop(context);
-    }
-  }
+  void _goTasks() => context.go(AppRoutes.taskList);
 
   double _progressValue() {
     if (_steps.isEmpty) return 0;
@@ -149,6 +151,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final now = DateTime.now();
     await _store.setCompleted(_task.id, now);
     _completedAt = now;
+
     if (!mounted) return;
 
     await showDialog<void>(
@@ -162,12 +165,16 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           children: const [
             Icon(Icons.check_circle, color: Colors.green, size: 110),
             SizedBox(height: 16),
-            Text('Done',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
+            Text(
+              'Done',
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+            ),
             SizedBox(height: 8),
-            Text('Task marked as complete.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18)),
+            Text(
+              'Task marked as complete.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
           ],
         ),
         actionsPadding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -213,13 +220,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (_stepIndex < _steps.length - 1) {
       setState(() => _stepIndex++);
     }
-    // if last step: button disappears (handled in build)
+    // last step: button disappears (handled in build)
   }
 
-  /// Image selection strategy:
-  /// 1) If Task has imageAsset field (optional), use it
-  /// 2) Else keyword-map based on title/description
-  /// 3) Else network placeholder
   String? _taskImageAsset(Task task) {
     try {
       final dyn = task as dynamic;
@@ -245,9 +248,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return null;
   }
 
-  String _fallbackImageUrl(Task task) {
-    final q = Uri.encodeComponent(task.title.isEmpty ? 'task' : task.title);
-    return 'https://picsum.photos/seed/$q/800/500';
+  Widget _imagePlaceholder() {
+    return Container(
+      color: const Color(0xFFF3F4F6),
+      alignment: Alignment.center,
+      child: const Icon(Icons.image, size: 44, color: Color(0xFF9CA3AF)),
+    );
   }
 
   Widget _completedBadge() {
@@ -288,32 +294,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final now = DateTime.now();
 
     final asset = _taskImageAsset(_task);
+
     final imageWidget = ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
       child: AspectRatio(
         aspectRatio: 16 / 10,
         child: asset == null
-            ? Image.network(
-                _fallbackImageUrl(_task),
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: const Color(0xFFF3F4F6),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.image, size: 44, color: Color(0xFF9CA3AF)),
-                ),
-              )
+            ? _imagePlaceholder()
             : Image.asset(
                 asset,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Image.network(
-                  _fallbackImageUrl(_task),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: const Color(0xFFF3F4F6),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.image, size: 44, color: Color(0xFF9CA3AF)),
-                  ),
-                ),
+                errorBuilder: (_, __, ___) => _imagePlaceholder(),
               ),
       ),
     );
@@ -325,21 +316,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Header: Today
-                Text(
-                  _todayLabel(now),
-                  style: const TextStyle(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                _todayLabel(now),
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
-                ),
-                const SizedBox(height: 14),
+              ),
+              const SizedBox(height: 14),
 
-              // "You are on: Task Step" pill
+              // "You are on: Task Step" pill (RichText)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
@@ -410,7 +400,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
               const SizedBox(height: 18),
 
-              // Blue divider
               Container(height: 3, color: blue),
               const SizedBox(height: 18),
 
@@ -437,7 +426,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Step label "Step 1"S
+                          // Step label
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 124, vertical: 14),
                             decoration: BoxDecoration(
@@ -457,7 +446,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                           const SizedBox(height: 14),
 
-                          // ✅ Completed mode formatting (green + check)
                           if (_isDone) ...[
                             _completedBadge(),
                             const SizedBox(height: 12),
@@ -493,9 +481,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
               const SizedBox(height: 18),
 
-              // Primary CTA behavior per requirements:
-              // - If NOT done: Next Step / Mark Done
-              // - If DONE: show "Next" until last step, then hide it
+              // Primary CTA logic
               if (!_isDone || showNextWhenDone) ...[
                 SizedBox(
                   height: 92,
@@ -544,7 +530,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               ),
 
               const SizedBox(height: 18),
-              
             ],
           ),
         ),
@@ -552,3 +537,4 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 }
+

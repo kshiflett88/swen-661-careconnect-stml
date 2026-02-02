@@ -27,15 +27,22 @@ const double dButtonHeight = 92;
 
 
 class HealthLoggingScreen extends StatefulWidget {
-  const HealthLoggingScreen({super.key});
+  final HealthLogStore? store;
+  const HealthLoggingScreen({super.key, this.store});
 
   @override
   State<HealthLoggingScreen> createState() => _HealthLoggingScreenState();
 }
 
 class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
-  final HealthLogStore _store = HealthLogStore();
+  late final HealthLogStore _store;
   final TextEditingController _noteController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _store = widget.store ?? SharedPrefsHealthLogStore();
+  }
 
   String? _selectedMood;
   static const int _maxChars = 200;
@@ -59,25 +66,9 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
   }
 
   void _goHome() {
-    // go_router navigation (preferred)
-    try {
-      if (kHomeRouteName.isNotEmpty) {
-        context.goNamed(kHomeRouteName);
-        return;
-      }
-    } catch (_) {
-      // ignore and try path fallback
-    }
-    try {
-      if (kHomePath.isNotEmpty) {
-        context.go(kHomePath);
-        return;
-      }
-    } catch (_) {
-      // last fallback (only works if this screen was pushed on Navigator stack)
-      Navigator.popUntil(context, (route) => route.isFirst);
-    }
+    context.go(kHomePath);
   }
+
 
   Future<void> _showSavedDialog() async {
     // Large green confirmation with a single, clear action.
@@ -219,6 +210,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
 
               // Large mood cards 
               _MoodCard(
+                key: const Key('mood_happy'),
                 emoji: '😊',
                 label: 'Happy',
                 selected: _selectedMood == 'Happy',
@@ -226,6 +218,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               ),
               const SizedBox(height: 18),
               _MoodCard(
+                key: const Key('mood_okay'),
                 emoji: '😐',
                 label: 'Okay',
                 selected: _selectedMood == 'Okay',
@@ -233,6 +226,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               ),
               const SizedBox(height: 18),
               _MoodCard(
+                key: const Key('mood_sad'),
                 emoji: '😢',
                 label: 'Sad',
                 selected: _selectedMood == 'Sad',
@@ -300,6 +294,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               SizedBox(
                 height: dButtonHeight,
                 child: ElevatedButton.icon(
+                  key: const Key('save_button'),
                   onPressed: _save,
                   label: const Text('Save'),
                   style: ElevatedButton.styleFrom(
@@ -323,6 +318,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               SizedBox(
                 height: dButtonHeight,
                 child: OutlinedButton.icon(
+                  key: const Key('return_home_button'),
                   onPressed: _goHome,
                   label: const Text('Return to Home'),
                   style: OutlinedButton.styleFrom(
@@ -353,6 +349,7 @@ class _MoodCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _MoodCard({
+    super.key,
     required this.emoji,
     required this.label,
     required this.selected,
