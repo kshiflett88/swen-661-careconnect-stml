@@ -34,7 +34,7 @@ GoRouter createRouter() {
       ),
       GoRoute(
         path: AppRoutes.dashboard,
-        builder: (context, state) => const PatientDashboardScreen(),
+        builder: (context, state) => PatientDashboardScreen(),
       ),
       GoRoute(
         path: AppRoutes.taskList,

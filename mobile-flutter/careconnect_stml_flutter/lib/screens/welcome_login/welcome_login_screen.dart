@@ -71,6 +71,7 @@ class WelcomeLoginScreen extends StatelessWidget {
 
               // Primary Face ID button (mock -> dashboard)
               _PrimaryBigButton(
+                key: const Key('face_id_button'),
                 label: 'Continue\nwith Face ID',
                 onPressed: () => context.go(AppRoutes.dashboard),
                 icon: CupertinoIcons.viewfinder,
@@ -88,6 +89,7 @@ class WelcomeLoginScreen extends StatelessWidget {
 
               // Secondary buttons
               _SecondaryCardButton(
+                key: const Key('caregiver_button'),
                 label: 'I am a\nCaregiver',
                 icon: Icons.person_add_alt_1_outlined,
                 onPressed: () {
@@ -99,6 +101,7 @@ class WelcomeLoginScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               _SecondaryCardButton(
+                key: const Key('help_signing_in_button'),
                 label: 'I need help\nsigning in',
                 icon: Icons.help_outline,
                 onPressed: () => context.go(AppRoutes.signInHelp),
@@ -116,7 +119,12 @@ class _PrimaryBigButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData? icon;
 
-  const _PrimaryBigButton({required this.label, required this.onPressed, this.icon});
+  const _PrimaryBigButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +170,7 @@ class _SecondaryCardButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _SecondaryCardButton({
+    super.key,
     required this.label,
     required this.icon,
     required this.onPressed,
