@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:careconnect_stml_flutter/app/router.dart';
 import 'package:careconnect_stml_flutter/screens/dashboard/patient_dashboard_screen.dart';
 
-// Import the real screens if you want to assert their UI.
-// If those files aren't ready yet, you can use placeholder widgets instead.
 import 'package:careconnect_stml_flutter/screens/settings/profile_settings_screen.dart';
 import 'package:careconnect_stml_flutter/screens/health_logging/health_logging_screen.dart';
 import 'package:careconnect_stml_flutter/screens/tasks/task_list_screen.dart';
@@ -14,13 +12,40 @@ import 'package:careconnect_stml_flutter/screens/tasks/task_detail_screen.dart';
 import 'package:careconnect_stml_flutter/screens/sign_in_help/sign_in_help_screen.dart';
 import 'package:careconnect_stml_flutter/screens/emergency/sos_screen.dart';
 
-GoRouter _buildTestRouter({String initialLocation = AppRoutes.dashboard}) {
+import 'package:careconnect_stml_flutter/shared/storage/task_status_store.dart';
+import 'package:careconnect_stml_flutter/data/models/task.dart';
+
+List<Task> _testTasks() {
+  return [
+    Task(
+      id: '1',
+      title: 'Take Morning\nMedication',
+      description: 'Blue pill after breakfast',
+      scheduledAt: DateTime(2026, 1, 26, 9, 0),
+    ),
+    Task(
+      id: '2',
+      title: 'Drink Water',
+      description: 'One full glass',
+      scheduledAt: DateTime(2026, 1, 26, 10, 0),
+    ),
+  ];
+}
+
+GoRouter _buildTestRouter({
+  String initialLocation = AppRoutes.dashboard,
+  TaskStatusStore? store,
+  List<Task>? tasks,
+}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
       GoRoute(
         path: AppRoutes.dashboard,
-        builder: (context, state) => const PatientDashboardScreen(),
+        builder: (context, state) => PatientDashboardScreen(
+          taskStore: store,
+          tasks: tasks,
+        ),
       ),
       GoRoute(
         path: AppRoutes.settings,
@@ -75,31 +100,30 @@ Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
 void main() {
   group('PatientDashboardScreen', () {
     testWidgets('renders key content', (tester) async {
-      final router = _buildTestRouter();
+      // Arrange
+      final store = InMemoryTaskStatusStore();
+      final tasks = _testTasks();
+      final router = _buildTestRouter(store: store, tasks: tasks);
 
+      // Act
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
-      // Top date lines
-      expect(find.text('Monday, January\n26, 2026'), findsOneWidget);
+      // Assert
+      expect(find.textContaining('Today:'), findsOneWidget);
 
-      // "You are on: Home" card content (RichText spans)
       final card = find.byKey(const Key('location_card'));
       expect(card, findsOneWidget);
 
       final rt = find.descendant(of: card, matching: find.byType(RichText));
       expect(rt, findsOneWidget);
-
       final plain = ((tester.widget<RichText>(rt).text) as TextSpan).toPlainText();
       expect(plain, contains('You are on: Home'));
 
-
-      // Next task labels
       expect(find.text('Next Task'), findsOneWidget);
       expect(find.text('Take Morning\nMedication'), findsOneWidget);
       expect(find.text('9:00 AM'), findsOneWidget);
 
-      // Buttons exist by key
       expect(find.byKey(const Key('profile_settings_button')), findsOneWidget);
       expect(find.byKey(const Key('feeling_button')), findsOneWidget);
       expect(find.byKey(const Key('start_task_button')), findsOneWidget);
@@ -109,93 +133,114 @@ void main() {
     });
 
     testWidgets('Profile icon navigates to Settings', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
+      // Act
       await tester.tap(find.byKey(const Key('profile_settings_button')));
       await tester.pumpAndSettle();
 
-      // Assert by type (best) or by a known text on that screen
+      // Assert
       expect(find.byType(ProfileSettingsScreen), findsOneWidget);
     });
 
     testWidgets('Feeling card navigates to Health Logging', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
+      // Act
       await tester.tap(find.byKey(const Key('feeling_button')));
       await tester.pumpAndSettle();
 
+      // Assert
       expect(find.byType(HealthLoggingScreen), findsOneWidget);
     });
 
     testWidgets('Start button navigates to Task Detail with id=1', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('start_task_button')));
+      // Act
+      final startBtn = find.byKey(const Key('start_task_button'));
+      await tester.ensureVisible(startBtn);
+      await tester.tap(startBtn);
       await tester.pumpAndSettle();
 
+      // Assert
       expect(find.byType(TaskDetailScreen), findsOneWidget);
-
-      // Optional: if TaskDetailScreen shows taskId on screen, assert it.
-      // If it doesn't, you can skip this.
-      // expect(find.textContaining('1'), findsWidgets);
     });
 
     testWidgets('Schedule button navigates to Task List', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
+      // Act
       final scheduleBtn = find.byKey(const Key('schedule_button'));
       await tester.ensureVisible(scheduleBtn);
-      await tester.pumpAndSettle();
-
       await tester.tap(scheduleBtn);
       await tester.pumpAndSettle();
 
+      // Assert
       expect(find.byType(TaskListScreen), findsOneWidget);
     });
 
     testWidgets('Messages button navigates to Sign-In Help', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
+      // Act
       final messagesBtn = find.byKey(const Key('messages_button'));
       await tester.ensureVisible(messagesBtn);
-      await tester.pumpAndSettle();
-
       await tester.tap(messagesBtn);
       await tester.pumpAndSettle();
 
+      // Assert
       expect(find.byType(SignInHelpScreen), findsOneWidget);
     });
 
     testWidgets('Emergency Help button navigates to SOS screen', (tester) async {
-      final router = _buildTestRouter();
-
+      // Arrange
+      final router = _buildTestRouter(
+        store: InMemoryTaskStatusStore(),
+        tasks: _testTasks(),
+      );
       await tester.pumpWidget(_TestApp(router: router));
       await tester.pumpAndSettle();
 
+      // Act
       final emergencyBtn = find.byKey(const Key('emergency_help_button'));
-
-      // This one is near bottom; in tests it can be off-screen
       await _scrollTo(tester, emergencyBtn);
-
       await tester.tap(emergencyBtn);
       await tester.pumpAndSettle();
 
+      // Assert
       expect(find.byType(SosScreen), findsOneWidget);
     });
   });
 }
+
