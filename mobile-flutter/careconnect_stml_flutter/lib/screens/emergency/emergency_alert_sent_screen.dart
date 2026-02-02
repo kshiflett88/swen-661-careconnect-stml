@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/orientation_header.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
+
 
 class EmergencyAlertSentScreen extends StatelessWidget {
   final String caregiverName;
@@ -74,10 +77,9 @@ class EmergencyAlertSentScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.popUntil(
-                          context,
-                          (route) => route.isFirst,
-                        ),
+                        onPressed: () {
+                          context.go(AppRoutes.dashboard);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                         ),

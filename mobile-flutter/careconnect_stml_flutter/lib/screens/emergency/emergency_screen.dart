@@ -3,6 +3,9 @@ import '../../../theme/app_colors.dart';
 import '../../../widgets/orientation_header.dart';
 import '../../../widgets/emergency_button.dart';
 import 'emergency_confirmation_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
+
 
 class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key});
@@ -71,7 +74,9 @@ class EmergencyScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          context.go(AppRoutes.dashboard);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondary,
                         ),

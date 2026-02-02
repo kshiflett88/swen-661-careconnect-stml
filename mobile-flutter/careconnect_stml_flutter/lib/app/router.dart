@@ -6,7 +6,7 @@ import '../screens/dashboard/patient_dashboard_screen.dart';
 import '../screens/tasks/task_list_screen.dart';
 import '../screens/tasks/task_detail_screen.dart';
 import '../screens/health_logging/health_logging_screen.dart';
-import '../screens/emergency/sos_screen.dart';
+import '../screens/emergency/emergency_screen.dart';
 import '../screens/settings/profile_settings_screen.dart';
 
 class AppRoutes {
@@ -53,7 +53,7 @@ GoRouter createRouter() {
       ),
       GoRoute(
         path: AppRoutes.sos,
-        builder: (context, state) => const SosScreen(),
+        builder: (context, state) => const EmergencyScreen(),
       ),
       GoRoute(
         path: AppRoutes.settings,
