@@ -4,6 +4,8 @@ import '../../../theme/app_colors.dart';
 import '../../../widgets/orientation_header.dart';
 import '../../../widgets/info_card.dart';
 import 'accessibility_settings_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -95,13 +97,7 @@ class ProfileScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const AccessibilitySettingsScreen(),
-                            ),
-                          );
+                          context.go(AppRoutes.accessibility);
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +117,9 @@ class ProfileScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          context.go(AppRoutes.dashboard);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondary,
                         ),

@@ -9,8 +9,8 @@ import 'package:careconnect_stml_flutter/screens/welcome_login/welcome_login_scr
 import 'package:careconnect_stml_flutter/screens/sign_in_help/sign_in_help_screen.dart';
 import 'package:careconnect_stml_flutter/screens/tasks/task_list_screen.dart';
 import 'package:careconnect_stml_flutter/screens/health_logging/health_logging_screen.dart';
-import 'package:careconnect_stml_flutter/screens/emergency/sos_screen.dart';
-import 'package:careconnect_stml_flutter/screens/settings/profile_settings_screen.dart';
+import 'package:careconnect_stml_flutter/screens/emergency/emergency_screen.dart';
+import 'package:careconnect_stml_flutter/screens/profile/profile_screen.dart';
 
 void main() {
   group('App router smoke', () {
@@ -53,12 +53,12 @@ void main() {
       // /sos
       router.go(AppRoutes.sos);
       await tester.pumpAndSettle();
-      expect(find.byType(SosScreen), findsOneWidget);
+      expect(find.byType(EmergencyScreen), findsOneWidget);
 
       // /settings
       router.go(AppRoutes.settings);
       await tester.pumpAndSettle();
-      expect(find.byType(ProfileSettingsScreen), findsOneWidget);
+      expect(find.byType(ProfileScreen), findsOneWidget);
     });
   });
 }

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../models/accessibility_settings.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/orientation_header.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
+
 
 class AccessibilitySettingsScreen extends StatelessWidget {
   const AccessibilitySettingsScreen({super.key});
@@ -87,7 +90,9 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          context.go(AppRoutes.dashboard);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondary,
                         ),
@@ -155,9 +160,6 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isEnabled
-                        ? AppColors.success.withOpacity(0.1)
-                        : AppColors.disabled.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

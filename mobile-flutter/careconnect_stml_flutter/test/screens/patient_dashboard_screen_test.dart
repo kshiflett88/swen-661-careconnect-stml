@@ -5,12 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:careconnect_stml_flutter/app/router.dart';
 import 'package:careconnect_stml_flutter/screens/dashboard/patient_dashboard_screen.dart';
 
-import 'package:careconnect_stml_flutter/screens/settings/profile_settings_screen.dart';
 import 'package:careconnect_stml_flutter/screens/health_logging/health_logging_screen.dart';
 import 'package:careconnect_stml_flutter/screens/tasks/task_list_screen.dart';
 import 'package:careconnect_stml_flutter/screens/tasks/task_detail_screen.dart';
 import 'package:careconnect_stml_flutter/screens/sign_in_help/sign_in_help_screen.dart';
-import 'package:careconnect_stml_flutter/screens/emergency/sos_screen.dart';
+import 'package:careconnect_stml_flutter/screens/emergency/emergency_screen.dart';
+import 'package:careconnect_stml_flutter/screens/profile/profile_screen.dart';
+import 'package:careconnect_stml_flutter/screens/profile/accessibility_settings_screen.dart';
 
 import 'package:careconnect_stml_flutter/shared/storage/task_status_store.dart';
 import 'package:careconnect_stml_flutter/data/models/task.dart';
@@ -49,7 +50,7 @@ GoRouter _buildTestRouter({
       ),
       GoRoute(
         path: AppRoutes.settings,
-        builder: (context, state) => const ProfileSettingsScreen(),
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         path: AppRoutes.healthLogging,
@@ -72,7 +73,11 @@ GoRouter _buildTestRouter({
       ),
       GoRoute(
         path: AppRoutes.sos,
-        builder: (context, state) => const SosScreen(),
+        builder: (context, state) => const EmergencyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.accessibility,
+        builder: (context, state) => const AccessibilitySettingsScreen(),
       ),
     ],
   );
@@ -146,7 +151,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(ProfileSettingsScreen), findsOneWidget);
+      expect(find.byType(ProfileScreen), findsOneWidget);
     });
 
     testWidgets('Feeling card navigates to Health Logging', (tester) async {
@@ -239,7 +244,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(SosScreen), findsOneWidget);
+      expect(find.byType(EmergencyScreen), findsOneWidget);
     });
   });
 }
