@@ -133,12 +133,11 @@ flutter test --coverage
 - Task data currently uses mock data for predictability and testing.
 - Local persistence uses SharedPreferences and is not designed for multi-user or cloud sync scenarios.
 
-## Team Contributions (This Week)
+## Team Contributions
 **Kodi Sarlett**
 - Implemented screens: Welcome/sign in, Help sign in, and Patient Dashboard
 - Integrated application-wide navigation using GoRouter
 - Implemented shared data storage patterns (SharedPreferences + in-memory stores)
-- Coordinated overall app architecture and screen integration
 - Assisted with debugging widget and unit tests across features
 - Generated and verified test coverage (60%+ requirement)
 
