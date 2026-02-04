@@ -6,8 +6,9 @@ import '../screens/dashboard/patient_dashboard_screen.dart';
 import '../screens/tasks/task_list_screen.dart';
 import '../screens/tasks/task_detail_screen.dart';
 import '../screens/health_logging/health_logging_screen.dart';
-import '../screens/emergency/sos_screen.dart';
-import '../screens/settings/profile_settings_screen.dart';
+import '../screens/emergency/emergency_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/profile/accessibility_settings_screen.dart';
 
 class AppRoutes {
   static const welcomeLogin = '/';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const healthLogging = '/health-logging';
   static const sos = '/sos';
   static const settings = '/settings';
+  static const accessibility = '/accessibility';
 }
 
 GoRouter createRouter() {
@@ -53,11 +55,15 @@ GoRouter createRouter() {
       ),
       GoRoute(
         path: AppRoutes.sos,
-        builder: (context, state) => const SosScreen(),
+        builder: (context, state) => const EmergencyScreen(),
       ),
       GoRoute(
         path: AppRoutes.settings,
-        builder: (context, state) => const ProfileSettingsScreen(),
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.accessibility,
+        builder: (context, state) => const AccessibilitySettingsScreen(),
       ),
     ],
   );

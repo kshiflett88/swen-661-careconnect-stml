@@ -21,11 +21,7 @@ class TaskDetailScreen extends StatefulWidget {
   /// ✅ Inject store so widget tests can use InMemoryTaskStatusStore
   final TaskStatusStore? store;
 
-  const TaskDetailScreen({
-    super.key,
-    required this.taskId,
-    this.store,
-  });
+  const TaskDetailScreen({super.key, required this.taskId, this.store});
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -101,7 +97,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       'Thursday',
       'Friday',
       'Saturday',
-      'Sunday'
+      'Sunday',
     ];
     const months = [
       'January',
@@ -115,7 +111,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       'September',
       'October',
       'November',
-      'December'
+      'December',
     ];
     return 'Today: ${weekdays[dt.weekday - 1]}, \n'
         '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
@@ -230,16 +226,24 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       if (v is String && v.trim().isNotEmpty) return v.trim();
     } catch (_) {}
 
-    final t = (task.title + ' ' + task.description).toLowerCase();
+    final t = ('${task.title} ${task.description}').toLowerCase();
 
     // Update these paths to match assets you actually have.
-    if (t.contains('medication') || t.contains('pill') || t.contains('medicine')) {
+    if (t.contains('medication') ||
+        t.contains('pill') ||
+        t.contains('medicine')) {
       return 'assets/images/tasks/medication.png';
     }
-    if (t.contains('breakfast') || t.contains('lunch') || t.contains('dinner') || t.contains('meal')) {
+    if (t.contains('breakfast') ||
+        t.contains('lunch') ||
+        t.contains('dinner') ||
+        t.contains('meal')) {
       return 'assets/images/tasks/meal.png';
     }
-    if (t.contains('walk') || t.contains('exercise') || t.contains('therapy') || t.contains('physical')) {
+    if (t.contains('walk') ||
+        t.contains('exercise') ||
+        t.contains('therapy') ||
+        t.contains('physical')) {
       return 'assets/images/tasks/exercise.png';
     }
     if (t.contains('water') || t.contains('drink')) {
@@ -331,7 +335,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
               // "You are on: Task Step" pill (RichText)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: blue, width: 2),
                   borderRadius: BorderRadius.circular(14),
@@ -428,9 +435,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         children: [
                           // Step label
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 124, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 124,
+                              vertical: 14,
+                            ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFF93C5FD), width: 2),
+                              border: Border.all(
+                                color: const Color(0xFF93C5FD),
+                                width: 2,
+                              ),
                               borderRadius: BorderRadius.circular(16),
                               color: const Color(0xFFEFF6FF),
                             ),
@@ -452,7 +465,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           ],
 
                           Text(
-                            _currentStepText().isEmpty ? _task.description : _currentStepText(),
+                            _currentStepText().isEmpty
+                                ? _task.description
+                                : _currentStepText(),
                             style: const TextStyle(
                               fontSize: 32,
                               height: 1.25,
@@ -502,7 +517,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     child: Text(
                       _isDone
                           ? 'Next'
-                          : (_stepIndex < _steps.length - 1 ? 'Next Step' : 'Mark Done'),
+                          : (_stepIndex < _steps.length - 1
+                                ? 'Next Step'
+                                : 'Mark Done'),
                     ),
                   ),
                 ),
@@ -537,4 +554,3 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 }
-
