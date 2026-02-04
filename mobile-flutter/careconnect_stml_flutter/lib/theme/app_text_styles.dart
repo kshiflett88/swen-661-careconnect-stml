@@ -36,4 +36,6 @@ class AppTextStyles {
     height: 1.5,
     color: AppColors.primary,
   );
+
+  static Null get bodyLarge => null;
 }
