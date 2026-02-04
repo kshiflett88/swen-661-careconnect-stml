@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/orientation_header.dart';
-import '../../../widgets/emergency_button.dart';
+import '../../theme/app_colors.dart';
+import '../../widgets/orientation_header.dart';
 import 'emergency_confirmation_screen.dart';
-import 'package:go_router/go_router.dart';
-import '../../../app/router.dart';
-
 
 class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key});
@@ -13,83 +9,150 @@ class EmergencyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
             const OrientationHeader(screenName: 'Emergency Help'),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 40,
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const Spacer(),
                     Container(
-                      width: 120,
-                      height: 120,
+                      padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.1),
-                        shape: BoxShape.circle,
+                        color: const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFDC2626),
+                          width: 2,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.emergency,
-                        size: 64,
-                        color: AppColors.error,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'Need Help?',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Press the button below to contact your caregiver immediately.',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: AppColors.mutedText,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 64),
-                    EmergencyButton(
-                      label: 'Send Emergency Alert',
-                      icon: Icons.phone_in_talk,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const EmergencyConfirmationScreen(),
+                      child: const Column(
+                        children: [
+                          Text(
+                            'You are on:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xFFDC2626),
+                            ),
                           ),
-                        );
-                      },
+                          SizedBox(height: 8),
+                          Text(
+                            'Emergency Help',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFDC2626),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF9C3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFEAB308),
+                          width: 2,
+                        ),
+                      ),
+                      child: const Text(
+                        'This will send an alert to your caregiver and start a call',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF854D0E),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDC2626),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const EmergencyConfirmationScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'SOS',
+                                  style: TextStyle(
+                                    fontSize: 72,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 8,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Press to Call for Help',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.go(AppRoutes.dashboard);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
+                      height: 60,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                            color: Color(0xFF64748B),
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.home),
-                            SizedBox(width: 12),
-                            Text(
-                              'Return to Home',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ],
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF64748B),
+                          ),
                         ),
                       ),
                     ),
@@ -102,9 +165,4 @@ class EmergencyScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-extension on Color? {
-  // ignore: body_might_complete_normally_nullable
-  Color? withOpacity(double opacity) {}
 }

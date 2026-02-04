@@ -13,5 +13,5 @@ class AppColors {
 
   static Color? get secondary => null;
 
-  static get disabled => null; // green
+  static Null get disabled => null; // green
 }

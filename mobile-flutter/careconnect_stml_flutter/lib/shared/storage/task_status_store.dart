@@ -22,6 +22,7 @@ class SharedPrefsTaskStatusStore implements TaskStatusStore {
     return jsonDecode(raw) as Map<String, dynamic>;
   }
 
+  @override
   Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
@@ -77,4 +78,3 @@ class InMemoryTaskStatusStore implements TaskStatusStore {
     _completed.clear();
   }
 }
-

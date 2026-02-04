@@ -19,11 +19,11 @@ class UserProfile {
   factory UserProfile.mock() {
     return const UserProfile(
       userId: 'user_001',
-      userName: 'John Smith',
+      userName: 'Keisha Williams',
       userPhotoUrl: null,
-      caregiverName: 'Sarah Smith',
+      caregiverName: 'Marcus Johnson',
       caregiverPhone: '+1-555-123-4567',
-      caregiverEmail: 'sarah.smith@email.com',
+      caregiverEmail: 'marcus.johnson@email.com',
     );
   }
 }

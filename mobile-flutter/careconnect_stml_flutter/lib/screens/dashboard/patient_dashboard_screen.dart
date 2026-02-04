@@ -9,16 +9,32 @@ import '../../data/models/task.dart';
 
 //Today's date label
 String _todayLabel(DateTime dt) {
-    const weekdays = [
-      'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
-    ];
-    const months = [
-      'January','February','March','April','May','June',
-      'July','August','September','October','November','December'
-    ];
-    return 'Today: ${weekdays[dt.weekday - 1]}, \n'
-        '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
-  }
+  const weekdays = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  return 'Today: ${weekdays[dt.weekday - 1]}, \n'
+      '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+}
 
 class PatientDashboardScreen extends StatelessWidget {
   final TaskStatusStore taskStore;
@@ -28,19 +44,20 @@ class PatientDashboardScreen extends StatelessWidget {
     super.key,
     TaskStatusStore? taskStore,
     List<Task>? tasks,
-  })  : taskStore = taskStore ?? SharedPrefsTaskStatusStore(),
-        tasks = tasks ?? mockTasks;
+  }) : taskStore = taskStore ?? SharedPrefsTaskStatusStore(),
+       tasks = tasks ?? mockTasks;
 
   // Add this helper method to get the next incomplete task
   Future<Task?> _getNextIncompleteTask() async {
-    final sortedTasks = [...tasks]..sort((a, b) {
-      final at = a.scheduledAt;
-      final bt = b.scheduledAt;
-      if (at == null && bt == null) return 0;
-      if (at == null) return 1;
-      if (bt == null) return -1;
-      return at.compareTo(bt);
-    });
+    final sortedTasks = [...tasks]
+      ..sort((a, b) {
+        final at = a.scheduledAt;
+        final bt = b.scheduledAt;
+        if (at == null && bt == null) return 0;
+        if (at == null) return 1;
+        if (bt == null) return -1;
+        return at.compareTo(bt);
+      });
 
     for (final task in sortedTasks) {
       final completedAt = await taskStore.getCompletedAt(task.id);
@@ -56,19 +73,17 @@ class PatientDashboardScreen extends StatelessWidget {
     // Mock data (UI only)
     final locationLabel = 'Home';
 
-
-
-// This helper should already exist in your file, but if not, add it:
-String _formatTime(DateTime? dt) {
-  if (dt == null) return '';
-  int hour = dt.hour;
-  final minute = dt.minute;
-  final suffix = hour >= 12 ? 'PM' : 'AM';
-  hour = hour % 12;
-  if (hour == 0) hour = 12;
-  final mm = minute.toString().padLeft(2, '0');
-  return '$hour:$mm $suffix';
-}
+    // This helper should already exist in your file, but if not, add it:
+    String formatTime(DateTime? dt) {
+      if (dt == null) return '';
+      int hour = dt.hour;
+      final minute = dt.minute;
+      final suffix = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12;
+      if (hour == 0) hour = 12;
+      final mm = minute.toString().padLeft(2, '0');
+      return '$hour:$mm $suffix';
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -105,13 +120,13 @@ String _formatTime(DateTime? dt) {
               // "You are on: Home" info card
               Container(
                 key: const Key('location_card'),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    width: 2,
-                    color: AppColors.primary,
-                  ),
+                  border: Border.all(width: 2, color: AppColors.primary),
                   color: AppColors.infoCardBg,
                 ),
                 child: RichText(
@@ -138,10 +153,7 @@ String _formatTime(DateTime? dt) {
               const SizedBox(height: 14),
 
               // Divider line
-              Container(
-                height: 4,
-                color: AppColors.primary,
-              ),
+              Container(height: 4, color: AppColors.primary),
 
               const SizedBox(height: 18),
 
@@ -153,7 +165,8 @@ String _formatTime(DateTime? dt) {
                   // Later: route to mood logging (for now can go to health logging)
                   context.go(AppRoutes.healthLogging);
                 },
-                child: Padding(padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -167,10 +180,7 @@ String _formatTime(DateTime? dt) {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      const Text(
-                        '😊 😐 😔',
-                        style: TextStyle(fontSize: 22),
-                      ),
+                      const Text('😊 😐 😔', style: TextStyle(fontSize: 22)),
                     ],
                   ),
                 ),
@@ -224,7 +234,7 @@ String _formatTime(DateTime? dt) {
                   }
 
                   final nextTask = snapshot.data!;
-                  final timeLabel = _formatTime(nextTask.scheduledAt);
+                  final timeLabel = formatTime(nextTask.scheduledAt);
 
                   return Container(
                     padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
@@ -267,7 +277,12 @@ String _formatTime(DateTime? dt) {
                           height: 72,
                           child: ElevatedButton(
                             key: const Key('start_task_button'),
-                            onPressed: () => context.go(AppRoutes.taskDetail.replaceFirst(':id', nextTask.id)),
+                            onPressed: () => context.go(
+                              AppRoutes.taskDetail.replaceFirst(
+                                ':id',
+                                nextTask.id,
+                              ),
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF16A34A), // green
                               foregroundColor: Colors.white,
@@ -412,7 +427,9 @@ class _CardButton extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           side: const BorderSide(width: 2, color: Color(0xFFCAD5E2)),
           elevation: 4,
           shadowColor: Colors.black12,

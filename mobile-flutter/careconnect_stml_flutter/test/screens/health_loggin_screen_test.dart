@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/semantics.dart';
 
 import 'package:careconnect_stml_flutter/app/router.dart';
 import 'package:careconnect_stml_flutter/screens/health_logging/health_logging_screen.dart';
-import 'package:careconnect_stml_flutter/screens/dashboard/patient_dashboard_screen.dart';
 
 import 'package:careconnect_stml_flutter/shared/storage/health_log_store.dart';
 
@@ -77,7 +75,10 @@ void main() {
 
       // "You are on: How I Feel" is RichText, so read its spans
       final rich = find.byType(RichText);
-      expect(rich, findsWidgets); // there are multiple RichText in app sometimes
+      expect(
+        rich,
+        findsWidgets,
+      ); // there are multiple RichText in app sometimes
 
       // Find the one that contains "You are on:"
       final matching = rich.evaluate().where((e) {
@@ -107,7 +108,9 @@ void main() {
       expect(homeBtn, findsOneWidget);
     });
 
-    testWidgets('tapping mood allows Save flow (selection works)', (tester) async {
+    testWidgets('tapping mood allows Save flow (selection works)', (
+      tester,
+    ) async {
       final store = InMemoryHealthLogStore();
       final router = _buildTestRouter(store: store);
 
@@ -128,7 +131,6 @@ void main() {
       expect(find.text('Saved'), findsOneWidget);
       expect(find.text('OK'), findsOneWidget);
     });
-
 
     testWidgets('Save without mood shows SnackBar', (tester) async {
       final store = InMemoryHealthLogStore();
@@ -189,7 +191,9 @@ void main() {
       expect(find.text('DASHBOARD'), findsOneWidget);
     });
 
-    testWidgets('Return to Home navigates to Dashboard (scroll required)', (tester) async {
+    testWidgets('Return to Home navigates to Dashboard (scroll required)', (
+      tester,
+    ) async {
       final store = InMemoryHealthLogStore();
       final router = _buildTestRouter(store: store);
 
@@ -206,4 +210,3 @@ void main() {
     });
   });
 }
-

@@ -37,5 +37,5 @@ class AppTextStyles {
     color: AppColors.primary,
   );
 
-  static get bodyLarge => null;
+  static Null get bodyLarge => null;
 }
