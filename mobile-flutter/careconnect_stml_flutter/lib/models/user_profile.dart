@@ -6,6 +6,7 @@ class UserProfile {
   final String caregiverName;
   final String caregiverPhone;
   final String caregiverEmail;
+  final DateTime dateOfBirth;
 
   const UserProfile({
     required this.userId,
@@ -14,16 +15,18 @@ class UserProfile {
     required this.caregiverName,
     required this.caregiverPhone,
     required this.caregiverEmail,
+    required this.dateOfBirth,
   });
 
   factory UserProfile.mock() {
-    return const UserProfile(
+    return UserProfile(
       userId: 'user_001',
       userName: 'Keisha Williams',
       userPhotoUrl: null,
       caregiverName: 'Marcus Johnson',
       caregiverPhone: '+1-555-123-4567',
-      caregiverEmail: 'marcus.johnson@email.com',
+      caregiverEmail: 'mjohnson@email.com',
+      dateOfBirth: DateTime(1955, 3, 15),
     );
   }
 }
