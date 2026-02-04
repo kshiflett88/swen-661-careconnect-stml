@@ -106,7 +106,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert we are on Welcome/Login screen
-      expect(find.text('CareConnect'), findsOneWidget);
+      expect(find.text('Access CareConnect'), findsOneWidget);
       expect(find.byType(WelcomeLoginScreen), findsOneWidget);
     });
 
@@ -128,7 +128,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(WelcomeLoginScreen), findsOneWidget);
-      expect(find.text('CareConnect'), findsOneWidget);
+      expect(find.text('Access CareConnect'), findsOneWidget);
     });
   });
 }

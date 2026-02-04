@@ -17,11 +17,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Title + helper text
-      expect(find.text('CareConnect'), findsOneWidget);
+      expect(find.text('Access CareConnect'), findsOneWidget);
       expect(find.text('Look at the camera to sign in'), findsOneWidget);
 
       // Info card text
-      expect(find.text('Your caregiver has set\nthis up for you.'), findsOneWidget);
+      expect(find.text('Your caregiver has set up\nsecure access up for you.'), findsOneWidget);
 
       // Buttons by key
       expect(find.byKey(const Key('face_id_button')), findsOneWidget);

@@ -38,7 +38,7 @@ class WelcomeLoginScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               Text(
-                'CareConnect',
+                'Access CareConnect',
                 textAlign: TextAlign.center,
                 style: t.headlineLarge,
               ),
@@ -58,7 +58,7 @@ class WelcomeLoginScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Your caregiver has set\nthis up for you.',
+                      'Your caregiver has set up\nsecure access up for you.',
                       textAlign: TextAlign.center,
                       style: t.bodyMedium,
                     ),
@@ -72,7 +72,7 @@ class WelcomeLoginScreen extends StatelessWidget {
               // Primary Face ID button (mock -> dashboard)
               _PrimaryBigButton(
                 key: const Key('face_id_button'),
-                label: 'Continue\nwith Face ID',
+                label: 'Sign in\nwith Face ID',
                 onPressed: () => context.go(AppRoutes.dashboard),
                 icon: CupertinoIcons.viewfinder,
               ),
@@ -90,7 +90,7 @@ class WelcomeLoginScreen extends StatelessWidget {
               // Secondary buttons
               _SecondaryCardButton(
                 key: const Key('caregiver_button'),
-                label: 'I am a\nCaregiver',
+                label: 'I am a\nCaregiver (Setup)',
                 icon: Icons.person_add_alt_1_outlined,
                 onPressed: () {
                   // You can decide later. For now route to dashboard or caregiver dashboard mock.
