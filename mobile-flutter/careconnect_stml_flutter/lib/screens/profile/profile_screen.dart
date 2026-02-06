@@ -399,6 +399,32 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              
+              const SizedBox(height: 14),
+              
+              // Sign Out button (WHITE + RED TEXT))
+              SizedBox(
+                height: 92,
+                child: ElevatedButton(
+                  key: const Key('sign_out_button'),
+                  onPressed: () => context.go(AppRoutes.welcomeLogin),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 8,
+                  ),
+                  child: Text(
+                    'Sign Out',
+                    textAlign: TextAlign.center,
+                    style: t.titleLarge?.copyWith(
+                      color: const Color.fromARGB(255, 255, 0, 0),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
