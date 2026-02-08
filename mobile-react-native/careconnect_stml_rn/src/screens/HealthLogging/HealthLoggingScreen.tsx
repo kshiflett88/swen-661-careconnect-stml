@@ -143,7 +143,7 @@ export default function HowIFeelTodayScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
       {showError && (
         <View style={styles.savedOverlay}>
           <View style={styles.savedCard}>
@@ -207,7 +207,7 @@ export default function HowIFeelTodayScreen({ navigation }: any) {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.container } showsVerticalScrollIndicator={false}>
         {/* Header */}
         <Text style={styles.todayText}>
           Today: {formatWeekday(today)}

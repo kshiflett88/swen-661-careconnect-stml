@@ -123,7 +123,7 @@ export default function TaskDetailScreen({ navigation, route }: any) {
 const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
       {/* Done overlay (equivalent to Flutter dialog) */}
       {showDoneOverlay && (
         <View style={styles.overlay}>

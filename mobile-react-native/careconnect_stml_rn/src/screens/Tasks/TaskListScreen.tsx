@@ -82,7 +82,7 @@ export default function TaskListScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
       <ScrollView
         contentContainerStyle={styles.container}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
