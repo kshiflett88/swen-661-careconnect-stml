@@ -6,3 +6,6 @@ export const TASK_IMAGES = {
 } as const;
 
 export type TaskImageKey = keyof typeof TASK_IMAGES
+
+//Add this for testing (important)
+export default TASK_IMAGES;

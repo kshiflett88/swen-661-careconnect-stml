@@ -54,20 +54,6 @@ function cleanStepText(s: string) {
   return raw;
 }
 
-// Optional: map a task to local image assets
-function resolveTaskImage(task: Task) {
-  // If you store an imageAsset string in mockTasks, use it
-  if (task.imageAsset) return task.imageAsset;
-
-  const t = `${task.title} ${task.description ?? ""}`.toLowerCase();
-  if (t.includes("medication") || t.includes("pill") || t.includes("medicine")) return "medication";
-  if (t.includes("breakfast") || t.includes("lunch") || t.includes("dinner") || t.includes("meal")) return "meal";
-  if (t.includes("walk") || t.includes("exercise") || t.includes("therapy") || t.includes("physical")) return "exercise";
-  if (t.includes("water") || t.includes("drink")) return "water";
-  return null;
-}
-
-
 export default function TaskDetailScreen({ navigation, route }: any) {
   const { id } = (route?.params ?? {}) as RouteParams;
 

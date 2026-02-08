@@ -46,3 +46,7 @@ export const mockTasks: Task[] = [
     steps: ["Put on comfortable shoes", "Walk for 10 minutes", "Mark as done"],
   },
 ];
+
+
+//test line (important)
+export default mockTasks;
