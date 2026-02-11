@@ -35,7 +35,6 @@ export default function SignInHelpScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <BackRow onPress={handleBack} />
 
         <View style={styles.spacer20} />
 
@@ -102,24 +101,6 @@ export default function SignInHelpScreen() {
         />
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function BackRow({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel="Back"
-      accessibilityHint="Returns to the previous screen"
-      style={({ pressed }) => [styles.backRow, pressed && styles.pressed]}
-      hitSlop={8}
-      testID="back_button"
-    >
-      <MaterialIcons name="arrow-back" size={26} color={Colors.text} />
-      <View style={styles.backRowSpacer} />
-      <Text style={styles.backText}>Back</Text>
-    </Pressable>
   );
 }
 
