@@ -34,17 +34,34 @@ The goal is to help users confidently complete daily tasks, log health informati
 - Profile Settings
 
 ## Architecture & Technologies
-- **Flutter**
+### Frontend
+- **Flutter** (STML UI / cross-platform build)
+- **React Native** (STML RN alternate mobile Implementation)
 - **GoRouter** (Navigator 2.0 style routing)
 - **SharedPreferences** for local data persistence
 - **In-memory stores** for testability
 - **Widget + Unit Testing**
 - Accessibility via **Semantics widgets**
 
-## Setup Instructions
-Follow these steps to run the CareConnect Flutter application locally.
+### Mobile Tooling
 
-### Prerequisites
+- **Android Studio**
+- **Android Emulator**
+- **Node.js**
+- **npm**
+
+### Version Control
+
+- **Git**
+- **GitHub** 
+
+## Setup Instructions
+This repository contains a **Flutter** implementation and (if present in your branch) a **React Native** implementation.
+
+- Use the **Flutter** steps if you are working in the Flutter app (the folder containing `pubspec.yaml`).
+- Use the **React Native** steps if you are working in the React Native app (the folder containing `package.json`).
+
+### Flutter Prerequisites
 - git
 - Flutter SDK installed
 - Android Studio + Android SDK
@@ -129,6 +146,77 @@ To run test coverage:
 ```bash
 flutter test --coverage
 ```
+
+---
+
+## React Native Setup & Usage (if applicable)
+
+If you have a React Native version of CareConnect in this repo (look for a folder that contains a `package.json`, e.g., `careconnect_stml_rn/`), use the steps below.
+
+### React Native Prerequisites
+- Node.js (LTS recommended) + npm (or Yarn)
+- Android Studio + Android SDK
+- JDK 17 (recommended for modern React Native Android builds)
+- An Android emulator or physical Android device
+- (Optional, macOS only) Xcode for iOS
+
+### Step 1: Install Dependencies
+From the React Native app folder (the one containing `package.json`):
+
+```bash
+npm install
+# or: yarn
+```
+
+### Step 2: Start Metro (the React Native bundler)
+In one terminal:
+
+```bash
+npx react-native start
+```
+
+### Step 3: Run the App on Android
+In a second terminal (same folder):
+
+```bash
+npx react-native run-android
+```
+
+**Tip:** If you have multiple devices/emulators, list them and pick one:
+
+```bash
+adb devices
+```
+
+### Step 4: Run Tests (Jest)
+From the React Native app folder:
+
+```bash
+npm test
+```
+
+### Step 5: Test Coverage
+If your package scripts include coverage (typical for Jest):
+
+```bash
+npm run test:coverage
+# often maps to: jest --coverage
+```
+
+### Common React Native Troubleshooting
+- If Metro is stuck or the app won’t refresh:
+  ```bash
+  npx react-native start --reset-cache
+  ```
+- If Android build issues occur:
+  ```bash
+  cd android
+  ./gradlew clean
+  cd ..
+  npx react-native run-android
+  ```
+- If the app can’t find the Android SDK, verify `ANDROID_HOME` / `ANDROID_SDK_ROOT` is set and that platform-tools are on your PATH.
+
 ## Known Issues / Limitations
 - Task data currently uses mock data for predictability and testing.
 - Local persistence uses SharedPreferences and is not designed for multi-user or cloud sync scenarios.
