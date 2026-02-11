@@ -11,10 +11,25 @@ type ScreenMap = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+// src/test-utils/renderWithNav.tsx
+function assertScreensValid(screens: ScreenMap) {
+  const bad = Object.entries(screens).filter(([, Comp]) => !Comp);
+  if (bad.length) {
+    const names = bad.map(([name]) => name).join(', ');
+    throw new Error(
+      `renderWithNav received undefined screen component(s): ${names}. ` +
+      `Check your imports/exports and file name casing.`
+    );
+  }
+}
+
 export function renderWithNav(
   initialRouteName: keyof RootStackParamList,
   screens: ScreenMap
 ) {
+
+  assertScreensValid(screens);
+  
   return render(
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRouteName}>
