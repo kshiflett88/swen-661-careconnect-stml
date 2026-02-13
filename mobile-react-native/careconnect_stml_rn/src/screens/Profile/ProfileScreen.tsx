@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Colors } from '../../theme/colors';
 
 import { Routes } from '../../navigation/routes';
 import type { RootStackParamList } from '../../navigation/types';
@@ -58,10 +59,8 @@ export default function ProfileScreen() {
         <View
           testID="location_card_profile"
           style={styles.locationCard}
-          accessibilityRole="text"
-          accessibilityLabel="You are on My Profile"
         >
-          <Text style={styles.locationText}>
+          <Text style={styles.locationText} accessibilityLabel="You are on: My Profile">
             You are on: <Text style={styles.locationTextBold}>My Profile</Text>
           </Text>
         </View>
@@ -82,9 +81,9 @@ export default function ProfileScreen() {
           <View style={styles.spacer18} />
 
           {/* Profile image placeholder */}
-          <View style={styles.avatarWrap} accessibilityRole="image" accessibilityLabel="Profile picture">
+          <View style={styles.avatarWrap} accessible accessibilityRole="image" accessibilityLabel="Profile picture">
             <View style={styles.avatarCircle}>
-              <MaterialIcons name="person" size={52} color={styles.__colors.primary} />
+              <MaterialIcons name="person" size={52} color={Colors.primary} />
             </View>
           </View>
 
@@ -127,7 +126,9 @@ export default function ProfileScreen() {
           <View style={styles.whiteBlock}>
             <Text style={styles.blockLabel}>Phone Number</Text>
             <View style={styles.spacer6} />
-            <Text style={styles.blockValue}>{profile.caregiverPhone}</Text>
+            <Text style={styles.blockValue}  accessibilityLabel={`Phone number: ${profile.caregiverPhone}`}>
+              {profile.caregiverPhone}
+            </Text>
           </View>
 
           <View style={styles.spacer12} />
@@ -135,7 +136,9 @@ export default function ProfileScreen() {
           <View style={styles.whiteBlock}>
             <Text style={styles.blockLabel}>Email</Text>
             <View style={styles.spacer6} />
-            <Text style={styles.emailValue}>{profile.caregiverEmail}</Text>
+            <Text style={styles.emailValue} accessibilityLabel={`Email: ${profile.caregiverEmail}`}>
+              {profile.caregiverEmail}
+            </Text>
           </View>
         </View>
 

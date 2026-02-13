@@ -7,8 +7,12 @@ import {
   Pressable,
   useWindowDimensions,
   TouchableOpacity,
+  Modal
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Routes } from "../../navigation/routes";
+
 
 type RootStackParamList = {
   EmergencyScreen: undefined;
@@ -83,16 +87,27 @@ const [showConfirm, setShowConfirm] = useState(false);
 
   const closeSent = () => {
     setShowSent(false);
-    navigation.navigate("Dashboard");
+    navigation.navigate(Routes.Dashboard);
   };
 
   return (
     <View style={styles.scaffold}>
-      <View style={styles.safeArea}>
-        {/* Confirm popup (HealthLog-style overlay) */}
-        {showConfirm && (
+      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+
+        {/* ✅ Confirm popup */}
+        <Modal
+          visible={showConfirm}
+          transparent
+          animationType="fade"
+          onRequestClose={cancelConfirm}
+          accessibilityViewIsModal
+        >
           <View style={styles.overlay}>
-            <View style={styles.overlayCard}>
+            <View
+              style={styles.overlayCard}
+              accessible
+              accessibilityLabel="Send Emergency Alert"
+            >
               <Ionicons name="warning" size={140} color={red} />
 
               <Text style={styles.overlayTitle}>Send Emergency Alert?</Text>
@@ -102,6 +117,9 @@ const [showConfirm, setShowConfirm] = useState(false);
               </Text>
 
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Yes, send emergency alert"
+                accessibilityHint="Alerts your caregiver and starts a call"
                 style={[styles.overlayButton, styles.dangerButton]}
                 activeOpacity={0.9}
                 onPress={sendAlert}
@@ -111,6 +129,9 @@ const [showConfirm, setShowConfirm] = useState(false);
               </TouchableOpacity>
 
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Cancel"
+                accessibilityHint="Closes the confirmation dialog"
                 style={[styles.overlayButton, styles.cancelButton]}
                 activeOpacity={0.9}
                 onPress={cancelConfirm}
@@ -120,12 +141,22 @@ const [showConfirm, setShowConfirm] = useState(false);
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        </Modal>
 
-        {/* Alert Sent popup (HealthLog-style overlay) */}
-        {showSent && (
+        {/* ✅ Alert Sent popup */}
+        <Modal
+          visible={showSent}
+          transparent
+          animationType="fade"
+          onRequestClose={closeSent}
+          accessibilityViewIsModal
+        >
           <View style={styles.overlay}>
-            <View style={styles.overlayCard}>
+            <View
+              style={styles.overlayCard}
+              accessible
+              accessibilityLabel="Alert sent"
+            >
               <Ionicons name="checkmark-circle" size={150} color="#16A34A" />
 
               <Text style={styles.overlayTitle}>Alert Sent!</Text>
@@ -135,6 +166,9 @@ const [showConfirm, setShowConfirm] = useState(false);
               </Text>
 
               <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="OK"
+                accessibilityHint="Returns to dashboard"
                 style={styles.overlayButton}
                 activeOpacity={0.9}
                 onPress={closeSent}
@@ -144,70 +178,90 @@ const [showConfirm, setShowConfirm] = useState(false);
               </TouchableOpacity>
             </View>
           </View>
-        )}
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { minHeight: windowHeight },
-          ]}
+        </Modal>
+
+        {/* ✅ Main content (hide from TalkBack while modal open) */}
+        <View
+          importantForAccessibility={showConfirm || showSent ? "no-hide-descendants" : "auto"}
         >
-          {/* Today header */}
-          <Text style={styles.todayHeader}>{todayLabel(now)}</Text>
-
-          <View style={{ height: 14 }} />
-
-          {/* "You are on" card (red) */}
-          <View style={styles.onCard}>
-            <Text style={styles.onLabel}>You are on: <Text style={styles.onTitle}>Emergency Help</Text></Text>
-          </View>
-
-          <View style={{ height: 16 }} />
-
-          {/* red divider line */}
-          <View style={styles.redDivider} />
-          <View style={{ height: 18 }} />
-
-          {/* Yellow warning card */}
-          <View style={styles.warningCard}>
-            <Text style={styles.warningText}>
-              {"This will send an alert to\nyour caregiver and start\na call"}
-            </Text>
-          </View>
-
-          <View style={{ height: 18 }} />
-
-          {/* SOS button (big red block) */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="SOS"
-            testID="sos_button"
-            onPress={openConfirm}
-            style={({ pressed }) => [
-              styles.sosButton,
-              pressed && { opacity: 0.95 },
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollContent,
+              { minHeight: windowHeight },
             ]}
+            showsVerticalScrollIndicator={false}
           >
-            <View style={styles.sosButtonInner}>
-              <Text style={styles.sosText}>SOS</Text>
-              <View style={{ height: 8 }} />
-              <Text style={styles.sosSubText}>Press to Call for Help</Text>
+            {/* Today header */}
+            <Text
+              style={styles.todayHeader}
+              accessibilityRole="header"
+              accessibilityLabel={todayLabel(now).replace("\n", ", ")}
+            >
+              {todayLabel(now)}
+            </Text>
+
+            <View style={{ height: 14 }} />
+
+            {/* "You are on" card (red) */}
+            <View
+              style={styles.onCard}
+              accessibilityLabel="You are on: Emergency Help"
+            >
+              <Text style={styles.onLabel}>
+                You are on: <Text style={styles.onTitle}>Emergency Help</Text>
+              </Text>
             </View>
-          </Pressable>
 
-          <View style={{ height: 18 }} />
+            <View style={{ height: 16 }} />
 
-          {/* Cancel button (outlined card) */}
-          <CardButton
-            testID="cancel_button"
-            height={92}
-            onPress={() => navigation.navigate("Dashboard")}
-          >
-            <Text style={styles.cancelText}>Cancel</Text>
-          </CardButton>
+            {/* red divider line */}
+            <View style={styles.redDivider} />
+            <View style={{ height: 18 }} />
 
-          <View style={{ height: 14 }} />
-        </ScrollView>
-      </View>
+            {/* Yellow warning card */}
+            <View style={styles.warningCard} accessibilityLabel="Emergency warning">
+              <Text style={styles.warningText}>
+                {"This will send an alert to\nyour caregiver and start\na call"}
+              </Text>
+            </View>
+
+            <View style={{ height: 18 }} />
+
+            {/* SOS button */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="SOS emergency alert"
+              accessibilityHint="Opens confirmation to alert your caregiver and start a call"
+              testID="sos_button"
+              onPress={openConfirm}
+              style={({ pressed }) => [
+                styles.sosButton,
+                pressed && { opacity: 0.95 },
+              ]}
+            >
+              <View style={styles.sosButtonInner}>
+                <Text style={styles.sosText}>SOS</Text>
+                <View style={{ height: 8 }} />
+                <Text style={styles.sosSubText}>Press to Call for Help</Text>
+              </View>
+            </Pressable>
+
+            <View style={{ height: 18 }} />
+
+            {/* Cancel button */}
+            <CardButton
+              testID="cancel_button"
+              height={92}
+              onPress={() => navigation.navigate("Dashboard")}
+              accessibilityLabel="Cancel emergency and return to dashboard"
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </CardButton>
+
+            <View style={{ height: 14 }} />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -217,17 +271,23 @@ function CardButton({
   children,
   onPress,
   testID,
+  accessibilityLabel,
+  accessibilityHint,
 }: {
   height: number;
   children: React.ReactNode;
   onPress: () => void;
   testID?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }) {
   return (
     <View style={{ height }}>
       <Pressable
         testID={testID}
         accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
         onPress={onPress}
         style={({ pressed }) => [
           styles.cardButton,

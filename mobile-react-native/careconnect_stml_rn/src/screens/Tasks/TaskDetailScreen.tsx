@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   Image,
+  Modal
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -126,111 +127,191 @@ const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
     <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
       {/* Done overlay (equivalent to Flutter dialog) */}
       {showDoneOverlay && (
-        <View style={styles.overlay}>
-          <View style={styles.overlayCard}>
-            <Ionicons
-              name="checkmark-circle"
-              size={140}
-              color="#16A34A"
-              accessibilityRole="image"
-              accessibilityLabel="Done"
-            />
-            <Text style={styles.overlayTitle}>Done</Text>
-            <Text style={styles.overlaySubtitle}>Task marked as complete.</Text>
-
-            <TouchableOpacity
-              style={styles.overlayButton}
-              activeOpacity={0.9}
-              onPress={() => {
-                setShowDoneOverlay(false);
-                goTasks();
-              }}
+        <Modal
+          visible={showDoneOverlay}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowDoneOverlay(false)}
+          accessibilityViewIsModal
+        >
+          <View style={styles.overlay}>
+            <View
+              style={styles.overlayCard}
+              accessible
+              accessibilityLabel="Task completed"
             >
-              <Text style={styles.overlayButtonText}>Return to Tasks</Text>
-            </TouchableOpacity>
+              <Ionicons
+                name="checkmark-circle"
+                size={140}
+                color="#16A34A"
+                accessibilityRole="image"
+                accessibilityLabel="Done"
+              />
+
+              <Text style={styles.overlayTitle}>Done</Text>
+              <Text style={styles.overlaySubtitle}>Task marked as complete.</Text>
+
+              <TouchableOpacity
+                style={styles.overlayButton}
+                activeOpacity={0.9}
+                onPress={() => {
+                  setShowDoneOverlay(false);
+                  goTasks();
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Return to tasks"
+                accessibilityHint="Closes this message and returns to the task list"
+              >
+                <Text style={styles.overlayButtonText}>Return to Tasks</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </Modal>
       )}
+      <View importantForAccessibility={showDoneOverlay ? "no-hide-descendants" : "auto"}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+          {/* Today */}
+          <Text style={styles.todayTop}>Today: {weekday},</Text>
+          <Text style={styles.todayBottom}>{rest}</Text>
 
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Today */}
-        <Text style={styles.todayTop}>Today: {weekday},</Text>
-        <Text style={styles.todayBottom}>{rest}</Text>
-
-        {/* You are on pill */}
-        <View style={styles.pill}>
-          <Text style={styles.pillText}>
-            You are on: <Text style={styles.pillBold}>Task Step</Text>
-          </Text>
-        </View>
-
-        {/* Task title */}
-        <Text style={styles.taskTitle}>{task.title}</Text>
-
-        {/* Step progress card */}
-        <View style={styles.progressCard}>
-          <Text style={styles.stepOf}>{stepOf}</Text>
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
-          </View>
-        </View>
-
-        {/* Divider */}
-        <View style={styles.divider} />
-
-        {/* Main step card */}
-        <View style={styles.stepCard}>
-          <View style={styles.imageWrap}>
-            {imageSource ? (
-              <Image source={imageSource} style={styles.image} resizeMode="cover" />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Ionicons name="image-outline" size={44} color="#9CA3AF" />
-              </View>
-            )}
+          {/* You are on pill */}
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>
+              You are on: <Text style={styles.pillBold}>Task Step</Text>
+            </Text>
           </View>
 
-          <View style={styles.stepContent}>
-            {/* Step label */}
-            <View style={styles.stepLabelPill}>
-              <Text style={styles.stepLabelText}>{stepTitle}</Text>
+          {/* Task title */}
+          <Text style={styles.taskTitle}>{task.title}</Text>
+
+          {/* Step progress card */}
+          <View 
+            style={styles.progressCard}
+            accessible
+            accessibilityRole="progressbar"
+            accessibilityLabel={`Progress: step ${stepIndex + 1} of ${steps.length}`}
+            accessibilityValue={{
+              min: 0,
+              max: steps.length,
+              now: stepIndex + 1,
+              text: `${stepIndex + 1} of ${steps.length}`,
+            }}
+          >
+            <Text style={styles.stepOf}>{stepOf}</Text>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
+            </View>
+          </View>
+
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* Main step card */}
+          <View
+            style={styles.stepCard}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel={`${stepTitle}. ${stepText}. ${isDone ? "Completed." : ""}`}
+          >
+            <View style={styles.imageWrap}>
+              {imageSource ? (
+                <Image 
+                  source={imageSource}
+                  style={styles.image}
+                  resizeMode="cover" 
+                  accessible
+                  accessibilityRole="image"
+                  accessibilityLabel={`Image representing: ${task.title}`}
+                />
+              ) : (
+                <View 
+                  style={styles.imagePlaceholder}
+                  accessible
+                  accessibilityRole="image"
+                  accessibilityLabel="No image available"  
+                >
+                  <Ionicons name="image-outline" size={44} color="#9CA3AF" />
+                </View>
+              )}
             </View>
 
-            {/* Completed badge */}
-            {isDone && (
-              <View style={styles.completedBadge}>
-                <Ionicons name="checkmark-circle" size={22} color="#16A34A" />
-                <Text style={styles.completedBadgeText}>Completed</Text>
+            <View style={styles.stepContent}>
+              {/* Step label */}
+              <View style={styles.stepLabelPill}>
+                <Text
+                  style={styles.stepLabelText}
+                  accessibilityRole="header"
+                >
+                  {stepTitle}
+                </Text>
               </View>
-            )}
 
-            {/* Step text */}
-            <Text style={styles.stepText}>{stepText}</Text>
+              {/* Completed badge */}
+              {isDone && (
+                <View style={styles.completedBadge}  accessible accessibilityLabel="Completed">
+                  <Ionicons 
+                    name="checkmark-circle"
+                    size={22}
+                    color="#16A34A"
+                    accessible={false}
+                    importantForAccessibility="no"
+                  />
+                  <Text style={styles.completedBadgeText}>Completed</Text>
+                </View>
+              )}
 
-            {isDone && <Text style={styles.stepCompleteHint}>This step is complete.</Text>}
+              {/* Step text */}
+              <Text style={styles.stepText}>{stepText}</Text>
+
+              {isDone && <Text style={styles.stepCompleteHint}>This step is complete.</Text>}
+            </View>
           </View>
-        </View>
 
-        {/* Primary CTA logic */}
-        {(!isDone || showNextWhenDone) && (
-          <TouchableOpacity
-            style={styles.primaryBtn}
+          {/* Primary CTA logic */}
+          {(!isDone || showNextWhenDone) && (
+            <TouchableOpacity
+              testID="task_primary_cta"
+              style={styles.primaryBtn}
+              activeOpacity={0.9}
+              onPress={isDone ? nextWhenDone : nextNormal}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isDone
+                  ? "Next step"
+                  : stepIndex < steps.length - 1
+                  ? "Next step"
+                  : "Mark task done"
+              }
+              accessibilityHint={
+                isDone
+                  ? "Moves to the next step"
+                  : stepIndex < steps.length - 1
+                  ? "Moves to the next step"
+                  : "Marks this task as complete"
+              }
+            >
+              <Text style={styles.primaryBtnText}>
+                {isDone ? "Next" : stepIndex < steps.length - 1 ? "Next Step" : "Mark Done"}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Return to Tasks */}
+          <TouchableOpacity 
+            testID="task_return_tasks"
+            style={styles.secondaryBtn}
             activeOpacity={0.9}
-            onPress={isDone ? nextWhenDone : nextNormal}
+            onPress={goTasks}
+            accessibilityRole="button"
+            accessibilityLabel="Return to tasks"
+            accessibilityHint="Goes back to the task list"
           >
-            <Text style={styles.primaryBtnText}>
-              {isDone ? "Next" : stepIndex < steps.length - 1 ? "Next Step" : "Mark Done"}
-            </Text>
+            <Text style={styles.secondaryBtnText}>Return to Tasks</Text>
           </TouchableOpacity>
-        )}
 
-        {/* Return to Tasks */}
-        <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.9} onPress={goTasks}>
-          <Text style={styles.secondaryBtnText}>Return to Tasks</Text>
-        </TouchableOpacity>
-
-        <View style={{ height: 16 }} />
-      </ScrollView>
+          <View style={{ height: 16 }} />
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

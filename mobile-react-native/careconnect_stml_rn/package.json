@@ -4,13 +4,16 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:coverage": "jest --coverage",
-    "test:coverage:watch": "jest --coverage --watchAll"
+    "test:coverage:watch": "jest --coverage --watchAll",
+    "e2e:build:android": "detox build -c android.emu.debug",
+    "e2e:test:android": "detox test -c android.emu.debug",
+    "e2e:android": "npm run e2e:build:android && npm run e2e:test:android"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -34,6 +37,7 @@
     "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
     "@types/react-test-renderer": "^19.1.0",
+    "detox": "^20.47.0",
     "jest": "~29.7.0",
     "jest-expo": "~54.0.17",
     "react-test-renderer": "19.1.0",

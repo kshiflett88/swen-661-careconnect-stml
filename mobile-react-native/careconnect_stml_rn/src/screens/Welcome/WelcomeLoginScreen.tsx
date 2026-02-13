@@ -27,20 +27,31 @@ export default function WelcomeLoginScreen() {
             accessibilityRole="image"
             accessibilityLabel="CareConnect logo"
           >
-            <MaterialIcons name="local-hospital" size={40} color={Colors.text} />
+            <MaterialIcons
+              name="local-hospital"
+              size={40}
+              color={Colors.text}
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+            />
           </View>
         </View>
 
         <View style={styles.spacer16} />
 
-        <Text style={styles.title} accessibilityRole="header">
+        <Text testID="welcome_title" style={styles.title} accessibilityRole="header">
           Access CareConnect
         </Text>
 
         <View style={styles.spacer20} />
 
         {/* Info card */}
-        <View style={styles.infoCard} accessibilityLabel="Secure access information">
+        <View 
+          style={styles.infoCard}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel="Secure access information. Your caregiver has set up secure access for you."
+        >
           <Text style={styles.infoText}>
             Your caregiver has set up{'\n'}secure access up for you.
           </Text>
@@ -60,7 +71,9 @@ export default function WelcomeLoginScreen() {
 
         <View style={styles.spacer12} />
 
-        <Text style={styles.subtitle}>Look at the camera to sign in</Text>
+        <Text testID="welcome_subtitle" style={styles.subtitle}>
+          Look at the camera to sign in
+        </Text>
 
         <View style={styles.spacer20} />
 
@@ -71,7 +84,7 @@ export default function WelcomeLoginScreen() {
           icon={<MaterialIcons name="person-add-alt-1" size={36} color={Colors.text} />}
           onPress={() => navigation.navigate(Routes.Dashboard)}
           accessibilityLabel="I am a caregiver setup"
-          accessibilityHint="Opens caregiver setup"
+          accessibilityHint="Opens caregiver setup flow"
         />
 
         <View style={styles.spacer12} />

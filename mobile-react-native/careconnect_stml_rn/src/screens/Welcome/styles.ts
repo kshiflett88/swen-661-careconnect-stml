@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     borderRadius: Spacing.radius,
     backgroundColor: Colors.surface,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.border,
     padding: 34,
     justifyContent: 'center',
     shadowColor: '#000',

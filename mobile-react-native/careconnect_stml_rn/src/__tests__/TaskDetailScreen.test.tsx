@@ -134,7 +134,7 @@ describe("TaskDetailScreen (Task Step)", () => {
     expect(getByText("Mark Done")).toBeTruthy();
   });
 
-  it("marks done via last-step CTA, shows Completed badge + hint, and shows Done overlay; overlay button returns to tasks", async () => {
+  it("marks done via last-step CTA, shows Done overlay; overlay button returns to tasks", async () => {
     const route = { params: { id: "1" } };
 
     const { getByText, getAllByText } = render(
@@ -146,9 +146,9 @@ describe("TaskDetailScreen (Task Step)", () => {
     // Go to last step (3 of 3)
     fireEvent.press(getByText("Next Step"));
     fireEvent.press(getByText("Next Step"));
-
     expect(getByText(/Step\s*3\s*of\s*3/i)).toBeTruthy();
 
+    // Mark done
     fireEvent.press(getByText("Mark Done"));
 
     await waitFor(() => {
@@ -158,20 +158,15 @@ describe("TaskDetailScreen (Task Step)", () => {
       expect(typeof isoArg).toBe("string");
     });
 
-    // Done state content
-    expect(getByText("Completed")).toBeTruthy();
-    expect(getByText("This step is complete.")).toBeTruthy();
-
-    // Overlay: "Done" can appear multiple times due to icon mock
+    // ✅ Assert the modal content (the real "user visible" success state now)
     expect(getAllByText("Done").length).toBeGreaterThan(0);
     expect(getByText("Task marked as complete.")).toBeTruthy();
 
-    // "Return to Tasks" appears twice (overlay + bottom button). Press overlay one.
+    // Press overlay "Return to Tasks"
     const buttons = getAllByText("Return to Tasks");
-    // Overlay renders before the ScrollView, so it's usually [0]
     fireEvent.press(buttons[0]);
-    expect(mockNavigate).toHaveBeenCalledWith("TaskList");
 
+    expect(mockNavigate).toHaveBeenCalledWith("TaskList");
   });
 
   it("covers isDone=true + showNextWhenDone=true path: shows Next (not Next Step) and advances; CTA disappears on last step", async () => {

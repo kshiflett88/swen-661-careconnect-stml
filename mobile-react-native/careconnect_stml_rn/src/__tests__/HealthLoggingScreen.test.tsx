@@ -74,7 +74,7 @@ describe("HealthLoggingScreen (HowIFeelTodayScreen)", () => {
   });
 
   it("shows validation error when Save pressed with no mood selected", async () => {
-    const { getByLabelText, queryByText, queryByLabelText } = render(
+    const { getByLabelText, queryByText } = render(
       <HowIFeelTodayScreen navigation={navigation} />
     );
 
@@ -93,11 +93,11 @@ describe("HealthLoggingScreen (HowIFeelTodayScreen)", () => {
     expect(mockSetItem).not.toHaveBeenCalled();
 
     // sanity: return home button exists
-    expect(queryByLabelText("Return to Home")).toBeTruthy();
+    expect(queryByText("OK")).toBeTruthy();
   });
 
   it("saves successfully when mood selected and shows Saved feedback", async () => {
-    const { getByText, getByLabelText, queryByText } = render(
+    const { getByText, getByLabelText } = render(
       <HowIFeelTodayScreen navigation={navigation} />
     );
 

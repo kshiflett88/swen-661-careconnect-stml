@@ -3,11 +3,14 @@ export const Colors = {
   background: '#F8FAFC',   // AppColors.background
   surface: '#FFFFFF',      // AppColors.surface
   text: '#0F172A',         // AppColors.text
-  mutedText: '#475569',    // AppColors.mutedText
+  mutedText: '#334155',    // AppColors.mutedText
   success: '#16A34A',      // AppColors.success
 
-  // Optional placeholders (since your Flutter ones are null)
-  error: undefined as string | undefined,
-  secondary: undefined as string | undefined,
-  disabled: undefined as string | undefined,
+  danger: '#DC2626',          // emergency red
+  warning: '#EAB308',         // yellow border
+  border: '#CAD5E2',          // neutral border
+  borderSubtle: '#E6E6E6',    // subtle border
+  overlay: 'rgba(0,0,0,0.25)',
+
+  disabled: '#94A3B8',
 } as const;
