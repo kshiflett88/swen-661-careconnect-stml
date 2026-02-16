@@ -59,6 +59,7 @@ void main() {
         scrollable: find.byType(Scrollable),
       );
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('caregiver_button')));
 
       await tester.tap(caregiverBtn);
       await tester.pumpAndSettle();

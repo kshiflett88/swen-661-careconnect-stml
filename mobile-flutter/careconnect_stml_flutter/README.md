@@ -41,6 +41,93 @@ The goal is to help users confidently complete daily tasks, log health informati
 - **Widget + Unit Testing**
 - Accessibility via **Semantics widgets**
 
+## Accessibility (WCAG 2.1 Level AA Compliance)
+
+CareConnect includes both Flutter and React Native implementations. Accessibility compliance is documented separately for each platform.
+
+### Flutter Implementation
+The Flutter application was implemented to align with WCAG 2.1 Level AA standards. Accessibility considerations were integrated into semantic structure, keyboard navigation, layout responsiveness, and automated testing.
+
+#### Semantic Structure and Screen Reader Support
+Flutter’s Semantics system is used to expose UI elements to assistive technologies.
+- Interactive elements are explicitly identified as buttons or input fields.
+- Meaningful labels and hints are provided for screen readers.
+- Enabled and disabled states are exposed appropriately.
+- Dialogs and confirmation flows are semantically structured.
+- Orientation cues (screen title, context indicators) are accessible to assistive technologies.
+
+#### Semantic behavior is validated using:
+- Flutter semantics inspection tools
+- Widget-level semantic tests
+- Manual verification with screen reader tools
+
+Automated tests are located in:
+```bash
+test/screens/accessibility/
+```
+#### Keyboard Accessibility
+The Flutter implementation supports full keyboard interaction.
+- Logical focus traversal is defined using FocusTraversalGroup.
+- Explicit focus order is applied where necessary.
+- Interactive elements respond to:
+    - Tab / Shift + Tab
+    - Enter
+    - Space
+- Dialog actions are keyboard accessible.
+Keyboard validation tests are located in:
+```bash
+test/screens/keyboard/
+```
+
+#### Touch Target Compliance
+All interactive controls meet WCAG touch target requirements.
+- Minimum interactive size: 48 x 48 logical pixels
+- Primary action buttons use a minimum height of 56 logical pixels.
+- Emergency and task-related controls exceed minimum sizing requirements.
+Touch target validation tests are located in:
+```bash
+test/screens/wcag/*touch_targets_test.dart
+```
+
+#### Text Scaling Support
+The Flutter UI supports dynamic text scaling up to 200% without layout breakage.
+- Flexible layout widgets prevent overflow.
+- Text containers are not constrained by fixed heights.
+- Controls remain visible and usable at maximum scaling.
+Text scaling validation tests are located in:
+```bash
+test/screens/wcag/*text_scaling_test.dart
+```
+
+#### Color Contrast
+Theme colors are selected to meet WCAG contrast minimum requirements:
+- 4.5:1 ratio for normal text
+- 3:1 ratio for large text
+
+Contrast validation tests are located in:
+```bash
+test/screens/wcag/*contrast_test.dart
+```
+
+#### Automated Accessibility Validation and Coverage
+Accessibility validation is integrated into the automated test suite.
+- Semantic role verification
+- Keyboard interaction validation
+- Touch target dimension verification
+- Text scaling validation
+Contrast checks (where applicable)
+Test coverage is generated using:
+```bash
+flutter test --coverage
+```
+
+Accessibility-related screens maintain high line coverage to ensure compliance behaviors are exercised during automated testing.
+
+### React Native Implementation
+
+[TO DO]
+
+
 ## Setup Instructions
 Follow these steps to run the CareConnect Flutter application locally.
 

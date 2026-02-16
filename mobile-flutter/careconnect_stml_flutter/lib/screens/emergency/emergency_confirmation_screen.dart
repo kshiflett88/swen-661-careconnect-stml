@@ -18,79 +18,118 @@ class EmergencyConfirmationScreen extends StatelessWidget {
         child: Column(
           children: [
             const OrientationHeader(screenName: 'Confirm Emergency'),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.warning_rounded,
-                      size: 80,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'Do you want to send an emergency alert?',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'This will send an alert to ${userProfile.caregiverName} and start a call.',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 64),
-                    EmergencyButton(
-                      label: 'Yes, Send Alert',
-                      icon: Icons.check_circle,
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EmergencyCallingScreen(
-                              caregiverName: userProfile.caregiverName,
-                              caregiverPhone: userProfile.caregiverPhone,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
-                        ),
-                        child: const Row(
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.cancel),
-                            SizedBox(width: 12),
-                            Text('Cancel', style: TextStyle(fontSize: 18)),
-                          ],
+                        Icon(
+                          Icons.warning_rounded,
+                          size: 80,
+                          color: AppColors.error,
                         ),
-                      ),
+                        const SizedBox(height: 32),
+                        const Text(
+                          'Do you want to send an emergency alert?',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'This will send an alert to ${userProfile.caregiverName} and start a call.',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 64),
+                          FocusTraversalGroup(
+                            policy: OrderedTraversalPolicy(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                FocusTraversalOrder(
+                                  order: const NumericFocusOrder(1),
+                                    child: Focus(
+                                      key: const Key('focus_send_alert'),
+                                      autofocus: true,
+                                      child: Semantics(
+                                        key: const Key('sem_send_alert'),
+                                        button: true,
+                                        label: 'Yes, Send Alert',
+                                        child: EmergencyButton(
+                                          label: 'Yes, Send Alert',
+                                          icon: Icons.check_circle,
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => EmergencyCallingScreen(
+                                                  caregiverName: userProfile.caregiverName,
+                                                  caregiverPhone: userProfile.caregiverPhone,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                FocusTraversalOrder(
+                                  order: const NumericFocusOrder(2),
+                                  child: Focus(
+                                    key: const Key('focus_confirm_cancel'),
+                                    child: Semantics(
+                                      key: const Key('sem_confirm_cancel'),
+                                      button: true,
+                                      label: 'Cancel. Return to the previous screen.',
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        height: 56,
+                                        child: ElevatedButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.secondary,
+                                          ),
+                                          child: const Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.cancel),
+                                              SizedBox(width: 12),
+                                              Text('Cancel', style: TextStyle(fontSize: 18)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                      ],
                     ),
-                  ],
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

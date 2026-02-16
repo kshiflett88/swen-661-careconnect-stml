@@ -497,54 +497,77 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               const SizedBox(height: 18),
 
               // Primary CTA logic
-              if (!_isDone || showNextWhenDone) ...[
-                SizedBox(
-                  height: 92,
-                  child: ElevatedButton(
-                    onPressed: _isDone ? _nextWhenDone : _nextNormal,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: blue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+              FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Primary CTA logic
+                    if (!_isDone || showNextWhenDone) ...[
+                      FocusTraversalOrder(
+                        order: const NumericFocusOrder(1),
+                        child: Focus(
+                          key: const Key('focus_task_detail_primary'),
+                          autofocus: true,
+                          child: SizedBox(
+                            height: 92,
+                            child: ElevatedButton(
+                              onPressed: _isDone ? _nextWhenDone : _nextNormal,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: blue,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              child: Text(
+                                _isDone
+                                    ? 'Next'
+                                    : (_stepIndex < _steps.length - 1
+                                        ? 'Next Step'
+                                        : 'Mark Done'),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      textStyle: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    child: Text(
-                      _isDone
-                          ? 'Next'
-                          : (_stepIndex < _steps.length - 1
-                                ? 'Next Step'
-                                : 'Mark Done'),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-              ],
+                      const SizedBox(height: 18),
+                    ],
 
-              // Return to Tasks
-              SizedBox(
-                height: 92,
-                child: OutlinedButton(
-                  onPressed: _goTasks,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(color: borderGrey, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                    // Return to Tasks
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(2),
+                      child: Focus(
+                        key: const Key('focus_task_detail_return'),
+                        child: SizedBox(
+                          height: 92,
+                          child: OutlinedButton(
+                            onPressed: _goTasks,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              side: const BorderSide(color: borderGrey, width: 2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            child: const Text('Return to Tasks'),
+                          ),
+                        ),
+                      ),
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  child: const Text('Return to Tasks'),
+                  ],
                 ),
               ),
+
 
               const SizedBox(height: 18),
             ],

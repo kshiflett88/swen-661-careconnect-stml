@@ -55,12 +55,6 @@ Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
 }
 
-String _plainTextFromRichText(WidgetTester tester, Finder richTextFinder) {
-  final rt = tester.widget<RichText>(richTextFinder);
-  final span = rt.text as TextSpan;
-  return span.toPlainText();
-}
-
 void main() {
   group('HealthLoggingScreen', () {
     testWidgets('renders key content', (tester) async {

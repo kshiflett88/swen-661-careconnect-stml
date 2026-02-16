@@ -5,6 +5,9 @@ import 'package:flutter/cupertino.dart';
 import '../../app/router.dart';
 import '../../shared/theme/app_colors.dart';
 
+import 'package:flutter/widgets.dart';
+
+
 class WelcomeLoginScreen extends StatelessWidget {
   const WelcomeLoginScreen({super.key});
 
@@ -46,65 +49,85 @@ class WelcomeLoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Info card
-              Container(
-                height: 116,
-                padding: const EdgeInsets.symmetric(horizontal: 26),
-                decoration: BoxDecoration(
-                  color: AppColors.infoCardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(width: 2, color: AppColors.infoCardBorder),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 116),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.infoCardBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(width: 2, color: AppColors.infoCardBorder),
+                  ),
+                  child: Center(
+                    child: Text(
                       'Your caregiver has set up\nsecure access up for you.',
                       textAlign: TextAlign.center,
                       style: t.bodyMedium,
                     ),
-                  ],
+                  ),
                 ),
               ),
 
-
               const SizedBox(height: 20),
 
-              // Primary Face ID button (mock -> dashboard)
-              _PrimaryBigButton(
-                key: const Key('face_id_button'),
-                label: 'Sign in\nwith Face ID',
-                onPressed: () => context.go(AppRoutes.dashboard),
-                icon: CupertinoIcons.viewfinder,
-              ),
+              FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(1),
+                      child: Focus(
+                        key: const Key('focus_face_id'),
+                        autofocus: true,
+                        child: _PrimaryBigButton(
+                          key: const Key('face_id_button'),
+                          label: 'Sign in\nwith Face ID',
+                          onPressed: () => context.go(AppRoutes.dashboard),
+                          icon: CupertinoIcons.viewfinder,
+                        ),
+                      ),
+                    ),
 
-              const SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-              Text(
-                'Look at the camera to sign in',
-                textAlign: TextAlign.center,
-                style: t.bodyLarge,
-              ),
+                    Text(
+                      'Look at the camera to sign in',
+                      textAlign: TextAlign.center,
+                      style: t.bodyLarge,
+                    ),
 
-              const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-              // Secondary buttons
-              _SecondaryCardButton(
-                key: const Key('caregiver_button'),
-                label: 'I am a\nCaregiver (Setup)',
-                icon: Icons.person_add_alt_1_outlined,
-                onPressed: () {
-                  // You can decide later. For now route to dashboard or caregiver dashboard mock.
-                  context.go(AppRoutes.dashboard);
-                },
-              ),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(2),
+                      child: Focus(
+                        key: const Key('focus_caregiver'),
+                        child: _SecondaryCardButton(
+                          key: const Key('caregiver_button'),
+                          label: 'I am a\nCaregiver (Setup)',
+                          icon: Icons.person_add_alt_1_outlined,
+                          onPressed: () => context.go(AppRoutes.dashboard),
+                        ),
+                      ),
+                    ),
 
-              const SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-              _SecondaryCardButton(
-                key: const Key('help_signing_in_button'),
-                label: 'I need help\nsigning in',
-                icon: Icons.help_outline,
-                onPressed: () => context.go(AppRoutes.signInHelp),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(3),
+                      child: Focus(
+                        key: const Key('focus_help_signin'),
+                        child: _SecondaryCardButton(
+                          key: const Key('help_signing_in_button'),
+                          label: 'I need help\nsigning in',
+                          icon: Icons.help_outline,
+                          onPressed: () => context.go(AppRoutes.signInHelp),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -130,9 +153,9 @@ class _PrimaryBigButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 240,
-      child: ElevatedButton(
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 240),
+        child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -168,46 +191,58 @@ class _SecondaryCardButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onPressed;
-
+  final Key? _buttonKey;
+  
   const _SecondaryCardButton({
-    super.key,
+    Key? key,
     required this.label,
     required this.icon,
     required this.onPressed,
-  });
+  }) : _buttonKey = key;
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 140,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: AppColors.textPrimary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          side: const BorderSide(width: 2, color: AppColors.outlineBorder),
-          padding: const EdgeInsets.all(34),
-        ).copyWith(
-          elevation: const WidgetStatePropertyAll(4),
-          shadowColor: WidgetStatePropertyAll(Colors.black.withOpacity(0.10)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 36), // bigger icon
-            const SizedBox(width: 24),
-            Expanded(
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: t.titleLarge,
-              ),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 140),
+      child: Semantics(
+        button: true,
+        label: label.replaceAll('\n', ' '),
+        child: OutlinedButton(
+          key: _buttonKey, // or key: key if you're using that version
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: AppColors.textPrimary,
+            minimumSize: const Size(double.infinity, 120),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // <-- rounded square
             ),
-          ],
+            side: const BorderSide(
+              width: 2,
+              color: AppColors.outlineBorder,
+            ),
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.10),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 36),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: t.titleLarge,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+
   }
 }

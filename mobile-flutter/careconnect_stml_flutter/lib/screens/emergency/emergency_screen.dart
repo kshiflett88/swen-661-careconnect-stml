@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import '../../../app/router.dart';
 import '../../shared/theme/app_colors.dart';
 import 'emergency_confirmation_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../../app/router.dart';
 
 class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key});
@@ -29,8 +28,6 @@ class EmergencyScreen extends StatelessWidget {
     const redSoft = Color(0xFFFEF2F2);
     const yellow = Color(0xFFEAB308);
     const yellowSoft = Color(0xFFFEF9C3);
-    const subtleText = Color(0xFF6B7280);
-    const borderGrey = Color(0xFFD1D5DB);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -116,72 +113,109 @@ class EmergencyScreen extends StatelessWidget {
                     const SizedBox(height: 18),
 
                     // SOS button
-                    SizedBox(
-                      height: 260,
-                      child: Material(
-                        color: red,
-                        borderRadius: BorderRadius.circular(18),
-                        elevation: 2,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(18),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const EmergencyConfirmationScreen(),
+                    FocusTraversalGroup(
+                      policy: OrderedTraversalPolicy(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(1),
+                            child: Focus(
+                              key: const Key('focus_sos'),
+                              autofocus: true,
+                              child: Semantics(
+                                key: const Key('sem_sos'),
+                                button: true,
+                                label: 'SOS. Press to call for emergency help.',
+                                child: SizedBox(
+                                  height: 260,
+                                  child: Material(
+                                    color: red,
+                                    borderRadius: BorderRadius.circular(18),
+                                    elevation: 2,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(18),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const EmergencyConfirmationScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Center(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              Text(
+                                                'SOS',
+                                                style: TextStyle(
+                                                  fontSize: 86,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Colors.white,
+                                                  letterSpacing: 6,
+                                                ),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                'Press to Call for Help',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            );
-                          },
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'SOS',
-                                  style: TextStyle(
-                                    fontSize: 86,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    letterSpacing: 6,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Press to Call for Help',
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
-                        ),
+
+                          const SizedBox(height: 18),
+
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(2),
+                            child: Focus(
+                              key: const Key('focus_emergency_cancel'),
+                              child: Semantics(
+                                key: const Key('sem_emergency_cancel'),
+                                button: true,
+                                label: 'Cancel. Return to the previous screen.',
+                                child: _CardButton(
+                                  key: const Key('cancel_button'),
+                                  height: 92,
+                                  onPressed: () => context.go(AppRoutes.dashboard),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.cancel, size: 28),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Cancel',
+                                        style: t.titleLarge?.copyWith(
+                                          fontWeight: FontWeight.w900,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),                          
+
+                          const SizedBox(height: 14),
+                        ],
                       ),
                     ),
-
-                    const SizedBox(height: 18),
-
-                    // Cancel button
-                    _CardButton(
-                      key: const Key('cancel_button'),
-                      height: 92,
-                      onPressed: () {
-                        // Later: calendar/schedule screen
-                        // For now you can route to tasks list as placeholder
-                        context.go(AppRoutes.dashboard);
-                      },
-                      child: Text(
-                        'Cancel',
-                        style: t.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
                   ],
                 ),
               ),
@@ -192,7 +226,6 @@ class EmergencyScreen extends StatelessWidget {
     );
   }
 }
-
 class _CardButton extends StatelessWidget {
   final double height;
   final Widget child;
