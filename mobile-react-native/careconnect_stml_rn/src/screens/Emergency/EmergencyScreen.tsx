@@ -92,7 +92,7 @@ const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <View style={styles.scaffold}>
-      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+      <SafeAreaView testID="emergency_screen" style={styles.safeArea} edges={["top", "left", "right"]}>
 
         {/* ✅ Confirm popup */}
         <Modal
@@ -195,9 +195,8 @@ const [showConfirm, setShowConfirm] = useState(false);
             <Text
               style={styles.todayHeader}
               accessibilityRole="header"
-              accessibilityLabel={todayLabel(now).replace("\n", ", ")}
             >
-              {todayLabel(now)}
+              {todayLabel(now).replace('\n', '')}
             </Text>
 
             <View style={{ height: 14 }} />
@@ -205,6 +204,8 @@ const [showConfirm, setShowConfirm] = useState(false);
             {/* "You are on" card (red) */}
             <View
               style={styles.onCard}
+              accessible
+              accessibilityRole="text"
               accessibilityLabel="You are on: Emergency Help"
             >
               <Text style={styles.onLabel}>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react-native';
 
-import WelcomeLoginScreen from './WelcomeLoginScreen';
-import DashboardScreen from '../Dashboard/DashboardScreen';
-import SignInHelpScreen from '../SignInHelp/SignInHelpScreen';
-import { renderWithNav } from '../../test-utils/renderWithNav';
-import { Routes } from '../../navigation/routes';
+import WelcomeLoginScreen from '../screens/Welcome/WelcomeLoginScreen';
+import DashboardScreen from '../screens/Dashboard/DashboardScreen';
+import SignInHelpScreen from '../screens/SignInHelp/SignInHelpScreen';
+import { renderWithNav } from '../test-utils/renderWithNav';
+import { Routes } from '../navigation/routes';
 
 describe('WelcomeLoginScreen', () => {
   it('renders and navigates to Dashboard when Face ID button is pressed', () => {

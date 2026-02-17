@@ -83,6 +83,7 @@ export default function TaskListScreen({ navigation }: any) {
 
   return (
     <SafeAreaView  
+      testID="task_list_screen"
       accessibilityLabel="Tasks list. Pull down to refresh."
       style={styles.safe}
       edges={["left", "right", "bottom"]}
@@ -93,10 +94,17 @@ export default function TaskListScreen({ navigation }: any) {
         showsVerticalScrollIndicator={false}
       >
         {/* Header: Today */}
-        <Text style={styles.todayText}>{todayLabel2Lines(new Date())}</Text>
+        <Text style={styles.todayText} accessibilityRole="header">
+          {todayLabel2Lines(new Date()).replace('\n', '')}
+        </Text>
 
         {/* Progress pill: You are on: Tasks */}
-        <View style={styles.pill}>
+        <View
+          style={styles.pill}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel="You are on: Tasks"
+        >
           <Text style={styles.pillText}>
             You are on: <Text style={styles.pillBold}>Tasks</Text>
           </Text>

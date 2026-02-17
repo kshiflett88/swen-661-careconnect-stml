@@ -27,7 +27,7 @@ function todayLabel2Lines(d: Date) {
   ];
   const weekday = weekdays[d.getDay()];
   const month = months[d.getMonth()];
-  return { weekday, rest: `${month} ${d.getDate()}, ${d.getFullYear()}` };
+  return `Today: ${weekday}, \n${month} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 function getSteps(task: Task): string[] {
@@ -78,7 +78,6 @@ export default function TaskDetailScreen({ navigation, route }: any) {
   const isDone = !!completedAtISO;
   const showNextWhenDone = isDone && stepIndex < steps.length - 1;
 
-  const { weekday, rest } = todayLabel2Lines(new Date());
   const stepTitle = `Step ${stepIndex + 1}`;
   const stepOf = `Step ${stepIndex + 1} of ${steps.length}`;
   const progress = steps.length ? (stepIndex + 1) / steps.length : 0;
@@ -124,7 +123,7 @@ export default function TaskDetailScreen({ navigation, route }: any) {
 const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
 
   return (
-    <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
+    <SafeAreaView testID="task_detail_screen" style={styles.safe} edges={["left", "right", "bottom"]}>
       {/* Done overlay (equivalent to Flutter dialog) */}
       {showDoneOverlay && (
         <Modal
@@ -134,7 +133,7 @@ const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
           onRequestClose={() => setShowDoneOverlay(false)}
           accessibilityViewIsModal
         >
-          <View style={styles.overlay}>
+          <View style={styles.overlay} testID="task_done_overlay">
             <View
               style={styles.overlayCard}
               accessible
@@ -152,6 +151,7 @@ const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
               <Text style={styles.overlaySubtitle}>Task marked as complete.</Text>
 
               <TouchableOpacity
+                testID="task_done_ok_button"
                 style={styles.overlayButton}
                 activeOpacity={0.9}
                 onPress={() => {
@@ -171,11 +171,17 @@ const imageSource = imageKey ? TASK_IMAGES[imageKey] : null;
       <View importantForAccessibility={showDoneOverlay ? "no-hide-descendants" : "auto"}>
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
           {/* Today */}
-          <Text style={styles.todayTop}>Today: {weekday},</Text>
-          <Text style={styles.todayBottom}>{rest}</Text>
+          <Text style={styles.todayTop} accessibilityRole="header">
+            {todayLabel2Lines(new Date()).replace('\n', '')}
+          </Text>
 
           {/* You are on pill */}
-          <View style={styles.pill}>
+          <View
+            style={styles.pill}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel="You are on: Task Step"
+          >
             <Text style={styles.pillText}>
               You are on: <Text style={styles.pillBold}>Task Step</Text>
             </Text>

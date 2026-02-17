@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, act } from '@testing-library/react-native';
-import DashboardScreen from './DashboardScreen';
+import DashboardScreen from '../screens/Dashboard/DashboardScreen';
 
 const mockNavigate = jest.fn();
 
@@ -16,7 +16,7 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.mock('../../storage/taskStatusStore', () => ({
+jest.mock('../storage/taskStatusStore', () => ({
   TaskStatusStore: jest.fn().mockImplementation(() => ({
     getCompletedAt: jest.fn(async () => null),
     setCompletedAt: jest.fn(async () => null),

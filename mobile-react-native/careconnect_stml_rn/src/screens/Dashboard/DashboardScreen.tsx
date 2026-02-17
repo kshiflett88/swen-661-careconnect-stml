@@ -92,7 +92,7 @@ export default function DashboardScreen() {
   }, [taskStore, tasks]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+    <SafeAreaView testID="dashboard_screen" style={styles.safe} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Top row: date + profile icon */}
         <View style={styles.topRow}>

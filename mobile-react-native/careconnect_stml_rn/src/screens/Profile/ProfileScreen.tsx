@@ -50,7 +50,7 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         {/* Today header */}
         <Text style={styles.todayText} accessibilityRole="header">
-          {todayLabel(new Date())}
+          {todayLabel(new Date()).replace('\n', '')}
         </Text>
 
         <View style={styles.spacer12} />
@@ -59,8 +59,11 @@ export default function ProfileScreen() {
         <View
           testID="location_card_profile"
           style={styles.locationCard}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel="You are on: My Profile"
         >
-          <Text style={styles.locationText} accessibilityLabel="You are on: My Profile">
+          <Text style={styles.locationText}>
             You are on: <Text style={styles.locationTextBold}>My Profile</Text>
           </Text>
         </View>
@@ -96,10 +99,17 @@ export default function ProfileScreen() {
           {dobLabel ? (
             <>
               <View style={styles.spacer18} />
-              <View style={styles.infoBlock}>
+              <View
+                style={styles.infoBlock}
+                accessible
+                accessibilityRole="text"
+                accessibilityLabel={`Date of Birth: ${dobLabel}`}
+              >
                 <Text style={styles.blockLabel}>Date of Birth</Text>
                 <View style={styles.spacer6} />
-                <Text style={styles.blockValue}>{dobLabel}</Text>
+                <Text style={styles.blockValue} accessible={false}>
+                  {dobLabel}
+                </Text>
               </View>
             </>
           ) : null}
@@ -115,28 +125,45 @@ export default function ProfileScreen() {
 
           <View style={styles.spacer16} />
 
-          <View style={styles.infoBlock}>
+          <View
+            style={styles.infoBlock}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel={`Primary Caregiver: ${profile.caregiverName}`}
+          >
             <Text style={styles.blockLabel}>Primary Caregiver</Text>
             <View style={styles.spacer6} />
-            <Text style={styles.blockValueBold}>{profile.caregiverName}</Text>
+            <Text style={styles.blockValueBold} accessible={false}>
+              {profile.caregiverName}
+            </Text>
           </View>
 
           <View style={styles.spacer12} />
 
-          <View style={styles.whiteBlock}>
+          <View
+            style={styles.whiteBlock}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel={`Phone number: ${profile.caregiverPhone}`}
+          >
             <Text style={styles.blockLabel}>Phone Number</Text>
             <View style={styles.spacer6} />
-            <Text style={styles.blockValue}  accessibilityLabel={`Phone number: ${profile.caregiverPhone}`}>
+            <Text style={styles.blockValue} accessible={false}>
               {profile.caregiverPhone}
             </Text>
           </View>
 
           <View style={styles.spacer12} />
 
-          <View style={styles.whiteBlock}>
+          <View
+            style={styles.whiteBlock}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel={`Email: ${profile.caregiverEmail}`}
+          >
             <Text style={styles.blockLabel}>Email</Text>
             <View style={styles.spacer6} />
-            <Text style={styles.emailValue} accessibilityLabel={`Email: ${profile.caregiverEmail}`}>
+            <Text style={styles.emailValue} accessible={false}>
               {profile.caregiverEmail}
             </Text>
           </View>
