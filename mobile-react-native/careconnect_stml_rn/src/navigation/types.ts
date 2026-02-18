@@ -8,7 +8,7 @@ export type RootStackParamList = {
   [Routes.EmergencyConfirmation]: undefined;
   [Routes.EmergencyAlertSent]: undefined;
   [Routes.TaskList]: undefined;
-  [Routes.TaskDetail]: { taskId: string } | undefined; // adjust if you want required
+  [Routes.TaskDetail]: { id: string } | undefined; // adjust if you want required
   [Routes.HealthLogging]: undefined;
   [Routes.Profile]: undefined;
   [Routes.AccessibilitySettings]: undefined;

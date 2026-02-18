@@ -23,15 +23,6 @@ function showMockMessage(message: string) {
 export default function SignInHelpScreen() {
   const navigation = useNavigation<Nav>();
 
-  const handleBack = () => {
-    // Mimic Flutter: pop if possible, else go to welcome
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.navigate(Routes.WelcomeLogin);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

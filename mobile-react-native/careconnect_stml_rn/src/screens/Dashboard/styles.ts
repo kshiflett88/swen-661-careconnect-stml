@@ -24,8 +24,8 @@ export const styles = StyleSheet.create({
     ...Typography.h2,
     color: Colors.text,
     fontWeight: '600',
-    lineHeight: Math.round(20 * 1.15),
-    fontSize: 20,
+    lineHeight: 32,
+    fontSize: 32,
   },
 
   circleIconButton: {

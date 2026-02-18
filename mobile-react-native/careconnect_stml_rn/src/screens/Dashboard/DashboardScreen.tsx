@@ -92,13 +92,13 @@ export default function DashboardScreen() {
   }, [taskStore, tasks]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+    <SafeAreaView testID="dashboard_screen" style={styles.safe} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Top row: date + profile icon */}
         <View style={styles.topRow}>
           <View style={styles.topRowLeft}>
             <Text style={styles.dateText} accessibilityRole="header">
-              {todayLabel(new Date())}
+              {todayLabel(new Date()).replace('\n', '')}
             </Text>
           </View>
 
@@ -117,6 +117,8 @@ export default function DashboardScreen() {
         <View
           style={styles.locationCard}
           testID="location_card"
+          accessible
+          accessibilityRole="text"
           accessibilityLabel={`You are on ${locationLabel}`}
         >
           <Text style={styles.locationText}>
@@ -136,12 +138,18 @@ export default function DashboardScreen() {
         <CardButton
           testID="feeling_button"
           height={140}
+          accessibilityLabel="How am I feeling today"
+          accessibilityHint="Opens mood tracking"
           onPress={() => navigation.navigate(Routes.HealthLogging)}
         >
           <View style={styles.feelingInner}>
             <Text style={styles.feelingTitle}>How Am I{'\n'}Feeling Today?</Text>
             <View style={styles.spacer10} />
-            <Text style={styles.emojiRow} accessibilityLabel="Mood options">
+            <Text 
+              style={styles.emojiRow}
+              accessibilityRole="text"
+              accessibilityLabel="Mood options: happy, okay, sad"
+            >
               😊 😐 😔
             </Text>
           </View>
@@ -152,25 +160,51 @@ export default function DashboardScreen() {
         {/* Next Task card */}
         <View style={styles.nextTaskWrap}>
           {loadingNextTask ? (
-            <View style={styles.nextTaskLoading}>
-              <ActivityIndicator />
+            <View 
+              style={styles.nextTaskLoading}
+              accessible
+              accessibilityRole="text"
+              accessibilityLabel="Loading next task"
+            >
+              <ActivityIndicator accessibilityLabel="Loading"/>
             </View>
           ) : taskError ? (
-            <View style={styles.nextTaskError}>
-              <Text style={styles.errorText}>Error loading tasks:{'\n'}{taskError}</Text>
+            <View 
+              style={styles.nextTaskError}
+              accessible
+              accessibilityRole="alert"
+              accessibilityLabel={`Error loading tasks. ${taskError}`}
+            >
+              <Text style={styles.errorText} accessible={false}>
+                Error loading tasks:{'\n'}{taskError}
+              </Text>
             </View>
           ) : !nextTask ? (
-            <View style={styles.nextTaskCard}>
-              <Text style={styles.noTasksText}>No tasks scheduled</Text>
+            <View 
+              style={styles.nextTaskCard}
+              accessible
+              accessibilityRole="text"
+              accessibilityLabel="No tasks scheduled"
+            >
+              <Text style={styles.noTasksText} accessible={false}>No tasks scheduled</Text>
             </View>
           ) : (
-            <View style={styles.nextTaskCard}>
-              <Text style={styles.nextTaskLabel}>Next Task</Text>
+            <View 
+              style={styles.nextTaskCard}
+              accessible
+              accessibilityRole="summary"
+              accessibilityLabel={
+                `Next task: ${nextTask.title}. Scheduled at ${formatTime(nextTask.scheduledAt
+                  ? new Date(nextTask.scheduledAt)
+                  : null) || 'unscheduled'}.`
+              }
+            >
+              <Text style={styles.nextTaskLabel} accessible={false}>Next Task</Text>
               <View style={styles.spacer6} />
-              <Text style={styles.nextTaskTitle}>{nextTask.title}</Text>
+              <Text style={styles.nextTaskTitle} accessible={false}>{nextTask.title}</Text>
               <View style={styles.spacer8} />
 
-              <Text style={styles.nextTaskTime}>
+              <Text style={styles.nextTaskTime} accessible={false}>
                 {formatTime(nextTask.scheduledAt ? new Date(nextTask.scheduledAt) : null)}
               </Text>
 
@@ -183,7 +217,7 @@ export default function DashboardScreen() {
                 accessibilityHint="Opens the task details screen"
                 style={({ pressed }) => [styles.startButton, pressed && styles.pressed]}
                 onPress={() =>
-                  navigation.navigate(Routes.TaskDetail, { taskId: nextTask.id })
+                  navigation.navigate(Routes.TaskDetail, { id: nextTask.id })
                 }
               >
                 <Text style={styles.startButtonText}>Start</Text>
@@ -198,6 +232,8 @@ export default function DashboardScreen() {
         <CardButton
           testID="schedule_button"
           height={92}
+          accessibilityLabel="Schedule"
+          accessibilityHint="Opens your task list"
           onPress={() => navigation.navigate(Routes.TaskList)}
         >
           <Text style={styles.cardButtonText}>Schedule</Text>
@@ -209,6 +245,8 @@ export default function DashboardScreen() {
         <CardButton
           testID="messages_button"
           height={92}
+          accessibilityLabel="Messages"
+          accessibilityHint="Opens sign-in help and caregiver messages"
           onPress={() => navigation.navigate(Routes.SignInHelp)}
         >
           <Text style={styles.cardButtonText}>Messages</Text>
@@ -255,7 +293,13 @@ function CircleIconButton({
       style={({ pressed }) => [styles.circleIconButton, pressed && styles.pressed]}
       hitSlop={8}
     >
-      <MaterialIcons name={iconName} size={30} color={Colors.text} />
+      <MaterialIcons 
+        name={iconName}
+        size={30}
+        color={Colors.text}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      />
     </Pressable>
   );
 }
@@ -265,16 +309,22 @@ function CardButton({
   children,
   onPress,
   testID,
+  accessibilityLabel,
+  accessibilityHint,
 }: {
   height: number;
   children: React.ReactNode;
   onPress: () => void;
   testID?: string;
+  accessibilityLabel: string;
+  accessibilityHint?: string;
 }) {
   return (
     <Pressable
       testID={testID}
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       onPress={onPress}
       style={({ pressed }) => [
         styles.cardButton,

@@ -82,17 +82,29 @@ export default function TaskListScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView  style={styles.safe} edges={["left", "right", "bottom"]}>
+    <SafeAreaView  
+      testID="task_list_screen"
+      accessibilityLabel="Tasks list. Pull down to refresh."
+      style={styles.safe}
+      edges={["left", "right", "bottom"]}
+    >
       <ScrollView
         contentContainerStyle={styles.container}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
       >
         {/* Header: Today */}
-        <Text style={styles.todayText}>{todayLabel2Lines(new Date())}</Text>
+        <Text style={styles.todayText} accessibilityRole="header">
+          {todayLabel2Lines(new Date()).replace('\n', '')}
+        </Text>
 
         {/* Progress pill: You are on: Tasks */}
-        <View style={styles.pill}>
+        <View
+          style={styles.pill}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel="You are on: Tasks"
+        >
           <Text style={styles.pillText}>
             You are on: <Text style={styles.pillBold}>Tasks</Text>
           </Text>
@@ -105,8 +117,9 @@ export default function TaskListScreen({ navigation }: any) {
         {tasks.map((task) => {
           const isDone = !!completedAt[task.id];
           return (
-            <View key={task.id} style={{ marginBottom: 18 }}>
+            <View key={task.id} style={{ marginBottom: 18 }} testID={`task_card_${task.id}`}>
               <TaskCard
+                id={task.id}
                 title={task.title}
                 timeLabel={formatTime(task.scheduledAt)}
                 isDone={isDone}
@@ -134,6 +147,8 @@ export default function TaskListScreen({ navigation }: any) {
             await clearAllTasks(tasks.map((t) => t.id));
             await loadStatuses();
           }}
+          accessible={false}
+          importantForAccessibility="no"
         >
           <Text style={styles.devResetText}>Reset Tasks (Dev)</Text>
         </TouchableOpacity>
@@ -145,12 +160,14 @@ export default function TaskListScreen({ navigation }: any) {
 }
 
 function TaskCard({
+  id,
   title,
   timeLabel,
   isDone,
   onStart,
-  onView,
+  onView
 }: {
+  id: string;
   title: string;
   timeLabel: string;
   isDone: boolean;
@@ -162,8 +179,11 @@ function TaskCard({
 
   return (
     <View
-      accessibilityRole="summary"
-      accessibilityLabel={`Task card: ${title}. ${isDone ? "Done" : "Not started"} at ${timeLabel}.`}
+      accessible
+      accessibilityLabel={`Task: ${title}. ${isDone ? "Status: done." : "Status: not started."}${
+        timeLabel ? ` Scheduled time: ${timeLabel}.` : ""
+      }`}
+      accessibilityHint={isDone ? "Use View Task to review steps." : "Use Start to begin this task."}
       style={[styles.card, { borderColor }]}
     >
       <View style={styles.rowTop}>
@@ -192,11 +212,25 @@ function TaskCard({
 
       <View style={styles.actionsWrap}>
         {isDone ? (
-          <TouchableOpacity style={styles.viewBtn} onPress={onView}>
+          <TouchableOpacity
+            testID={`task_primary_${id}`} 
+            style={styles.viewBtn}
+            onPress={onView}
+            accessibilityRole="button"
+            accessibilityLabel={`View task: ${title}`}
+            accessibilityHint="Opens the task steps screen"
+          >
             <Text style={styles.viewBtnText}>View Task</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.startBtn} onPress={onStart}>
+          <TouchableOpacity
+            testID={`task_primary_${id}`} 
+            style={styles.startBtn}
+            onPress={onStart}
+            accessibilityRole="button"
+            accessibilityLabel={`Start task: ${title}`}
+            accessibilityHint="Opens the task steps screen"
+          >
             <Text style={styles.startBtnText}>Start</Text>
           </TouchableOpacity>
         )}
@@ -208,6 +242,8 @@ function TaskCard({
 function StatusIcon({ isDone }: { isDone: boolean }) {
   return (
     <View
+      accessible={false}
+      importantForAccessibility="no"
       style={[
         styles.statusIcon,
         {
@@ -216,7 +252,7 @@ function StatusIcon({ isDone }: { isDone: boolean }) {
         },
       ]}
     >
-      {isDone ? <Text style={styles.statusCheck}>✓</Text> : null}
+      {isDone ? <Text accessible={false} importantForAccessibility="no" style={styles.statusCheck}>✓</Text> : null}
     </View>
   );
 }

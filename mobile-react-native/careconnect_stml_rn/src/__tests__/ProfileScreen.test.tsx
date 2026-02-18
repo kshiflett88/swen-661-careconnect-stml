@@ -1,9 +1,9 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react-native';
 
-import ProfileScreen from './ProfileScreen';
-import { renderWithNav } from '../../test-utils/renderWithNav';
-import { Routes } from '../../navigation/routes';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import { renderWithNav } from '../test-utils/renderWithNav';
+import { Routes } from '../navigation/routes';
 
 describe('ProfileScreen', () => {
   it('renders profile and can navigate to accessibility setup', async () => {

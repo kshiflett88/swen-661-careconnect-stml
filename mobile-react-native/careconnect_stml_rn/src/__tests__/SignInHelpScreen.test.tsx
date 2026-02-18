@@ -2,10 +2,10 @@ import React from 'react';
 import { fireEvent } from '@testing-library/react-native';
 import { Alert, Platform, ToastAndroid } from 'react-native';
 
-import SignInHelpScreen from './SignInHelpScreen';
-import WelcomeLoginScreen from '../Welcome/WelcomeLoginScreen';
-import { renderWithNav } from '../../test-utils/renderWithNav';
-import { Routes } from '../../navigation/routes';
+import SignInHelpScreen from '../screens/SignInHelp/SignInHelpScreen';
+import WelcomeLoginScreen from '../screens/Welcome/WelcomeLoginScreen';
+import { renderWithNav } from '../test-utils/renderWithNav';
+import { Routes } from '../navigation/routes';
 
 describe('SignInHelpScreen', () => {
   it('renders title', () => {

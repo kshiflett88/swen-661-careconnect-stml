@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Colors } from '../../theme/colors';
 
-const borderGrey = '#CAD5E2';
-
 export const styles = StyleSheet.create({
   // quick internal color handle (optional)
   __colors: {
@@ -64,7 +62,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 18,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: borderGrey,
+    borderColor: Colors.border,
     backgroundColor: '#FFFFFF',
   },
   cardTitle: {
@@ -111,7 +109,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Colors.background ?? '#E6F0FF',
     borderWidth: 1.5,
-    borderColor: borderGrey,
+    borderColor: Colors.border,
   },
   whiteBlock: {
     paddingLeft: 16,
@@ -121,7 +119,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
-    borderColor: borderGrey,
+    borderColor: Colors.border,
   },
   blockLabel: {
     textAlign: 'center',
@@ -172,7 +170,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: borderGrey,
+    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

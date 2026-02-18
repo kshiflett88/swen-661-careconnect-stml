@@ -39,3 +39,10 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local editor settings
+.vscode/
+
+# detox / emulator artifacts
+artifacts/
+Medium_Phone_API_36.1-*.log
