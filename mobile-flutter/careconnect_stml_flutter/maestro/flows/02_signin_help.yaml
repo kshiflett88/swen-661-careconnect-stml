@@ -1,0 +1,25 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+
+- scrollUntilVisible:
+    element:
+      text: "I need Help signing in"
+    direction: DOWN
+
+- tapOn: "I need Help signing in"
+
+- assertVisible:
+    text: "(.|\\n)*Need Help signing in?(.|\\n)*"
+
+- assertVisible: 
+    text: "(.|\\n)*Call my caregiver(.|\\n)*"
+
+- assertVisible: 
+    text: "(.|\\n)*Send a message to my caregiver(.|\\n)*"
+
+- scrollUntilVisible:
+    element:
+      text: "(.|\\n)*Try Face ID again(.|\\n)*"
+    direction: DOWN
+    

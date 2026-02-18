@@ -1,0 +1,47 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+- tapOn: "Sign in with Face ID"
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element:
+      text: "Emergency Help"
+    direction: DOWN
+    
+- tapOn: "Emergency Help"
+
+- extendedWaitUntil:
+    visible: "Emergency Help"
+    timeout: 15000
+
+- tapOn: 
+    text: "(.|\\n)*\\bSOS\\b(.|\\n)*Press to Call for Help(.|\\n)*"
+
+- assertVisible:
+    text: "(.|\\n)*Do you want to send an emergency alert\\?(.|\\n)*"
+    
+- tapOn: "Cancel"
+
+- extendedWaitUntil:
+    visible: "Emergency Help"
+    timeout: 15000
+
+- tapOn: 
+    text: "(.|\\n)*\\bSOS\\b(.|\\n)*Press to Call for Help(.|\\n)*"
+- tapOn: "Yes, Send Alert"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*Alert Sent(.|\\n)*"
+    timeout: 15000
+
+- tapOn: "Return to Home"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000

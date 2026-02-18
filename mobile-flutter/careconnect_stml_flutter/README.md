@@ -48,6 +48,16 @@ CareConnect includes both Flutter and React Native implementations. Accessibilit
 ### Flutter Implementation
 The Flutter application was implemented to align with WCAG 2.1 Level AA standards. Accessibility considerations were integrated into semantic structure, keyboard navigation, layout responsiveness, and automated testing.
 
+#### Accessibility guideline tests (Flutter)
+```bash
+flutter test test/screens/accessibility_guidelines_test.dart
+```
+
+#### Automated Integration tests (Flutter)
+```bash
+flutter test integration_test
+```
+
 #### Semantic Structure and Screen Reader Support
 Flutter’s Semantics system is used to expose UI elements to assistive technologies.
 - Interactive elements are explicitly identified as buttons or input fields.
@@ -119,9 +129,77 @@ Contrast checks (where applicable)
 Test coverage is generated using:
 ```bash
 flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
 ```
 
+Coverage output will be generated in: coverage/html/index.html
+
 Accessibility-related screens maintain high line coverage to ensure compliance behaviors are exercised during automated testing.
+
+#### Automated  Integration Testing (Flutter Integration Test)
+We validate multi-screen navigation and full flows using Flutter integration tests.
+Example integration flow:
+- Login → Dashboard
+- Dashboard → Health Log → Save
+- Dashboard → Schedule → Task Detail → Complete
+- Dashboard → Profile → Accessibility (View Only)
+- Dashboard → Emergency → SOS → Confirm
+
+Run integration tests
+
+```bash
+flutter test integration_test
+```
+
+#### End-to-End (E2E) Testing with Maestro
+
+We use Maestro for device-level UI automation testing.
+Maestro validates:
+- Real device/emulator interaction
+- Accessibility label correctness
+- Scroll behavior
+- Multi-step task progression
+- Emergency flow confirmation dialogs
+- Profile and Accessibility navigation
+Health Log submission
+
+Run all Maestro flows
+```bash
+maestro test maestro/flows
+```
+
+Generate JUnit Report (for CI / proof)
+```bash
+maestro test maestro/flows --format junit --output maestro-report.xml
+```
+
+This produces:
+maestro-report.xml
+
+Recording E2E Test Execution 
+
+To record the full Maestro run:
+
+Step 1 — Start screen recording
+```bash
+adb shell screenrecord /sdcard/maestro_run.mp4
+```
+Step 2 — Run Maestro tests (in another terminal)
+```bash
+maestro test maestro/flows --format junit --output maestro-report.xml
+```
+Step 3 — Stop recording (Ctrl+C)
+Step 4 — Pull the video to your machine
+```bash
+adb pull /sdcard/maestro_run.mp4 .
+```
+This generates:
+
+🎥 maestro_run.mp4
+
+📄 maestro-report.xml
+
+These artifacts provide proof of E2E execution.
 
 ### React Native Implementation
 
