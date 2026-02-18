@@ -53,7 +53,7 @@ export default function WelcomeLoginScreen() {
           accessibilityLabel="Secure access information. Your caregiver has set up secure access for you."
         >
           <Text style={styles.infoText}>
-            Your caregiver has set up{'\n'}secure access up for you.
+            Your caregiver has set up{'\n'}secure access for you.
           </Text>
         </View>
 
