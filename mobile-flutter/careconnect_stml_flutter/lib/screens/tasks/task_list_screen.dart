@@ -67,7 +67,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     // Prefer named route with param "id" (matches your earlier router screenshot)
     try {
       if (AppRoutes.taskList.isNotEmpty) {
-        context.goNamed(AppRoutes.taskList, pathParameters: {'id': id});
+        context.go(AppRoutes.taskDetail.replaceFirst(':id', id));
         return;
       }
     } catch (_) {}
@@ -171,37 +171,57 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 const SizedBox(height: 18),
 
                 // Task cards
-                for (final task in tasks) ...[
-                  _TaskCard(
-                    title: task.title,
-                    timeLabel: _formatTime(task.scheduledAt),
-                    isDone: _completedAt[task.id] != null,
-                    onStart: () => _goTaskDetail(task.id),
-                    onView: () => _goTaskDetail(task.id),
-                  ),
-                  const SizedBox(height: 18),
-                ],
+                FocusTraversalGroup(
+                  policy: OrderedTraversalPolicy(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Task cards (ordered focus)
+                      for (var i = 0; i < tasks.length; i++) ...[
+                        _TaskCard(
+                          title: tasks[i].title,
+                          timeLabel: _formatTime(tasks[i].scheduledAt),
+                          isDone: _completedAt[tasks[i].id] != null,
+                          onStart: () => _goTaskDetail(tasks[i].id),
+                          onView: () => _goTaskDetail(tasks[i].id),
 
-                const SizedBox(height: 8),
+                          // ✅ Focus metadata for keyboard traversal tests
+                          actionFocusKey: Key('focus_task_${i}_action'),
+                          actionFocusOrder: (i + 1).toDouble(),
+                          autofocusAction: i == 0,
+                        ),
+                        const SizedBox(height: 18),
+                      ],
 
-                // Return to Home
-                SizedBox(
-                  key: const Key('return_home_button'),
-                  height: 92,
-                  child: OutlinedButton(
-                    onPressed: _goHome,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      side: const BorderSide(color: Color(0xFFD1D5DB), width: 2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      const SizedBox(height: 8),
+
+                      // Return to Home (after task actions)
+                      FocusTraversalOrder(
+                        order: NumericFocusOrder((tasks.length + 1).toDouble()),
+                        child: Focus(
+                          key: const Key('focus_return_home'),
+                          child: SizedBox(
+                            key: const Key('return_home_button'),
+                            height: 92,
+                            child: OutlinedButton(
+                              onPressed: _goHome,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                side: const BorderSide(color: Color(0xFFD1D5DB), width: 2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              child: const Text('Return to Home'),
+                            ),
+                          ),
+                        ),
                       ),
-                      textStyle: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    child: const Text('Return to Home'),
+                    ],
                   ),
                 ),
                 ElevatedButton(
@@ -228,13 +248,22 @@ class _TaskCard extends StatelessWidget {
   final VoidCallback onStart;
   final VoidCallback onView;
 
+  // ✅ Keyboard focus support
+  final Key? actionFocusKey;
+  final double? actionFocusOrder;
+  final bool autofocusAction;
+
   const _TaskCard({
     required this.title,
     required this.timeLabel,
     required this.isDone,
     required this.onStart,
     required this.onView,
+    this.actionFocusKey,
+    this.actionFocusOrder,
+    this.autofocusAction = false,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -328,50 +357,65 @@ class _TaskCard extends StatelessWidget {
             if (isDone) ...[
               Padding(
                 padding: const EdgeInsets.only(left: 58), // 44 (icon) + 14 (gap) ≈ text start
-                child: SizedBox(
-                  width: 260,
-                  height: 64,
-                  child: OutlinedButton(
-                    onPressed: onView,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF6B7280),
-                      backgroundColor: const Color(0xFFE5E7EB),
-                      side: const BorderSide(color: Color(0xFFC7CCD6), width: 2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
+                child: FocusTraversalOrder(
+                  order: NumericFocusOrder(actionFocusOrder ?? 0),
+                  child: Focus(
+                    key: actionFocusKey,
+                    autofocus: autofocusAction,
+                    child: SizedBox(
+                      width: 260,
+                      height: 64,
+                      child: OutlinedButton(
+                        onPressed: onView,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6B7280),
+                          backgroundColor: const Color(0xFFE5E7EB),
+                          side: const BorderSide(color: Color(0xFFC7CCD6), width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        child: const Text('View Task'),
                       ),
                     ),
-                    child: const Text('View Task'),
                   ),
                 ),
               ),
             ] else ...[
               Padding(
                 padding: const EdgeInsets.only(left: 58), // 44 (icon) + 14 (gap) ≈ text start
-                child: SizedBox(
-                  width: 260,
-                  height: 92,
-                  child: ElevatedButton(
-                    onPressed: onStart,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
+                child: FocusTraversalOrder(
+                  order: NumericFocusOrder(actionFocusOrder ?? 0),
+                  child: Focus(
+                    key: actionFocusKey,
+                    autofocus: autofocusAction,
+                    child: SizedBox(
+                      width: 260,
+                      height: 92,
+                      child: ElevatedButton(
+                        onPressed: onStart,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        child: const Text('Start'),
                       ),
                     ),
-                    child: const Text('Start'),
                   ),
                 ),
+
               ),
             ],
           ],

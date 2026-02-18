@@ -1,0 +1,38 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+- tapOn: "Sign in with Face ID"
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000
+
+- tapOn: 
+    text: "How Am I(.|\\n)*Feeling Today\\?"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: How I Feel(.|\\n)*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Happy.*"
+
+- tapOn:
+    text: ".*You can say or write how you feel.*"
+
+- inputText: "I am feeling great today."
+
+- scrollUntilVisible:
+    element:
+      text: "Return to Home"
+    direction: DOWN
+
+- tapOn: "Save"
+
+- assertVisible: "Saved"
+
+- tapOn: "Ok"
+
+- assertVisible: 
+    text: "(.|\\n)*You are on: Home(.|\\n)*"

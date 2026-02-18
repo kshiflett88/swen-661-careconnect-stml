@@ -1,0 +1,51 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+- tapOn: "Sign in with Face ID"
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000
+
+- tapOn: "Profile settings"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: My Profile(.|\\n)*"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element:
+      text: "(.|\\n)*View Accessibility Setup(.|\\n)*"
+    direction: DOWN
+
+- tapOn: "View Accessibility Setup"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Accessibility(.|\\n)*"
+    timeout: 15000
+
+- assertVisible:
+    text: "(.|\\n)*Large Text(.|\\n)*"
+
+- assertVisible:
+    text: "(.|\\n)*Voice Guidance(.|\\n)*"
+
+- assertVisible:
+    text: "(.|\\n)*High Contrast(.|\\n)*"
+
+- assertVisible:
+    text: "(.|\\n)*Extra Reminders(.|\\n)*"
+
+- scrollUntilVisible:
+    element:
+      text: "(.|\\n)*Return to Profile(.|\\n)*"
+    direction: DOWN
+
+- tapOn: "Return to Profile"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000

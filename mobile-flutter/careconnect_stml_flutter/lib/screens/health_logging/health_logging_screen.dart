@@ -10,11 +10,7 @@ import '../../data/models/health_log_entry.dart';
 /// - Large tap targets (>= 48dp), generous spacing
 /// - High contrast, clear labels, minimal cognitive load
 /// - Local persistence via HealthLogStore (SharedPreferences JSON)
-///
-/// IMPORTANT: Set your real dashboard route here:
-/// - If you use named routes in go_router: set [kHomeRouteName]
-/// - Otherwise set [kHomePath]
-///
+//////
 /// If both are set, the screen tries goNamed first, then falls back to go(path).
 const String kHomeRouteName = AppRoutes.dashboard; // <-- change to your dashboard route NAME if you have one
 const String kHomePath = AppRoutes.dashboard;     // <-- change to your dashboard route PATH if needed
@@ -264,6 +260,7 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
                       maxLines: 4,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
+                        
                         hintText: 'You can say or write how you feel.',
                         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
                         counterText: '',
@@ -291,13 +288,17 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               const SizedBox(height: 22),
 
               // Save button (large)
-              SizedBox(
-                height: dButtonHeight,
+              Semantics(
+                key: const Key('sem_save'),
+                button: true,
+                label: 'Save health log entry',
                 child: ElevatedButton.icon(
                   key: const Key('save_button'),
                   onPressed: _save,
                   label: const Text('Save'),
                   style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56), // full width, 56px tall
+                    padding: const EdgeInsets.symmetric(vertical: 32),
                     backgroundColor: blue,
                     foregroundColor: Colors.white,
                     elevation: 0,
@@ -315,13 +316,17 @@ class _HealthLoggingScreenState extends State<HealthLoggingScreen> {
               const SizedBox(height: 16),
 
               // Return button (large)
-              SizedBox(
-                height: dButtonHeight,
+              Semantics(
+                key: const Key('sem_return_home'),
+                button: true,
+                label: 'Return to Home',
                 child: OutlinedButton.icon(
                   key: const Key('return_home_button'),
                   onPressed: _goHome,
                   label: const Text('Return to Home'),
                   style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    padding: const EdgeInsets.symmetric(vertical: 32),
                     foregroundColor: Colors.black,
                     side: const BorderSide(color: borderGrey, width: 2),
                     shape: RoundedRectangleBorder(

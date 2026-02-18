@@ -1,0 +1,26 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Sign in(\\s|\\n)+with Face ID"
+    timeout: 15000
+
+- tapOn: "Sign in with Face ID"
+
+- extendedWaitUntil:
+    visible:
+      text: "(.|\\n)*You are on: Home(.|\\n)*"
+    timeout: 15000
+
+- assertVisible:
+    text: "(.|\\n)*Next Task(.|\\n)*"
+
+- assertVisible: "Schedule"
+
+- assertVisible: "Messages"
+    
+- scrollUntilVisible:
+    element:
+      text: "Emergency Help"
+    direction: DOWN

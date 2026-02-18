@@ -1,0 +1,7 @@
+appId: com.example.careconnect_stml_flutter
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Sign in(\\s|\\n)+with Face ID"
+    timeout: 15000

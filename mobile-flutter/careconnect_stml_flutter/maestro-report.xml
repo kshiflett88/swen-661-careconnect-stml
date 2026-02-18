@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites>
+  <testsuite name="Test Suite" device="Pixel_9a" tests="7" failures="0" time="167.0">
+    <testcase id="00_smoke_launch" name="00_smoke_launch" classname="00_smoke_launch" time="7.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="01_login_to_dashboard" name="01_login_to_dashboard" classname="01_login_to_dashboard" time="11.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="02_signin_help" name="02_signin_help" classname="02_signin_help" time="12.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="03_dashboard_healthlog_save" name="03_dashboard_healthlog_save" classname="03_dashboard_healthlog_save" time="28.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="04_schedule_task_complete" name="04_schedule_task_complete" classname="04_schedule_task_complete" time="59.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="05_profile_accessibility_viewonly" name="05_profile_accessibility_viewonly" classname="05_profile_accessibility_viewonly" time="21.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+    <testcase id="06_emergency_sos" name="06_emergency_sos" classname="06_emergency_sos" time="29.0" status="SUCCESS">
+      <properties/>
+    </testcase>
+  </testsuite>
+</testsuites>

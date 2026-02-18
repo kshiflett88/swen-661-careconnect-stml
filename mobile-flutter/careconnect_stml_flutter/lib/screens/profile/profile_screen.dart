@@ -5,6 +5,7 @@ import '../../../app/router.dart';
 import '../../shared/theme/app_colors.dart';
 import '../../models/user_profile.dart';
 import 'accessibility_settings_screen.dart';
+import 'package:flutter/services.dart';
 
 // Today's date label (same as dashboard)
 String _todayLabel(DateTime dt) {
@@ -36,7 +37,17 @@ String _todayLabel(DateTime dt) {
 }
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final VoidCallback? onOpenAccessibilitySetup;
+  final VoidCallback? onBackToHome;
+  final VoidCallback? onSignOut;
+
+  const ProfileScreen({
+    super.key,
+    this.onOpenAccessibilitySetup,
+    this.onBackToHome,
+    this.onSignOut,
+  });
+
 
   /// Optional DOB support (won’t crash if your UserProfile model doesn’t have it).
   String? _tryDobLabel(UserProfile profile) {
@@ -74,10 +85,15 @@ class ProfileScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final userProfile = UserProfile.mock();
     final dobLabel = _tryDobLabel(userProfile);
+    final a11yNode = FocusNode(debugLabel: 'profileAccessibilitySetup');
+    final homeNode = FocusNode(debugLabel: 'profileBackToHome');
+    final signOutNode = FocusNode(debugLabel: 'profileSignOut');
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
+  body: SafeArea(
+    child: FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -154,19 +170,21 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 18),
 
                     // Profile image placeholder (blue ring)
-                    Center(
-                      child: Container(
-                        width: 96,
-                        height: 96,
-                        decoration: BoxDecoration(
-                          color: AppColors.infoCardBg,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primary, width: 3),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          size: 52,
-                          color: AppColors.primary,
+                    ExcludeSemantics(
+                      child: Center(
+                        child: Container(
+                          width: 96,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            color: AppColors.infoCardBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.primary, width: 3),
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            size: 52,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -353,74 +371,158 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Accessibility Setup button (BLUE + WHITE TEXT like you want)
-              SizedBox(
-                height: 92, // same feel as dashboard buttons
-                child: ElevatedButton(
-                  key: const Key('accessibility_setup_button'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AccessibilitySettingsScreen(),
+              FocusTraversalOrder(
+                order: const NumericFocusOrder(1),
+                child: Semantics(
+                  button: true,
+                  label: 'View Accessibility Setup',
+                  hint: 'Opens accessibility settings and setup options',
+                  child: FocusableActionDetector(
+                    key: const Key('focus_profile_accessibility_setup'),
+                    focusNode: a11yNode,
+                    shortcuts: const <ShortcutActivator, Intent>{
+                      SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                      SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+                    },
+                    actions: <Type, Action<Intent>>{
+                      ActivateIntent: CallbackAction<ActivateIntent>(
+                        onInvoke: (intent) {
+                          (onOpenAccessibilitySetup ??
+                              () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AccessibilitySettingsScreen(),
+                                  ),
+                                );
+                              })();
+                          return null;
+                        },
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 8,
-                  ),
-                  child: Text(
-                    'View Accessibility Setup',
-                    textAlign: TextAlign.center,
-                    style: t.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                    },
+                    child: SizedBox(
+                      height: 92,
+                      child: ElevatedButton(
+                        key: const Key('accessibility_setup_button'),
+                        onPressed: onOpenAccessibilitySetup ??
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AccessibilitySettingsScreen(),
+                                ),
+                              );
+                            },
+                        style: ElevatedButton.styleFrom(
+                          // AA-safe blue (same approach as SignInHelp)
+                          backgroundColor: const Color(0xFF155DFC),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 8,
+                        ),
+                        child: Text(
+                          'View Accessibility Setup',
+                          textAlign: TextAlign.center,
+                          style: t.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
+
 
               const SizedBox(height: 14),
 
               // Back to Home (dashboard card button)
-              _CardButton(
-                key: const Key('back_to_home_button'),
-                height: 92,
-                onPressed: () => context.go(AppRoutes.dashboard),
-                child: Text(
-                  'Back to Home',
-                  style: t.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.textPrimary,
+              FocusTraversalOrder(
+                order: const NumericFocusOrder(2),
+                child: Semantics(
+                  button: true,
+                  label: 'Back to Home',
+                  hint: 'Returns to the dashboard',
+                  child: FocusableActionDetector(
+                    key: const Key('focus_profile_back_to_home'),
+                    focusNode: homeNode,
+                    shortcuts: const <ShortcutActivator, Intent>{
+                      SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                      SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+                    },
+                    actions: <Type, Action<Intent>>{
+                      ActivateIntent: CallbackAction<ActivateIntent>(
+                        onInvoke: (intent) {
+                          (onBackToHome ?? () => context.go(AppRoutes.dashboard))();
+                          return null;
+                        },
+                      ),
+                    },
+                    child: _CardButton(
+                      key: const Key('back_to_home_button'),
+                      height: 92,
+                      onPressed: onBackToHome ?? () => context.go(AppRoutes.dashboard),
+                      child: Text(
+                        'Back to Home',
+                        style: t.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
+
               
               const SizedBox(height: 14),
               
               // Sign Out button (WHITE + RED TEXT))
-              SizedBox(
-                height: 92,
-                child: ElevatedButton(
-                  key: const Key('sign_out_button'),
-                  onPressed: () => context.go(AppRoutes.welcomeLogin),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 8,
-                  ),
-                  child: Text(
-                    'Sign Out',
-                    textAlign: TextAlign.center,
-                    style: t.titleLarge?.copyWith(
-                      color: const Color.fromARGB(255, 255, 0, 0),
-                      fontWeight: FontWeight.w900,
+              FocusTraversalOrder(
+                order: const NumericFocusOrder(3),
+                child: Semantics(
+                  button: true,
+                  label: 'Sign Out',
+                  hint: 'Signs you out and returns to the welcome screen',
+                  child: FocusableActionDetector(
+                    key: const Key('focus_profile_sign_out'),
+                    focusNode: signOutNode,
+                    shortcuts: const <ShortcutActivator, Intent>{
+                      SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                      SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+                    },
+                    actions: <Type, Action<Intent>>{
+                      ActivateIntent: CallbackAction<ActivateIntent>(
+                        onInvoke: (intent) {
+                          (onSignOut ?? () => context.go(AppRoutes.welcomeLogin))();
+                          return null;
+                        },
+                      ),
+                    },
+                    child: SizedBox(
+                      height: 92,
+                      child: ElevatedButton(
+                        key: const Key('sign_out_button'),
+                        onPressed: onSignOut ?? () => context.go(AppRoutes.welcomeLogin),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 8,
+                        ),
+                        child: Text(
+                          'Sign Out',
+                          textAlign: TextAlign.center,
+                          style: t.titleLarge?.copyWith(
+                            color: const Color(0xFFDC2626), // ✅ AA-safe red on white
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -428,6 +530,7 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
