@@ -141,6 +141,42 @@ coverage/
 │   └── index.html   ← Open in browser
 └── lcov.info        ← LCOV file for submission
 ```
+
+### Detox E2E Tests (Android)
+
+Detox uses a separate Jest config (`e2e/jest.config.js`) and Android build flow defined in `.detoxrc.js`.
+
+#### Prerequisites for Detox
+
+- Android emulator running (configured AVD in this repo: `Medium_Phone_API_36.1`)
+- Android SDK, build-tools, and platform-tools installed
+- Java/Gradle environment working for Android builds
+
+#### Run default E2E flow (release emulator)
+
+```bash
+npm run e2e:android
+```
+
+This runs:
+
+```bash
+npm run e2e:build:android
+npm run e2e:test:android
+```
+
+#### Run debug emulator config manually (useful for troubleshooting)
+
+```bash
+npx detox build -c android.emu.debug
+npx detox test -c android.emu.debug --record-logs all
+```
+
+Detox test artifacts/logs are written under:
+
+```text
+artifacts/
+```
 ---
 
 ## Known Issues / Limitations
