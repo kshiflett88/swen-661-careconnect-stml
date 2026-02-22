@@ -14,6 +14,7 @@ import AccessibilityScreen from "./screens/AccessibilityScreen";
 
 export default function App() {
   const [screen, setScreen] = useState<ScreenId>("dashboard");
+  const [textScale, setTextScale] = useState<number>(1);
 
   // Optional: accept Electron menu nav events if you have them
   useEffect(() => {
@@ -25,32 +26,60 @@ export default function App() {
     return () => unsub?.();
   }, []);
 
+  useEffect(() => {
+    if (!window.careconnect?.onTextScale) return;
+    const unsub = window.careconnect.onTextScale((action) => {
+      setTextScale((prev) => {
+        if (action === "reset") return 1;
+        if (action === "up") return Math.min(prev + 0.1, 1.6);
+        return Math.max(prev - 0.1, 0.9);
+      });
+    });
+    return () => unsub?.();
+  }, []);
+
+  let content: React.ReactNode;
+
   switch (screen) {
     case "dashboard":
-      return <DashboardScreen onGo={setScreen} />;
+      content = <DashboardScreen onGo={setScreen} />;
+      break;
 
     case "welcome":
-      return <WelcomeScreen onGo={setScreen} />;
+      content = <WelcomeScreen onGo={setScreen} />;
+      break;
     case "sign_in_help":
-      return <SignInHelpScreen onGo={setScreen} />;
+      content = <SignInHelpScreen onGo={setScreen} />;
+      break;
     case "task_list":
-      return <TaskListScreen onGo={setScreen} />;
+      content = <TaskListScreen onGo={setScreen} />;
+      break;
     case "task_detail":
-      return <TaskDetailScreen onGo={setScreen} />;
+      content = <TaskDetailScreen onGo={setScreen} />;
+      break;
     case "health_log":
-      return <HealthLogScreen onGo={setScreen} />;
+      content = <HealthLogScreen onGo={setScreen} />;
+      break;
     case "emergency":
-      return <EmergencyScreen onGo={setScreen} />;
+      content = <EmergencyScreen onGo={setScreen} />;
+      break;
     case "emergency_confirmation":
-      return <EmergencyConfirmationScreen onGo={setScreen} />;
+      content = <EmergencyConfirmationScreen onGo={setScreen} />;
+      break;
     case "emergency_calling":
-      return <EmergencyCallingScreen onGo={setScreen} />;
+      content = <EmergencyCallingScreen onGo={setScreen} />;
+      break;
     case "profile":
-      return <ProfileScreen onGo={setScreen} />;
+      content = <ProfileScreen onGo={setScreen} />;
+      break;
     case "accessibility":
-      return <AccessibilityScreen onGo={setScreen} />;
+      content = <AccessibilityScreen onGo={setScreen} />;
+      break;
 
     default:
-      return <DashboardScreen onGo={setScreen} />
+      content = <DashboardScreen onGo={setScreen} />;
+      break;
   }
+
+  return <div style={{ fontSize: `${textScale}em` }}>{content}</div>;
 }
