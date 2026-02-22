@@ -1,7 +1,7 @@
-import { app, BrowserWindow, Menu, ipcMain } from "electron";
-import * as path from "path";
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const path = require("path");
 
-let win: BrowserWindow | null = null;
+let win: any = null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -10,26 +10,28 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "preload.cjs"),
     },
   });
 
-  const devUrl = process.env.VITE_DEV_SERVER_URL;
-  if (devUrl) {
+  const devUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:4173";
+  if (!app.isPackaged) {
     win.loadURL(devUrl);
   } else {
     win.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 }
 
-function sendNavigate(route: "dashboard" | "tasks") {
-  if (win && !win.isDestroyed()) win.webContents.send("nav:go", route);
+function sendNavigate(route: "dashboard" | "task-list" | "health-log" | "contacts" | "profile" | "emergency") {
+  if (win && !win.isDestroyed()) {
+    win.webContents.send("nav:go", route);
+  }
 }
 
 function buildMenu() {
   const isMac = process.platform === "darwin";
 
-const template: Electron.MenuItemConstructorOptions[] = [
+const template: any[] = [
   ...(isMac
     ? [
         {
@@ -38,7 +40,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
             { role: "about" },
             { type: "separator" },
             { role: "quit" },
-            ] as Electron.MenuItemConstructorOptions[],
+            ] as any[],
         },
       ]
     : []),
@@ -55,7 +57,28 @@ const template: Electron.MenuItemConstructorOptions[] = [
         {
           label: "Tasks",
           accelerator: isMac ? "Cmd+2" : "Ctrl+2",
-          click: () => sendNavigate("tasks"),
+          click: () => sendNavigate("task-list"),
+        },
+        {
+          label: "Health Log",
+          accelerator: isMac ? "Cmd+3" : "Ctrl+3",
+          click: () => sendNavigate("health-log"),
+        },
+        {
+          label: "Contacts",
+          accelerator: isMac ? "Cmd+4" : "Ctrl+4",
+          click: () => sendNavigate("contacts"),
+        },
+        {
+          label: "Profile",
+          accelerator: isMac ? "Cmd+5" : "Ctrl+5",
+          click: () => sendNavigate("profile"),
+        },
+        { type: "separator" },
+        {
+          label: "Emergency SOS",
+          accelerator: isMac ? "Cmd+E" : "Ctrl+E",
+          click: () => sendNavigate("emergency"),
         },
       ],
     },

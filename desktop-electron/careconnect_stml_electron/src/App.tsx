@@ -6,6 +6,7 @@ import SignInHelpScreen from "./screens/SignInHelpScreen";
 import TaskListScreen from "./screens/TaskListScreen";
 import TaskDetailScreen from "./screens/TaskDetailScreen";
 import HealthLogScreen from "./screens/HealthLogScreen";
+import ContactsScreen from "./screens/ContactsScreen";
 import EmergencyScreen from "./screens/EmergencyScreen";
 import EmergencyConfirmationScreen from "./screens/EmergencyConfirmationScreen";
 import EmergencyCallingScreen from "./screens/EmergencyCallingScreen";
@@ -13,16 +14,28 @@ import ProfileScreen from "./screens/ProfileScreen";
 import AccessibilityScreen from "./screens/AccessibilityScreen";
 
 export default function App() {
-  const [screen, setScreen] = useState<ScreenId>("dashboard");
+  const [screen, setScreen] = useState<ScreenId>("welcome");
   const [textScale, setTextScale] = useState<number>(1);
+  const screenRef = React.useRef<ScreenId>("welcome");
+
+  // Keep ref in sync with state
+  React.useEffect(() => {
+    screenRef.current = screen;
+  }, [screen]);
 
   // Optional: accept Electron menu nav events if you have them
   useEffect(() => {
     if (!window.careconnect?.onNavigate) return;
+    
     const unsub = window.careconnect.onNavigate((route) => {
-      if (route === "dashboard") setScreen("dashboard");
-      if (route === "tasks") setScreen("task_list"); // map old "tasks" menu item
+      // Don't allow navigation shortcuts from welcome/signin screens
+      // User must sign in first
+      if (screenRef.current === "welcome" || screenRef.current === "signin-help") {
+        return;
+      }
+      setScreen(route);
     });
+    
     return () => unsub?.();
   }, []);
 
@@ -48,25 +61,28 @@ export default function App() {
     case "welcome":
       content = <WelcomeScreen onGo={setScreen} />;
       break;
-    case "sign_in_help":
+    case "signin-help":
       content = <SignInHelpScreen onGo={setScreen} />;
       break;
-    case "task_list":
+    case "task-list":
       content = <TaskListScreen onGo={setScreen} />;
       break;
-    case "task_detail":
+    case "task-detail":
       content = <TaskDetailScreen onGo={setScreen} />;
       break;
-    case "health_log":
+    case "health-log":
       content = <HealthLogScreen onGo={setScreen} />;
+      break;
+    case "contacts":
+      content = <ContactsScreen onGo={setScreen} />;
       break;
     case "emergency":
       content = <EmergencyScreen onGo={setScreen} />;
       break;
-    case "emergency_confirmation":
+    case "emergency-confirmation":
       content = <EmergencyConfirmationScreen onGo={setScreen} />;
       break;
-    case "emergency_calling":
+    case "emergency-calling":
       content = <EmergencyCallingScreen onGo={setScreen} />;
       break;
     case "profile":

@@ -1,6 +1,6 @@
-import { contextBridge, ipcRenderer } from "electron";
+const { contextBridge, ipcRenderer } = require("electron");
 
-type Route = "dashboard" | "tasks";
+type Route = "dashboard" | "task-list" | "health-log" | "contacts" | "profile" | "emergency";
 
 contextBridge.exposeInMainWorld("careconnect", {
   // IPC demo: main -> renderer

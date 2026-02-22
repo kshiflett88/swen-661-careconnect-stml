@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "version": "0.0.0",
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/main.cjs",
   "scripts": {
     "vite": "vite",
     "electron": "electron .",
-    "dev": "concurrently -k \"npm run vite\" \"npm run build:electron:watch\" \"wait-on http://localhost:5173 && npm run build:electron && npm run electron\"",
-    "build:electron": "tsc -p tsconfig.electron.json",
+    "dev": "concurrently -k \"npm run vite\" \"npm run build:electron:watch\" \"wait-on http://localhost:4173 && npm run build:electron && npm run electron\"",
+    "build:electron": "tsc -p tsconfig.electron.json && node -e \"const fs=require('fs');['main','preload'].forEach(f=>{const src='dist-electron/'+f+'.js';const dst='dist-electron/'+f+'.cjs';if(fs.existsSync(src)){fs.renameSync(src,dst);}});\"",
     "build:electron:watch": "tsc -p tsconfig.electron.json --watch"
   },
   "dependencies": {
