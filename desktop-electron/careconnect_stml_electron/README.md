@@ -24,6 +24,14 @@ Electron desktop shell for the CareConnect STML experience.
 - `Ctrl+E` / `Cmd+E`: Emergency SOS
 - Shortcuts are disabled on Welcome and Sign-In Help screens.
 
+## Testing
+
+- `npm test` runs unit tests followed by E2E tests.
+- `npm run test:unit` runs Jest unit and integration tests.
+- `npm run test:unit:watch` runs Jest in watch mode.
+- `npm run test:coverage` runs Jest with HTML coverage output (`coverage-jest/lcov-report/index.html`).
+- `npm run test:e2e` runs Playwright tests (placeholder setup).
+
 ## Notes
 
 - Generated output folders (`dist`, `dist-electron`) should not be committed.

@@ -258,6 +258,51 @@ Key Features:
 
 ## Testing Checklist
 
+## Assignment Enforcement Checklist (Desktop)
+
+This section maps directly to the desktop accessibility assignment requirements.
+
+### 1) Keyboard-only navigation (required)
+- Launch app and do not use mouse.
+- Use `Tab` and `Shift+Tab` to move through all interactive controls on:
+	- Sign in screen (`SignInView`)
+	- Sign in help screen (`SignInHelpView`)
+	- Contact caregiver confirmation (`ConfirmDialog`)
+- Use `Enter` and `Space` to activate controls.
+- Use `Escape` to dismiss confirmation dialog.
+- Verify no keyboard trap exists and focus order is logical.
+
+### 2) Focus indicators (required)
+- While tabbing, confirm every interactive element shows a visible focus indicator.
+- Verify focus outline contrast is clearly visible against background.
+- Confirm focus remains visible in modal dialogs and after dialog closes.
+
+### 3) Screen reader support (required)
+- Windows: NVDA
+- macOS: VoiceOver
+- Validate:
+	- Page landmarks (`main`) are announced.
+	- Buttons and links announce meaningful names.
+	- Dialog announces as `alertdialog` with title and message.
+	- Action labels are clear (e.g., Contact caregiver, Back to sign in).
+
+### 4) High contrast / increased contrast (required)
+- Windows: enable High Contrast mode.
+- macOS: enable Increase Contrast.
+- Validate:
+	- Text remains readable and controls are still distinguishable.
+	- Focus indicators remain visible.
+	- Primary vs secondary actions remain perceivable.
+
+### Automation status in this repo
+- Automated with Jest + React Testing Library:
+	- Keyboard activation checks for sign-in/help interactions.
+	- ARIA/role assertions for dialog and major controls.
+	- IPC wiring tests and window management tests for Electron main/preload.
+- Manual required:
+	- NVDA/VoiceOver validation.
+	- OS-level high contrast mode verification.
+
 ### Keyboard Navigation
 - [ ] Can tab through all interactive elements
 - [ ] Focus indicator clearly visible

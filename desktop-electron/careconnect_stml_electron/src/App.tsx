@@ -9,9 +9,8 @@ import { EmergencyModal } from "./components/EmergencyModal";
 import { AddTaskModal } from "./components/AddTaskModal";
 import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
-import WelcomeScreen from "./screens/WelcomeScreen";
-import SignInHelpScreen from "./screens/SignInHelpScreen";
-import type { ScreenId } from "./types";
+import { SignInView } from "./components/SignInView";
+import { SignInHelpView } from "./components/SignInHelpView";
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -26,7 +25,9 @@ export interface Task {
 }
 
 export default function App() {
-  const [entryScreen, setEntryScreen] = useState<"welcome" | "signin-help" | "app">("welcome");
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [authStep, setAuthStep] = useState<"signin" | "help">("signin");
+  const [showContactCaregiverConfirm, setShowContactCaregiverConfirm] = useState(false);
   const [activeNav, setActiveNav] = useState<NavPage>("Dashboard");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCompleteTaskId, setPendingCompleteTaskId] = useState<string | null>(null);
@@ -69,29 +70,6 @@ export default function App() {
       status: "pending",
     },
   ]);
-
-  const handleEntryNavigation = (screen: ScreenId) => {
-    if (screen === "dashboard") {
-      setActiveNav("Dashboard");
-      setEntryScreen("app");
-      return;
-    }
-
-    if (screen === "signin-help") {
-      setEntryScreen("signin-help");
-      return;
-    }
-
-    setEntryScreen("welcome");
-  };
-
-  if (entryScreen === "welcome") {
-    return <WelcomeScreen onGo={handleEntryNavigation} />;
-  }
-
-  if (entryScreen === "signin-help") {
-    return <SignInHelpScreen onGo={handleEntryNavigation} />;
-  }
 
   const handleMarkComplete = (taskId: string) => {
     setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: "completed" } : task)));
@@ -195,6 +173,37 @@ export default function App() {
     setShowEditTaskModal(false);
     setEditingTaskId(null);
   };
+
+  if (!isSignedIn) {
+    return (
+      <>
+        <SignInView onSignIn={() => setIsSignedIn(true)} onNeedHelp={() => setAuthStep("help")} />
+        {authStep === "help" && (
+          <SignInHelpView
+            onResetAccess={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+            }}
+            onClose={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+            }}
+            onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
+          />
+        )}
+        <ConfirmDialog
+          isOpen={showContactCaregiverConfirm}
+          title="Contact caregiver?"
+          message="This will send a caregiver contact request."
+          confirmText="Contact"
+          cancelText="Cancel"
+          variant="primary"
+          onConfirm={() => setShowContactCaregiverConfirm(false)}
+          onCancel={() => setShowContactCaregiverConfirm(false)}
+        />
+      </>
+    );
+  }
 
   let content: React.ReactNode;
   if (activeNav === "Dashboard") {
