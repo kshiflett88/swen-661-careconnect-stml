@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["jest", "node", "@testing-library/jest-dom"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+  },
+  "include": ["tests/jest/**/*", "src/**/*", "electron/**/*"]
+}
