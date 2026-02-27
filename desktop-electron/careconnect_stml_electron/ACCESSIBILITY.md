@@ -305,3 +305,48 @@ Key Features:
 5. Add more orientation cues (breadcrumbs, progress indicators)
 6. Implement persistent task notifications
 7. Add undo functionality for destructive actions
+
+## Part 3 Verification (Desktop Accessibility)
+
+Use this checklist as evidence for the assignment rubric section:
+
+### 1) Keyboard Navigation (Keyboard-only)
+- Start app and do not use mouse.
+- Use `Tab` / `Shift+Tab` to navigate:
+	- Welcome screen controls.
+	- Top toolbar (`+ Add Task`, search, `Today`, `SOS`).
+	- Sidebar navigation (`Dashboard`, `Tasks`, `Contacts`, `Settings`).
+	- Tasks actions (`Mark Complete`, `Edit Task`, `Delete Task`), modal buttons, and form fields.
+	- Contacts action buttons and contact action modals.
+- Verify `Enter`/`Space` activate focused controls.
+- Verify modal dialogs close with `Escape`.
+- Verify task context menu supports keyboard navigation (`ArrowUp`, `ArrowDown`, `Home`, `End`, `Escape`).
+
+### 2) Focus Indicators
+- Confirm visible focus ring appears on all interactive elements while tabbing.
+- Confirm focus remains trapped inside open modals until closed.
+- Confirm focus lands on the first meaningful control when context menu/modal opens.
+
+### 3) Screen Reader Support (Manual)
+- **Windows**: run NVDA.
+- **macOS**: run VoiceOver.
+- Verify:
+	- Main landmarks and headings are announced.
+	- Buttons are announced with clear names.
+	- Dialogs are announced as dialogs (`role="alertdialog"` where used).
+	- Form labels are read correctly for Add/Edit task forms.
+
+### 4) High Contrast Mode (Manual)
+- **Windows**: enable a High Contrast theme or Forced Colors mode.
+- **macOS**: enable Increase Contrast.
+- Verify:
+	- Text remains readable.
+	- Buttons and inputs remain visible with clear borders.
+	- Focus indicator remains visible.
+	- No critical control disappears due to color-only styling.
+
+### Evidence to include in submission
+- Short keyboard-only test notes (what was tested + pass/fail).
+- One screenshot of focused navigation state.
+- One screenshot of app in high contrast mode.
+- A brief note that NVDA/VoiceOver announcement checks were completed.

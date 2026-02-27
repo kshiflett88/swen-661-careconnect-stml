@@ -1,0 +1,216 @@
+.contacts-view {
+  flex: 1;
+  overflow: auto;
+  padding: 2rem;
+}
+
+.contacts-content {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-card {
+  background: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.contact-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+}
+
+.contact-card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.contact-card-header p {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+}
+
+.caregiver-header {
+  background: #0066cc;
+  color: #ffffff;
+}
+
+.emergency-header {
+  background: #cc0000;
+  color: #ffffff;
+}
+
+.neutral-header {
+  background: #f5f5f5;
+  border-bottom: 2px solid #d0d0d0;
+  color: #1a1a1a;
+}
+
+.neutral-header.with-icon {
+  gap: 0.5rem;
+}
+
+.contact-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+}
+
+.caregiver-icon {
+  color: #0066cc;
+}
+
+.emergency-icon {
+  color: #cc0000;
+}
+
+.contact-card-body {
+  padding: 1.5rem;
+}
+
+.contact-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.35rem;
+}
+
+.contact-field-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.82rem;
+  color: #666666;
+}
+
+.contact-field-value {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.contact-field-value.lg {
+  font-size: 1.25rem;
+}
+
+.emergency-number-block {
+  margin-bottom: 1.2rem;
+}
+
+.contact-field-value.emergency-number {
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.contact-actions.two-col > * {
+  flex: 1;
+}
+
+.contact-btn {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.contact-btn:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.contact-btn.btn-primary {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+.contact-btn.btn-primary:hover {
+  background: #0052a3;
+  border-color: #0052a3;
+}
+
+.contact-btn.btn-secondary {
+  background: #ffffff;
+  border-color: #d0d0d0;
+  color: #1a1a1a;
+}
+
+.contact-btn.btn-secondary:hover {
+  background: #f0f0f0;
+}
+
+.emergency-card {
+  border-color: #cc0000;
+}
+
+.contact-btn.btn-emergency {
+  background: #cc0000;
+  border-color: #cc0000;
+  color: #ffffff;
+  min-height: 56px;
+  font-size: 1.06rem;
+  font-weight: 700;
+}
+
+.contact-btn.btn-emergency:hover {
+  background: #b30000;
+  border-color: #b30000;
+}
+
+.contact-btn.full {
+  width: 100%;
+}
+
+.emergency-note {
+  margin: 1rem 0 0;
+  text-align: center;
+  color: #666666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.contacts-info-note {
+  background: #e6f2ff;
+  border: 2px solid #b3d9ff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+
+.contacts-info-note p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .contacts-view {
+    padding: 1rem;
+  }
+
+  .contact-actions.two-col {
+    flex-direction: column;
+  }
+}
