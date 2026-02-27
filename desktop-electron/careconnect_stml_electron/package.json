@@ -13,6 +13,7 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "jest --config jest.config.cjs",
     "test:unit:watch": "jest --config jest.config.cjs --watch",
+    "test:a11y": "jest --config jest.config.cjs src/__tests__/Accessibility.automated.test.tsx",
     "test:e2e": "playwright test",
     "test:coverage": "jest --config jest.config.cjs --coverage"
   },

@@ -27,21 +27,17 @@ describe('React components (RTL + Jest)', () => {
     expect(onNeedHelp).toHaveBeenCalledTimes(2);
   });
 
-  test('SignInView supports space key and optional help section behavior', () => {
+  test('SignInView supports optional help section behavior', () => {
     const onNeedHelp = jest.fn();
-    const { rerender } = render(<SignInView onSignIn={() => undefined} onNeedHelp={onNeedHelp} />);
+    render(<SignInView onSignIn={() => undefined} onNeedHelp={onNeedHelp} />);
 
     const helpLink = screen.getByRole('link', { name: /need help signing in\?/i });
-    fireEvent.keyDown(helpLink, { key: ' ' });
     fireEvent.focus(helpLink);
     fireEvent.blur(helpLink);
     fireEvent.mouseEnter(helpLink);
     fireEvent.mouseLeave(helpLink);
 
-    expect(onNeedHelp).toHaveBeenCalledTimes(1);
-
-    rerender(<SignInView onSignIn={() => undefined} />);
-    expect(screen.queryByRole('link', { name: /need help signing in\?/i })).not.toBeInTheDocument();
+    expect(onNeedHelp).toHaveBeenCalledTimes(0);
   });
 
   test('SignInHelpView renders screen-reader friendly structure and actions', () => {

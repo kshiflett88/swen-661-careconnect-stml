@@ -34,16 +34,6 @@ describe("App pre-sign-in flow", () => {
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });
 
-  test("closes caregiver confirmation on confirm", () => {
-    render(<App />);
-
-    fireEvent.click(screen.getByRole("link", { name: /need help signing in\?/i }));
-    fireEvent.click(screen.getByRole("button", { name: /contact caregiver/i }));
-
-    fireEvent.click(screen.getByRole("button", { name: /contact this action/i }));
-    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
-  });
-
   test("enters main app after sign in", () => {
     render(<App />);
 

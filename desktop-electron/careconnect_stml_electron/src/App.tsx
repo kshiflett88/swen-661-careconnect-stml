@@ -11,6 +11,7 @@ import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
 import { SignInView } from "./components/SignInView";
 import { SignInHelpView } from "./components/SignInHelpView";
+import { typography } from "./constants/accessibility";
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -28,6 +29,7 @@ export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [authStep, setAuthStep] = useState<"signin" | "help">("signin");
   const [showContactCaregiverConfirm, setShowContactCaregiverConfirm] = useState(false);
+  const [caregiverRequestSent, setCaregiverRequestSent] = useState(false);
   const [activeNav, setActiveNav] = useState<NavPage>("Dashboard");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCompleteTaskId, setPendingCompleteTaskId] = useState<string | null>(null);
@@ -177,18 +179,27 @@ export default function App() {
   if (!isSignedIn) {
     return (
       <>
-        <SignInView onSignIn={() => setIsSignedIn(true)} onNeedHelp={() => setAuthStep("help")} />
+        <SignInView
+          onSignIn={() => setIsSignedIn(true)}
+          onNeedHelp={() => {
+            setAuthStep("help");
+            setCaregiverRequestSent(false);
+          }}
+        />
         {authStep === "help" && (
           <SignInHelpView
             onResetAccess={() => {
               setAuthStep("signin");
               setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
             }}
             onClose={() => {
               setAuthStep("signin");
               setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
             }}
             onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
+            caregiverRequestSent={caregiverRequestSent}
           />
         )}
         <ConfirmDialog
@@ -198,7 +209,10 @@ export default function App() {
           confirmText="Contact"
           cancelText="Cancel"
           variant="primary"
-          onConfirm={() => setShowContactCaregiverConfirm(false)}
+          onConfirm={() => {
+            setShowContactCaregiverConfirm(false);
+            setCaregiverRequestSent(true);
+          }}
           onCancel={() => setShowContactCaregiverConfirm(false)}
         />
       </>
@@ -233,6 +247,22 @@ export default function App() {
   } else {
     content = <SettingsView />;
   }
+
+  const activeTasksCount = tasks.filter((task) => task.status !== "completed").length;
+  const nextPendingTask = [...tasks]
+    .filter((task) => task.status !== "completed")
+    .sort((first, second) => first.dueDateTime.getTime() - second.dueDateTime.getTime())[0];
+
+  const footerDate = new Date().toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const nextTaskDue = nextPendingTask
+    ? `${nextPendingTask.dueDateTime.toLocaleDateString([], { month: "long", day: "numeric" })} at ${nextPendingTask.dueDateTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+    : "No upcoming tasks";
 
   return (
     <div className="app-shell">
@@ -279,8 +309,16 @@ export default function App() {
         <main className="app-content">{content}</main>
       </div>
 
-      <footer className="app-footer">
-        Active tasks: {tasks.filter((task) => task.status !== "completed").length}
+      <footer className="app-footer" style={{ fontFamily: typography.fontFamilyBase }}>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Current Date:</strong> {footerDate}
+        </span>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Active Tasks:</strong> {activeTasksCount}
+        </span>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Next Task Due:</strong> {nextTaskDue}
+        </span>
       </footer>
 
       <ConfirmDialog
