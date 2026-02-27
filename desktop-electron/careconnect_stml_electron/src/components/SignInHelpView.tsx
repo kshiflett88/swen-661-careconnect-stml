@@ -5,9 +5,15 @@ interface SignInHelpViewProps {
   onResetAccess: () => void;
   onContactCaregiver: () => void;
   onClose: () => void;
+  caregiverRequestSent?: boolean;
 }
 
-export function SignInHelpView({ onResetAccess, onContactCaregiver, onClose }: SignInHelpViewProps) {
+export function SignInHelpView({
+  onResetAccess,
+  onContactCaregiver,
+  onClose,
+  caregiverRequestSent = false,
+}: SignInHelpViewProps) {
   const overlayStyles: React.CSSProperties = {
     position: "fixed",
     top: 0,
@@ -116,6 +122,18 @@ export function SignInHelpView({ onResetAccess, onContactCaregiver, onClose }: S
     alignSelf: "center",
   };
 
+  const successMessageStyles: React.CSSProperties = {
+    marginTop: sizing.spaceMd,
+    marginBottom: 0,
+    padding: `${sizing.spaceSm}px ${sizing.spaceMd}px`,
+    border: `1px solid ${colors.success}`,
+    borderRadius: sizing.borderRadiusSm,
+    backgroundColor: colors.backgroundAlt,
+    color: colors.success,
+    fontSize: typography.fontSizeBase,
+    fontWeight: typography.fontWeightMedium,
+  };
+
   return (
     <div style={overlayStyles} role="presentation">
       <section role="dialog" aria-modal="true" aria-labelledby="signin-help-title" style={modalStyles}>
@@ -148,6 +166,12 @@ export function SignInHelpView({ onResetAccess, onContactCaregiver, onClose }: S
               Contact Caregiver
             </Button>
           </div>
+
+          {caregiverRequestSent && (
+            <p role="status" aria-live="polite" style={successMessageStyles}>
+              Caregiver request sent. You should hear back soon.
+            </p>
+          )}
 
           <button type="button" style={closeTextStyles} onClick={onClose} aria-label="Close sign in help modal">
             Close

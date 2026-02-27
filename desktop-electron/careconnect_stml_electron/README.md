@@ -29,10 +29,24 @@ Electron desktop shell for the CareConnect STML experience.
 - `npm test` runs unit tests followed by E2E tests.
 - `npm run test:unit` runs Jest unit and integration tests.
 - `npm run test:unit:watch` runs Jest in watch mode.
+- `npm run test:a11y` runs automated accessibility checks (axe + keyboard navigation tests).
 - `npm run test:coverage` runs Jest with HTML coverage output (`coverage-jest/lcov-report/index.html`).
 - `npm run test:e2e` runs Playwright tests (placeholder setup).
 
+### Current UI coverage
+
+- Component and view tests live under `src/__tests__/` and cover rendering, interaction flows, and accessibility semantics.
+- App-level and integration scenarios are also covered in `tests/jest/`.
+
+## Accessibility
+
+- Full accessibility requirements and validation checklist are in [ACCESSIBILITY.md](ACCESSIBILITY.md).
+- Automated checks are covered by Jest tests (including `src/__tests__/Accessibility.automated.test.tsx`).
+- Manual validation still required for:
+	- Screen reader behavior (NVDA on Windows / VoiceOver on macOS)
+	- OS-level contrast modes (Windows High Contrast / macOS Increase Contrast)
+
 ## Notes
 
-- Generated output folders (`dist`, `dist-electron`) should not be committed.
+- Generated output folders (`dist`, `dist-electron`, `coverage-jest`, `test-results`) should not be committed.
 - Renderer app entry is `src/main.tsx` and `src/App.tsx`.
