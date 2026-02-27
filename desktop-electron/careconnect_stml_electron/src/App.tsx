@@ -151,6 +151,7 @@ export default function App() {
 
   const handleAddTaskSubmit = (taskData: {
     title: string;
+    description: string;
     dueDate: string;
     dueTime: string;
     priority: "high" | "medium" | "low";
@@ -158,7 +159,7 @@ export default function App() {
     const newTask: Task = {
       id: String(Date.now()),
       title: taskData.title,
-      description: "",
+      description: taskData.description,
       dueDateTime: new Date(`${taskData.dueDate}T${taskData.dueTime}`),
       priority: taskData.priority,
       status: "pending",
@@ -172,7 +173,13 @@ export default function App() {
 
   const handleEditTaskSubmit = (
     taskId: string,
-    taskData: { title: string; dueDate: string; dueTime: string; priority: "high" | "medium" | "low" }
+    taskData: {
+      title: string;
+      description: string;
+      dueDate: string;
+      dueTime: string;
+      priority: "high" | "medium" | "low";
+    }
   ) => {
     setTasks((prev) =>
       prev.map((task) =>
@@ -180,6 +187,7 @@ export default function App() {
           ? {
               ...task,
               title: taskData.title,
+              description: taskData.description,
               dueDateTime: new Date(`${taskData.dueDate}T${taskData.dueTime}`),
               priority: taskData.priority,
             }
@@ -225,29 +233,124 @@ export default function App() {
     content = <SettingsView />;
   }
 
+  const activeTaskCount = tasks.filter((task) => task.status !== "completed").length;
+  const nextPendingTask = [...tasks]
+    .filter((task) => task.status === "pending")
+    .sort((a, b) => a.dueDateTime.getTime() - b.dueDateTime.getTime())[0];
+
+  const currentDateLabel = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const nextTaskDueLabel = (() => {
+    if (!nextPendingTask) {
+      return "No upcoming tasks";
+    }
+
+    const date = nextPendingTask.dueDateTime;
+    const now = new Date();
+
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const dueDay = new Date(date);
+    dueDay.setHours(0, 0, 0, 0);
+
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    if (dueDay.getTime() === today.getTime()) {
+      return `Today at ${time}`;
+    }
+
+    if (dueDay.getTime() === tomorrow.getTime()) {
+      return `Tomorrow at ${time}`;
+    }
+
+    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+    return `${weekday} at ${time}`;
+  })();
+
   return (
     <div className="app-shell">
       <header className="app-toolbar">
-        <button className="toolbar-button toolbar-primary" onClick={() => setShowAddTaskModal(true)}>
-          Add Task
+        <button className="toolbar-button toolbar-primary toolbar-with-icon" onClick={() => setShowAddTaskModal(true)}>
+          <svg
+            className="toolbar-add-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path d="M12 5V19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span>Add Task</span>
         </button>
-        <input
-          value={searchInputValue}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Search tasks..."
-          className="toolbar-search"
-        />
-        <button className="toolbar-button" onClick={handleTodayClick}>
-          {taskFilterMode === "today" ? "Today ✓" : "Today"}
+        <div className="toolbar-search-wrap">
+          <span className="toolbar-search-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+              <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </span>
+          <input
+            value={searchInputValue}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search tasks..."
+            className="toolbar-search"
+          />
+        </div>
+        <button
+          className={`toolbar-button toolbar-with-icon toolbar-today ${taskFilterMode === "today" ? "toolbar-today-active" : ""}`}
+          onClick={handleTodayClick}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+            <path d="M8 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M16 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          <span>Today</span>
         </button>
         <button
-          className="toolbar-button toolbar-sos"
+          className="toolbar-button toolbar-with-icon toolbar-sos"
           onClick={() => {
             setEmergencyConfirmed(false);
             setShowEmergencyModal(true);
           }}
         >
-          SOS
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 7.5V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="12" cy="16.5" r="1.2" fill="currentColor" />
+          </svg>
+          <span>SOS</span>
         </button>
       </header>
 
@@ -267,11 +370,25 @@ export default function App() {
           </nav>
         </aside>
 
-        <main className="app-content">{content}</main>
+        <main className="app-content">
+          <div className="app-context-bar">
+            <strong>You are on:</strong> {activeNav}
+          </div>
+          {content}
+        </main>
       </div>
 
-      <footer className="app-footer">
-        Active tasks: {tasks.filter((task) => task.status !== "completed").length}
+      <footer className="app-footer" role="contentinfo">
+        <span className="app-footer-item">
+          <strong>Current Date:</strong> {currentDateLabel}
+        </span>
+        <span className="app-footer-item app-footer-divider">
+          <strong>Active Tasks:</strong> {activeTaskCount}
+        </span>
+        <span className="app-footer-item app-footer-divider">
+          <strong>Next Task Due:</strong> {nextTaskDueLabel}
+        </span>
+        <span className="app-footer-help">Help is always available in the Help menu</span>
       </footer>
 
       <ConfirmDialog
@@ -328,21 +445,24 @@ export default function App() {
           setEditingTaskId(null);
         }}
         onSave={handleEditTaskSubmit}
-        onDelete={handleDeleteTask}
+        onDelete={(taskId) => {
+          setDeletingTaskId(taskId);
+          setShowDeleteTaskConfirmModal(true);
+          setShowEditTaskModal(false);
+          setEditingTaskId(null);
+        }}
         task={tasks.find((task) => task.id === editingTaskId) ?? null}
       />
 
       <DeleteTaskConfirmModal
         isOpen={showDeleteTaskConfirmModal}
-        taskTitle={tasks.find((task) => task.id === deletingTaskId)?.title ?? ""}
+        task={tasks.find((task) => task.id === deletingTaskId) ?? null}
         onCancel={() => {
           setShowDeleteTaskConfirmModal(false);
           setDeletingTaskId(null);
         }}
-        onConfirm={() => {
-          if (deletingTaskId) {
-            handleDeleteTask(deletingTaskId);
-          }
+        onConfirmDelete={(taskId) => {
+          handleDeleteTask(taskId);
           setShowDeleteTaskConfirmModal(false);
           setDeletingTaskId(null);
         }}
