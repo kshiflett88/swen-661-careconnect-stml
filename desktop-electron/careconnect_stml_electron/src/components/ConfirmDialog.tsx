@@ -77,12 +77,14 @@ export function ConfirmDialog({
     maxWidth: '500px',
     width: '90%',
     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+    fontFamily: typography.fontFamilyBase,
     // STML: Large enough to be easily read
   };
 
   const titleStyles: React.CSSProperties = {
     fontSize: typography.fontSizeLg,
     fontWeight: typography.fontWeightBold,
+    fontFamily: typography.fontFamilyBase,
     color: colors.text,
     marginBottom: sizing.spaceMd,
     // STML: Clear, prominent heading
@@ -90,6 +92,7 @@ export function ConfirmDialog({
 
   const messageStyles: React.CSSProperties = {
     fontSize: typography.fontSizeBase,
+    fontFamily: typography.fontFamilyBase,
     color: colors.text,
     lineHeight: typography.lineHeightRelaxed,
     marginBottom: sizing.spaceLg,
