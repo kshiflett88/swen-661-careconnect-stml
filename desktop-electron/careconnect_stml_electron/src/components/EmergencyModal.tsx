@@ -1,13 +1,14 @@
 // src/components/EmergencyModal.tsx
-import React, { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 interface EmergencyModalProps {
   isOpen: boolean;
-  title: string;
-  message: string;
-  confirmText: string;
-  cancelText: string;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
   borderColor?: string;
+  confirmed?: boolean;
 
   onConfirm: () => void;
   onCancel: () => void;
@@ -121,6 +122,7 @@ export function EmergencyModal({
   confirmText,
   cancelText,
   borderColor = "#c62828",
+  confirmed = false,
   onConfirm,
   onCancel,
   onClose,
@@ -177,6 +179,11 @@ export function EmergencyModal({
 
   if (!isOpen) return null;
 
+  const resolvedTitle = title ?? "Emergency";
+  const resolvedMessage = message ?? (confirmed ? "Caregiver contact has been triggered (placeholder behavior)." : "Contact caregiver now?");
+  const resolvedConfirmText = confirmText ?? "Confirm";
+  const resolvedCancelText = cancelText ?? (confirmed ? "Close" : "Cancel");
+
   return (
     <>
       <style>{styles}</style>
@@ -207,10 +214,10 @@ export function EmergencyModal({
 
             <div>
               <h2 id={titleId} className="h1">
-                {title}
+                {resolvedTitle}
               </h2>
               <p id={descId} className="p">
-                {message}
+                {resolvedMessage}
               </p>
               {ariaHint ? (
                 <p id={hintId} className="hint">
@@ -221,18 +228,20 @@ export function EmergencyModal({
           </div>
 
           <div className="actions">
-            <button
-              ref={confirmRef}
-              type="button"
-              className="primary"
-              onClick={onConfirm}
-              aria-label={confirmText}
-            >
-              {confirmText}
-            </button>
+            {!confirmed && (
+              <button
+                ref={confirmRef}
+                type="button"
+                className="primary"
+                onClick={onConfirm}
+                aria-label={resolvedConfirmText}
+              >
+                {resolvedConfirmText}
+              </button>
+            )}
 
-            <button type="button" className="secondary" onClick={onCancel} aria-label={cancelText}>
-              {cancelText}
+            <button type="button" className="secondary" onClick={onCancel} aria-label={resolvedCancelText}>
+              {resolvedCancelText}
             </button>
           </div>
         </div>

@@ -1,551 +1,684 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useState } from 'react';
 
-type TextSize = "small" | "medium" | "large";
-type ReminderFrequency = "once" | "twice" | "three";
-type ReminderTime = "08:00" | "09:00" | "10:00" | "12:00" | "15:00";
+type TextSize = 'small' | 'medium' | 'large';
 
-function isMacPlatform() {
-  // ✅ SSR-safe
-  if (typeof navigator === "undefined") return false;
-  return navigator.platform.toLowerCase().includes("mac");
-}
-
-const styles = `/* ... keep your existing styles string exactly as-is ... */`;
-
-function IconPlus() {
-  return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconSearch() {
-  return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path d="M16.5 16.5 21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconCalendar() {
-  return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M7 3v3M17 3v3M4 9h16M6 6h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-function IconSOS() {
-  return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 9v4M12 17h.01M10.3 3.6 2.7 17.1A2 2 0 0 0 4.4 20h15.2a2 2 0 0 0 1.7-2.9L13.7 3.6a2 2 0 0 0-3.4 0Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function Switch({
-  id,
-  label,
-  description,
-  checked,
-  onChange,
-}: {
+type ToggleProps = {
   id: string;
   label: string;
-  description?: string;
+  description: string;
   checked: boolean;
-  onChange: (next: boolean) => void;
-}) {
-  return (
-    <div className="row">
-      <div>
-        <h3 id={`${id}-label`}>{label}</h3>
-        {description ? (
-          <div id={`${id}-desc`} className="help">
-            {description}
-          </div>
-        ) : null}
-      </div>
+  onChange: (checked: boolean) => void;
+};
 
-      <div className="controls">
-        <button
-          type="button"
-          role="switch"
-          aria-checked={checked}
-          aria-labelledby={`${id}-label`}
-          aria-describedby={description ? `${id}-desc` : undefined}
-          className="switch"
-          onClick={() => onChange(!checked)}
-        >
-          <span className="sr-only">{checked ? "On" : "Off"}</span>
-          <span className="switchTrack" data-on={checked}>
-            <span className="switchThumb" />
-          </span>
-        </button>
+const styles = `
+  .settingsRoot {
+    --font-scale: 1;
+    --page-bg: #ffffff;
+    --surface-bg: #ffffff;
+    --muted-text: #666666;
+    --body-text: #1a1a1a;
+    --line-color: #e0e0e0;
+    --line-soft: #d0d0d0;
+    --primary: #0066cc;
+    --danger: #cc0000;
+    flex: 1;
+    background: var(--page-bg);
+    overflow: auto;
+    color: var(--body-text);
+    font-size: calc(16px * var(--font-scale));
+  }
+
+  .settingsRoot.size-small {
+    --font-scale: 0.92;
+  }
+
+  .settingsRoot.size-medium {
+    --font-scale: 1;
+  }
+
+  .settingsRoot.size-large {
+    --font-scale: 1.5;
+  }
+
+  .settingsRoot.highContrast {
+    --page-bg: #ffffff;
+    --surface-bg: #ffffff;
+    --muted-text: #222222;
+    --body-text: #000000;
+    --line-color: #000000;
+    --line-soft: #000000;
+    --primary: #003e9b;
+    --danger: #8b0000;
+  }
+
+  .settingsContainer {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .pageHeader {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--line-color);
+  }
+
+  .pageHeader h1 {
+    margin: 0 0 0.5rem;
+    font-size: calc(28px * var(--font-scale));
+    color: var(--body-text);
+    font-weight: 600;
+  }
+
+  .pageHeader p {
+    margin: 0;
+    font-size: calc(15px * var(--font-scale));
+    color: var(--muted-text);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .sectionTitleWrap {
+    background: #f5f5f5;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+    border-radius: 0.25rem;
+  }
+
+  .sectionTitleWrap h2 {
+    margin: 0;
+    font-size: calc(22px * var(--font-scale));
+    color: var(--body-text);
+    font-weight: 600;
+  }
+
+  .card {
+    background: var(--surface-bg);
+    border: 2px solid var(--line-color);
+    border-radius: 0.5rem;
+    padding: 2rem;
+  }
+
+  .block {
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--line-color);
+    margin-bottom: 1.5rem;
+  }
+
+  .block:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .fieldLabel {
+    display: block;
+    font-size: calc(16px * var(--font-scale));
+    color: var(--body-text);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .fieldHelp {
+    font-size: calc(14px * var(--font-scale));
+    color: var(--muted-text);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+  }
+
+  .sizeRow {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .sizeButton {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--line-soft);
+    background: #ffffff;
+    color: var(--body-text);
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .sizeButton:hover {
+    background: #f5f5f5;
+  }
+
+  .sizeButton[data-active='true'] {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+
+  .toggleRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.25rem 0;
+  }
+
+  .toggleText {
+    flex: 1;
+  }
+
+  .toggleLabel {
+    display: block;
+    font-size: calc(16px * var(--font-scale));
+    color: var(--body-text);
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .toggleDescription {
+    margin: 0;
+    font-size: calc(14px * var(--font-scale));
+    color: var(--muted-text);
+    line-height: 1.6;
+  }
+
+  .toggleButton {
+    position: relative;
+    width: 56px;
+    height: 32px;
+    border-radius: 999px;
+    border: 2px solid var(--line-soft);
+    background: var(--line-soft);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .toggleButton[data-checked='true'] {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .toggleThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: #ffffff;
+    transition: transform 0.15s ease;
+  }
+
+  .toggleButton[data-checked='true'] .toggleThumb {
+    transform: translateX(24px);
+  }
+
+  .selectField,
+  .inputField {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--line-soft);
+    border-radius: 0.5rem;
+    font-size: calc(15px * var(--font-scale));
+    background: #ffffff;
+    color: var(--body-text);
+  }
+
+  .topRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .secondaryButton {
+    padding: 0.5rem 1rem;
+    background: #ffffff;
+    border: 2px solid var(--line-soft);
+    color: var(--body-text);
+    border-radius: 0.25rem;
+    font-size: calc(14px * var(--font-scale));
+    cursor: pointer;
+  }
+
+  .secondaryButton:hover {
+    background: #f0f0f0;
+  }
+
+  .caregiverBox {
+    background: #f9f9f9;
+    border: 1px solid var(--line-soft);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+  }
+
+  .caregiverRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .caregiverName {
+    margin: 0;
+    font-size: calc(16px * var(--font-scale));
+    color: var(--body-text);
+    font-weight: 500;
+  }
+
+  .phoneRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .phoneText {
+    margin: 0;
+    font-size: calc(15px * var(--font-scale));
+    color: var(--muted-text);
+  }
+
+  .editGrid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .actionButton {
+    padding: 0.75rem 1.5rem;
+    background: #ffffff;
+    border: 2px solid var(--line-soft);
+    color: var(--body-text);
+    border-radius: 0.5rem;
+    font-size: calc(15px * var(--font-scale));
+    cursor: pointer;
+  }
+
+  .actionButton:hover {
+    background: #f0f0f0;
+  }
+
+  .dangerButton {
+    color: var(--danger);
+  }
+
+  .dangerButton:hover {
+    background: #ffe6e6;
+  }
+
+  .infoBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: #e6f2ff;
+    border: 2px solid #b3d9ff;
+    border-radius: 0.5rem;
+  }
+
+  .infoText {
+    margin: 0;
+    font-size: calc(14px * var(--font-scale));
+    color: var(--body-text);
+    line-height: 1.6;
+  }
+
+  .settingsRoot.simplified .settingsContainer {
+    max-width: 56rem;
+  }
+
+  .settingsRoot.simplified .section {
+    margin-bottom: 2rem;
+  }
+
+  .settingsRoot.simplified .sectionTitleWrap {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .settingsRoot.simplified .sectionTitleWrap h2 {
+    font-size: calc(18px * var(--font-scale));
+  }
+
+  .settingsRoot.simplified .card {
+    padding: 1.25rem;
+  }
+
+  .settingsRoot.simplified .fieldHelp,
+  .settingsRoot.simplified .toggleDescription,
+  .settingsRoot.simplified .infoBox {
+    display: none;
+  }
+
+  .settingsRoot.simplified .block {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .infoText strong {
+    font-weight: 700;
+  }
+
+  button:focus-visible,
+  select:focus-visible,
+  input:focus-visible {
+    outline: 4px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .settingsContainer {
+      padding: 1rem;
+    }
+
+    .card {
+      padding: 1rem;
+    }
+
+    .sizeRow {
+      flex-direction: column;
+    }
+
+    .toggleRow {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+`;
+
+function PhoneIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M22 16.9v3a2 2 0 0 1-2.2 2c-8.6-.8-15.5-7.7-16.3-16.3A2 2 0 0 1 5.5 3h3a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.4a2 2 0 0 1-.5 2.1L9.4 10.4a14.5 14.5 0 0 0 4.2 4.2l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.6.5 2.4.6a2 2 0 0 1 1.7 2Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 16v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function Toggle({ id, label, description, checked, onChange }: ToggleProps) {
+  return (
+    <div className="toggleRow">
+      <div className="toggleText">
+        <label htmlFor={id} className="toggleLabel">
+          {label}
+        </label>
+        <p className="toggleDescription">{description}</p>
       </div>
+      <button
+        id={id}
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className="toggleButton"
+        data-checked={checked}
+      >
+        <span className="toggleThumb" />
+      </button>
     </div>
   );
 }
 
-export default function SettingsPage() {
-  const [textSize, setTextSize] = useState<TextSize>("medium");
-  const [highContrast, setHighContrast] = useState<boolean>(true);
-  const [simplifiedLayout, setSimplifiedLayout] = useState<boolean>(false);
+export default function SettingsView() {
+  const [textSize, setTextSize] = useState<TextSize>('medium');
+  const [highContrastMode, setHighContrastMode] = useState(true);
+  const [simplifiedLayout, setSimplifiedLayout] = useState(false);
+  const [reminderFrequency, setReminderFrequency] = useState('twice');
+  const [defaultReminderTime, setDefaultReminderTime] = useState('09:00');
+  const [confirmComplete, setConfirmComplete] = useState(true);
+  const [caregiverName, setCaregiverName] = useState('Sarah Miller');
+  const [caregiverPhone, setCaregiverPhone] = useState('(555) 123-4567');
+  const [isEditingCaregiver, setIsEditingCaregiver] = useState(false);
 
-  const [reminderFrequency, setReminderFrequency] = useState<ReminderFrequency>("twice");
-  const [defaultReminderTime, setDefaultReminderTime] = useState<ReminderTime>("09:00");
-  const [confirmComplete, setConfirmComplete] = useState<boolean>(true);
+  const handleResetFilters = () => {
+    if (window.confirm('This will reset all settings to their default values. Continue?')) {
+      setTextSize('medium');
+      setHighContrastMode(false);
+      setSimplifiedLayout(false);
+      setConfirmComplete(false);
+    }
+  };
 
-  const [searchTerm, setSearchTerm] = useState<string>("medication");
-  const [toast, setToast] = useState<string>("");
-
-  const toastRef = useRef<HTMLDivElement | null>(null);
-  const appClass = useMemo(() => (highContrast ? "app highContrast" : "app"), [highContrast]);
-
-  const keyHint = isMacPlatform() ? "⌘" : "Ctrl";
-
-  // ✅ useCallback avoids lint warnings and stale closures
-  const handleSOS = useCallback(() => {
-    setToast("SOS sent to caregiver (demo).");
-  }, []);
-
-  const restoreDefaults = useCallback(() => {
-    setTextSize("medium");
-    setHighContrast(false);
-    setSimplifiedLayout(false);
-    setReminderFrequency("twice");
-    setDefaultReminderTime("09:00");
-    setConfirmComplete(true);
-    setToast("Defaults restored. Settings saved automatically.");
-  }, []);
-
-  const resetTaskFilters = useCallback(() => {
-    setSearchTerm("");
-    setToast("Task filters cleared (demo).");
-  }, []);
-
-  // ✅ SSR-safe event listener
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      const metaOrCtrl = isMacPlatform() ? e.metaKey : e.ctrlKey;
-
-      if (metaOrCtrl && (e.key === "e" || e.key === "E")) {
-        e.preventDefault();
-        handleSOS();
-      }
-
-      if (metaOrCtrl && ["1", "2", "3", "4", "5"].includes(e.key)) {
-        e.preventDefault();
-        const map: Record<string, string> = {
-          "1": "Dashboard",
-          "2": "Tasks",
-          "3": "Health Log",
-          "4": "Contacts",
-          "5": "Profile",
-        };
-        setToast(`Shortcut: ${map[e.key]} (demo)`);
-      }
-
-      if (e.key === "Escape") {
-        setToast("");
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleSOS]);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = window.setTimeout(() => setToast(""), 4500);
-    return () => window.clearTimeout(t);
-  }, [toast]);
+  const rootClassName = [
+    'settingsRoot',
+    `size-${textSize}`,
+    highContrastMode ? 'highContrast' : '',
+    simplifiedLayout ? 'simplified' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <>
+    <div className={rootClassName}>
       <style>{styles}</style>
-
-      <a className="skip-link" href="#main">
-        Skip to main content
-      </a>
-
-      <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {toast}
-      </div>
-
-      <div className={appClass}>
-        <header>
-          <div className="demoBar" role="region" aria-label="Demo view controls">
-            <span style={{ opacity: 0.85, fontWeight: 800 }}>DEMO VIEW:</span>
-            <button className="demoPill" type="button">
-              Show Sign-In Screen
-            </button>
-            <button className="demoPill" type="button" aria-current="page">
-              Tasks – Search Active
-            </button>
-            <button className="demoPill" type="button">
-              Tasks – Today Filter Active
-            </button>
-            <button className="demoPill" type="button">
-              Tasks – All (No Filter)
-            </button>
-          </div>
-
-          <nav className="menuBar" aria-label="Application menu" role="menubar">
-            <button className="menuItem" type="button" role="menuitem">
-              File
-            </button>
-            <button className="menuItem" type="button" role="menuitem">
-              Edit
-            </button>
-            <button className="menuItem" type="button" role="menuitem">
-              View
-            </button>
-            <button className="menuItem" type="button" role="menuitem">
-              Help
-            </button>
-          </nav>
-
-          <div className="toolbar" role="region" aria-label="Toolbar">
-            <button type="button" className="btn btnPrimary iconBtn" aria-label="Add a new task">
-              <IconPlus />
-              Add Task
-            </button>
-
-            <div className="searchWrap">
-              <div className="search" role="search">
-                <IconSearch />
-                <label className="sr-only" htmlFor="taskSearch">
-                  Search tasks
-                </label>
-                <input
-                  id="taskSearch"
-                  type="search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search tasks"
-                  aria-describedby="taskSearchHelp"
-                />
-              </div>
-              <span id="taskSearchHelp" className="badgeKey">
-                {keyHint}+F (optional)
-              </span>
-            </div>
-
-            <button type="button" className="btn iconBtn" aria-label="Show tasks due today">
-              <IconCalendar />
-              Today
-            </button>
-
-            <button
-              type="button"
-              className="btn btnDanger iconBtn"
-              onClick={handleSOS}
-              aria-label="Emergency SOS"
-              aria-keyshortcuts="Control+E Meta+E"
-              title={`Emergency SOS (${keyHint}+E)`}
-            >
-              <IconSOS />
-              SOS
-            </button>
-          </div>
-        </header>
-
-        <div className="content">
-          <aside aria-label="Primary navigation">
-            <div className="brand">CareConnect</div>
-            <nav className="nav">
-              <a href="#dashboard" aria-label="Go to Dashboard">
-                Dashboard
-              </a>
-              <a href="#tasks" aria-label="Go to Tasks">
-                Tasks
-              </a>
-              <a href="#contacts" aria-label="Go to Contacts">
-                Contacts
-              </a>
-              <a href="#settings" aria-current="page" aria-label="Go to Settings">
-                Settings
-              </a>
-            </nav>
-          </aside>
-
-          <main id="main" tabIndex={-1}>
-            <div className="where" aria-label="Location indicator">
-              You are on: <span style={{ fontWeight: 900 }}>Settings</span>
-            </div>
-
-            <h1>Settings</h1>
-            <div className="subtitle">Adjust settings to make CareConnect work best for you</div>
-
-            <section className="section" aria-labelledby="displayHeading">
-              <div className="sectionHeader" id="displayHeading">
-                <span className="accentBar" aria-hidden="true" />
-                Display &amp; Simplicity
-              </div>
-
-              <div className="sectionBody">
-                <div className="row" role="group" aria-labelledby="textSizeLabel" aria-describedby="textSizeHelp">
-                  <div>
-                    <h3 id="textSizeLabel">Text Size</h3>
-                    <div id="textSizeHelp" className="help">
-                      Choose how large text appears throughout the application
-                    </div>
-                  </div>
-
-                  <div className="controls">
-                    <div className="radioGroup" role="radiogroup" aria-label="Text size options">
-                      {([
-                        ["small", "Small"],
-                        ["medium", "Medium"],
-                        ["large", "Large"],
-                      ] as const).map(([value, label]) => {
-                        const checked = textSize === value;
-                        return (
-                          <button
-                            key={value}
-                            type="button"
-                            role="radio"
-                            aria-checked={checked}
-                            className="radioBtn"
-                            data-checked={checked}
-                            onClick={() => {
-                              setTextSize(value);
-                              setToast("Text size updated. Settings saved automatically.");
-                            }}
-                          >
-                            {label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                <Switch
-                  id="highContrast"
-                  label="High Contrast Mode"
-                  description="Makes text and buttons easier to see by increasing contrast"
-                  checked={highContrast}
-                  onChange={(next) => {
-                    setHighContrast(next);
-                    setToast("Contrast updated. Settings saved automatically.");
-                  }}
-                />
-
-                <Switch
-                  id="simpleLayout"
-                  label="Simplified Layout Mode"
-                  description="Shows only the most important information on each page"
-                  checked={simplifiedLayout}
-                  onChange={(next) => {
-                    setSimplifiedLayout(next);
-                    setToast("Layout mode updated. Settings saved automatically.");
-                  }}
-                />
-              </div>
-            </section>
-
-            <section className="section" aria-labelledby="reminderHeading">
-              <div className="sectionHeader" id="reminderHeading">
-                <span className="accentBar" aria-hidden="true" />
-                Reminder Support
-              </div>
-
-              <div className="sectionBody">
-                <div className="row">
-                  <div>
-                    <h3>Reminder Frequency</h3>
-                    <div className="help">How many times should reminders appear for each task?</div>
-                  </div>
-                  <div className="controls">
-                    <label className="sr-only" htmlFor="reminderFrequency">
-                      Reminder frequency
-                    </label>
-                    <select
-                      id="reminderFrequency"
-                      className="select"
-                      value={reminderFrequency}
-                      onChange={(e) => {
-                        setReminderFrequency(e.target.value as ReminderFrequency);
-                        setToast("Reminder frequency updated. Settings saved automatically.");
-                      }}
-                    >
-                      <option value="once">Once – Reminder appears once</option>
-                      <option value="twice">Twice – Reminder appears twice</option>
-                      <option value="three">Three times – Reminder appears three times</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div>
-                    <h3>Default Reminder Time</h3>
-                    <div className="help">What time should reminders appear by default?</div>
-                  </div>
-                  <div className="controls">
-                    <label className="sr-only" htmlFor="defaultReminderTime">
-                      Default reminder time
-                    </label>
-                    <select
-                      id="defaultReminderTime"
-                      className="select"
-                      value={defaultReminderTime}
-                      onChange={(e) => {
-                        setDefaultReminderTime(e.target.value as ReminderTime);
-                        setToast("Default reminder time updated. Settings saved automatically.");
-                      }}
-                    >
-                      <option value="08:00">8:00 AM</option>
-                      <option value="09:00">9:00 AM</option>
-                      <option value="10:00">10:00 AM</option>
-                      <option value="12:00">12:00 PM</option>
-                      <option value="15:00">3:00 PM</option>
-                    </select>
-                  </div>
-                </div>
-
-                <Switch
-                  id="confirmComplete"
-                  label="Show Confirmation After Completing Task"
-                  description="Ask for confirmation before marking tasks as complete to prevent mistakes"
-                  checked={confirmComplete}
-                  onChange={(next) => {
-                    setConfirmComplete(next);
-                    setToast("Confirmation setting updated. Settings saved automatically.");
-                  }}
-                />
-              </div>
-            </section>
-
-            <section className="section" aria-labelledby="supportHeading">
-              <div className="sectionHeader" id="supportHeading">
-                <span className="accentBar" aria-hidden="true" />
-                Support
-              </div>
-
-              <div className="sectionBody">
-                <div className="row">
-                  <div>
-                    <h3>Caregiver Contact</h3>
-                    <div className="help">Contact information for your primary caregiver or family member</div>
-                  </div>
-                  <div className="controls">
-                    <button
-                      type="button"
-                      className="btn"
-                      onClick={() => setToast("Edit caregiver contact (demo).")}
-                      aria-label="Edit caregiver contact"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </div>
-
-                <div style={{ padding: "0 0 14px" }}>
-                  <div className="card" role="group" aria-label="Caregiver contact card">
-                    <div className="contactInfo">
-                      <div className="avatar" aria-hidden="true">
-                        S
-                      </div>
-                      <div className="contactText">
-                        <div style={{ fontWeight: 900 }}>Sarah Miller</div>
-                        <div style={{ color: "var(--muted)", fontWeight: 700 }}>(555) 123-4567</div>
-                      </div>
-                    </div>
-                    <span className="badgeKey" aria-label="Primary caregiver">
-                      Primary
-                    </span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div>
-                    <h3>Reset All Filters</h3>
-                    <div className="help">Clear any active search or filter settings on the Tasks page</div>
-                  </div>
-                  <div className="controls">
-                    <button type="button" className="btn" onClick={resetTaskFilters}>
-                      Reset All Filters
-                    </button>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div>
-                    <h3>Restore Default Settings</h3>
-                    <div className="help">Reset all settings on this page back to their original values</div>
-                  </div>
-                  <div className="controls">
-                    <button type="button" className="btn" onClick={restoreDefaults} style={{ color: "var(--red)" }}>
-                      Restore Default Settings
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <div className="callout" role="note" aria-label="Autosave note">
-              <div aria-hidden="true" style={{ fontWeight: 900 }}>
-                i
-              </div>
-              <div>
-                <div style={{ fontWeight: 900 }}>Settings are saved automatically.</div>
-                <div style={{ color: "var(--muted)", marginTop: 2 }}>
-                  Changes take effect immediately and are saved as you make them.
-                </div>
-              </div>
-            </div>
-
-            {toast ? (
-              <div
-                ref={toastRef}
-                style={{
-                  marginTop: 14,
-                  maxWidth: 860,
-                  border: "1px solid var(--line)",
-                  borderRadius: 14,
-                  padding: "12px 14px",
-                  background: "#fff",
-                }}
-                role="status"
-                aria-live="polite"
-              >
-                <strong>Status:</strong> {toast}{" "}
-                <span style={{ color: "var(--muted)" }}>(Press Esc to dismiss)</span>
-              </div>
-            ) : null}
-          </main>
+      <div className="settingsContainer">
+        <div className="pageHeader">
+          <h1>Settings</h1>
+          <p>Adjust settings to make CareConnect work best for you</p>
         </div>
 
-        <footer aria-label="Footer status bar">
-          <div>
-            <strong>Current Date:</strong> Thursday, February 19, 2026
+        <section className="section" aria-labelledby="display-section-heading">
+          <div className="sectionTitleWrap">
+            <h2 id="display-section-heading">Display &amp; Simplicity</h2>
           </div>
-          <div>
-            <strong>Active Tasks:</strong> 5
+
+          <div className="card">
+            <div className="block">
+              <label className="fieldLabel">Text Size</label>
+              <p className="fieldHelp">Choose how large text appears throughout the application</p>
+              <div className="sizeRow" role="radiogroup" aria-label="Text size options">
+                {(['small', 'medium', 'large'] as const).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    role="radio"
+                    aria-checked={textSize === size}
+                    data-active={textSize === size}
+                    onClick={() => setTextSize(size)}
+                    className="sizeButton"
+                  >
+                    {size.charAt(0).toUpperCase() + size.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="block">
+              <Toggle
+                id="high-contrast-mode"
+                label="High Contrast Mode"
+                description="Makes text and buttons easier to see by increasing contrast"
+                checked={highContrastMode}
+                onChange={setHighContrastMode}
+              />
+            </div>
+
+            <div className="block">
+              <Toggle
+                id="simplified-layout"
+                label="Simplified Layout Mode"
+                description="Shows only the most important information on each page"
+                checked={simplifiedLayout}
+                onChange={setSimplifiedLayout}
+              />
+            </div>
           </div>
-          <div>
-            <strong>Next Task Due:</strong> Tomorrow at 2:00 PM
+        </section>
+
+        <section className="section" aria-labelledby="reminder-section-heading">
+          <div className="sectionTitleWrap">
+            <h2 id="reminder-section-heading">Reminder Support</h2>
           </div>
-          <div>Help is always available in the Help menu</div>
-        </footer>
+
+          <div className="card">
+            <div className="block">
+              <label htmlFor="reminder-frequency" className="fieldLabel">
+                Reminder Frequency
+              </label>
+              <p className="fieldHelp">How many times should reminders appear for each task?</p>
+              <select
+                id="reminder-frequency"
+                value={reminderFrequency}
+                onChange={(e) => setReminderFrequency(e.target.value)}
+                className="selectField"
+              >
+                <option value="once">Once - Single reminder only</option>
+                <option value="twice">Twice - Reminder appears twice</option>
+                <option value="until-completed">Until Completed - Keep reminding until task is done</option>
+              </select>
+            </div>
+
+            <div className="block">
+              <label htmlFor="default-reminder-time" className="fieldLabel">
+                Default Reminder Time
+              </label>
+              <p className="fieldHelp">What time should reminders appear by default?</p>
+              <select
+                id="default-reminder-time"
+                value={defaultReminderTime}
+                onChange={(e) => setDefaultReminderTime(e.target.value)}
+                className="selectField"
+              >
+                <option value="08:00">8:00 AM</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="12:00">12:00 PM (Noon)</option>
+                <option value="14:00">2:00 PM</option>
+                <option value="16:00">4:00 PM</option>
+                <option value="18:00">6:00 PM</option>
+              </select>
+            </div>
+
+            <div className="block">
+              <Toggle
+                id="confirm-complete"
+                label="Show Confirmation After Completing Task"
+                description="Ask for confirmation before marking tasks as complete to prevent mistakes"
+                checked={confirmComplete}
+                onChange={setConfirmComplete}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="section" aria-labelledby="support-section-heading">
+          <div className="sectionTitleWrap">
+            <h2 id="support-section-heading">Support</h2>
+          </div>
+
+          <div className="card">
+            <div className="block">
+              <div className="topRow">
+                <label className="fieldLabel" style={{ marginBottom: 0 }}>
+                  Caregiver Contact
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingCaregiver((prev) => !prev)}
+                  className="secondaryButton"
+                >
+                  {isEditingCaregiver ? 'Save' : 'Edit'}
+                </button>
+              </div>
+
+              <p className="fieldHelp">Contact information for your primary caregiver or family member</p>
+
+              {!isEditingCaregiver ? (
+                <div className="caregiverBox">
+                  <div className="caregiverRow">
+                    <div className="avatar">{caregiverName.charAt(0)}</div>
+                    <div>
+                      <p className="caregiverName">{caregiverName}</p>
+                      <div className="phoneRow">
+                        <PhoneIcon />
+                        <p className="phoneText">{caregiverPhone}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="editGrid">
+                  <div>
+                    <label htmlFor="caregiver-name" className="fieldLabel" style={{ fontSize: 14 }}>
+                      Name
+                    </label>
+                    <input
+                      id="caregiver-name"
+                      type="text"
+                      value={caregiverName}
+                      onChange={(e) => setCaregiverName(e.target.value)}
+                      className="inputField"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="caregiver-phone" className="fieldLabel" style={{ fontSize: 14 }}>
+                      Phone Number
+                    </label>
+                    <input
+                      id="caregiver-phone"
+                      type="tel"
+                      value={caregiverPhone}
+                      onChange={(e) => setCaregiverPhone(e.target.value)}
+                      className="inputField"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="block">
+              <label className="fieldLabel">Reset to Defaults</label>
+              <p className="fieldHelp">Clear any active search or filter settings on the Tasks page</p>
+              <button type="button" onClick={handleResetFilters} className="actionButton">
+                Reset to Defaults
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <div className="infoBox" role="note" aria-label="Settings autosave information">
+          <div style={{ color: 'var(--primary)', marginTop: 2 }}>
+            <InfoIcon />
+          </div>
+          <p className="infoText">
+            <strong>Settings are saved automatically.</strong> Changes take effect immediately and are saved as you
+            make them.
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
