@@ -68,7 +68,8 @@ describe("main process integration", () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./main.ts");
+    const mainModule = require("./main.ts") as { initializeMainProcess: () => void };
+    mainModule.initializeMainProcess();
 
     return {
       app,

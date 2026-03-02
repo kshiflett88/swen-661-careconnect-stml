@@ -21,7 +21,8 @@ describe("preload IPC integration", () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./preload.ts");
+    const preloadModule = require("./preload.ts") as { exposeCareconnect: () => void };
+    preloadModule.exposeCareconnect();
 
     expect(exposeInMainWorld).toHaveBeenCalledTimes(1);
     const [key, api] = exposeInMainWorld.mock.calls[0] as [string, {

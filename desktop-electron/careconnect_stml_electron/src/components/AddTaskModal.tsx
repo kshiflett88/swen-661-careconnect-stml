@@ -36,11 +36,7 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
     setPriority("medium");
     setShowValidation(false);
 
-    const timer = window.setTimeout(() => {
-      taskNameRef.current?.focus();
-    }, 100);
-
-    return () => window.clearTimeout(timer);
+    taskNameRef.current?.focus();
   }, [isOpen]);
 
   useEffect(() => {
@@ -65,7 +61,7 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
 
     const modal = modalRef.current;
     const focusableElements = modal.querySelectorAll<HTMLElement>(
-      "input, select, button, [tabindex]:not([tabindex='-1'])"
+      "#task-name, #task-description, #due-date, #due-time, #priority, .add-task-cancel, .add-task-save"
     );
 
     if (focusableElements.length === 0) {
@@ -171,7 +167,7 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
                 id="task-name"
                 value={taskName}
                 onChange={(event) => setTaskName(event.target.value)}
-                placeholder="Enter task name"
+                placeholder="Task title"
               />
             </div>
 
@@ -236,7 +232,7 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
               Cancel
             </button>
             <button type="submit" className="add-task-save">
-              Save Task
+              Save
             </button>
           </div>
         </form>

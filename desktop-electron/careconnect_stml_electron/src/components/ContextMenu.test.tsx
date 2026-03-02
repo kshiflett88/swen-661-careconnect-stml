@@ -16,9 +16,9 @@ describe("ContextMenu", () => {
     );
 
     expect(screen.getByRole("menu", { name: "Task quick actions" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Edit" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Edit task" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "Mark Complete" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Delete" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Delete task" })).toBeInTheDocument();
   });
 
   test("fires action callbacks", async () => {
@@ -38,9 +38,9 @@ describe("ContextMenu", () => {
       />
     );
 
-    await user.click(screen.getByRole("menuitem", { name: "Edit" }));
+    await user.click(screen.getByRole("menuitem", { name: "Edit task" }));
     await user.click(screen.getByRole("menuitem", { name: "Mark Complete" }));
-    await user.click(screen.getByRole("menuitem", { name: "Delete" }));
+    await user.click(screen.getByRole("menuitem", { name: "Delete task" }));
 
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onMarkComplete).toHaveBeenCalledTimes(1);
@@ -64,7 +64,7 @@ describe("ContextMenu", () => {
       </>
     );
 
-    fireEvent.mouseDown(screen.getByRole("menuitem", { name: "Edit" }));
+    fireEvent.mouseDown(screen.getByRole("menuitem", { name: "Edit task" }));
     expect(onClose).not.toHaveBeenCalled();
 
     fireEvent.mouseDown(screen.getByTestId("outside-target"));
@@ -86,9 +86,9 @@ describe("ContextMenu", () => {
       />
     );
 
-    const editItem = screen.getByRole("menuitem", { name: "Edit" });
+    const editItem = screen.getByRole("menuitem", { name: "Edit task" });
     const markCompleteItem = screen.getByRole("menuitem", { name: "Mark Complete" });
-    const deleteItem = screen.getByRole("menuitem", { name: "Delete" });
+    const deleteItem = screen.getByRole("menuitem", { name: "Delete task" });
 
     expect(editItem).toHaveFocus();
 

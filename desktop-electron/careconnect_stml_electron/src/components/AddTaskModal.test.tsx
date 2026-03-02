@@ -14,7 +14,7 @@ describe("AddTaskModal", () => {
 
     render(<AddTaskModal isOpen={true} onCancel={jest.fn()} onSave={onSave} />);
 
-    await user.click(screen.getByRole("button", { name: "Save Task" }));
+    await user.click(screen.getByRole("button", { name: /^save$/i }));
 
     expect(screen.getByText("Please select a due date and time.")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
@@ -32,7 +32,7 @@ describe("AddTaskModal", () => {
     await user.type(screen.getByLabelText("Due Time"), "09:30");
     await user.selectOptions(screen.getByLabelText("Priority"), "high");
 
-    await user.click(screen.getByRole("button", { name: "Save Task" }));
+    await user.click(screen.getByRole("button", { name: /^save$/i }));
 
     expect(onSave).toHaveBeenCalledWith({
       title: "Refill prescription",

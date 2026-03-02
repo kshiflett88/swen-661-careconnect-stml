@@ -1,10 +1,14 @@
 import { useEffect, useRef } from "react";
-import type { Task } from "../types";
 import "./DeleteTaskConfirmModal.css";
+
+interface DeleteTask {
+  id: string;
+  title: string;
+}
 
 interface DeleteTaskConfirmModalProps {
   isOpen: boolean;
-  task: Task | null;
+  task: DeleteTask | null;
   onCancel: () => void;
   onConfirmDelete: (taskId: string) => void;
 }

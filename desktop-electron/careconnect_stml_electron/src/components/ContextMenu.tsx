@@ -89,7 +89,7 @@ export function ContextMenu({ x, y, onEdit, onMarkComplete, onDelete, onClose }:
             <path d="M12 8L16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </span>
-        <span>Edit</span>
+        <span>Edit task</span>
       </button>
 
       <button type="button" className="task-context-menu-item" onClick={onMarkComplete} role="menuitem">
@@ -112,7 +112,7 @@ export function ContextMenu({ x, y, onEdit, onMarkComplete, onDelete, onClose }:
             <path d="M7 6L8 20H16L17 6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
           </svg>
         </span>
-        <span>Delete</span>
+        <span>Delete task</span>
       </button>
     </div>
   );

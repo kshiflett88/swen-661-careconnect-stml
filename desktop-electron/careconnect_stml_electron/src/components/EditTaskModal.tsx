@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { Task } from "../App";
 import "./EditTaskModal.css";
+
+interface EditTask {
+  id: string;
+  title: string;
+  description?: string;
+  dueDateTime: Date;
+  priority: "high" | "medium" | "low";
+}
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -16,7 +23,7 @@ interface EditTaskModalProps {
     }
   ) => void;
   onDelete: (taskId: string) => void;
-  task: Task | null;
+  task: EditTask | null;
 }
 
 export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: EditTaskModalProps) {
@@ -36,7 +43,7 @@ export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: Edit
     }
 
     setTaskName(task.title);
-    setDescription(task.description);
+    setDescription(task.description ?? "");
 
     const date = new Date(task.dueDateTime);
     const year = date.getFullYear();
@@ -181,6 +188,7 @@ export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: Edit
                 value={taskName}
                 onChange={(event) => setTaskName(event.target.value)}
                 placeholder="Enter task name"
+                required
               />
             </div>
 
@@ -204,6 +212,7 @@ export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: Edit
                   setDueDate(event.target.value);
                   setShowValidation(false);
                 }}
+                required
               />
             </div>
 
@@ -217,6 +226,7 @@ export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: Edit
                   setDueTime(event.target.value);
                   setShowValidation(false);
                 }}
+                required
               />
             </div>
 

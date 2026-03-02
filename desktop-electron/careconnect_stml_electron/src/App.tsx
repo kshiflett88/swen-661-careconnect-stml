@@ -9,9 +9,8 @@ import { EmergencyModal } from "./components/EmergencyModal";
 import { AddTaskModal } from "./components/AddTaskModal";
 import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
-import WelcomeScreen from "./screens/WelcomeScreen";
-import SignInHelpScreen from "./screens/SignInHelpScreen";
-import type { ScreenId } from "./types";
+import { SignInView } from "./components/SignInView";
+import { SignInHelpView } from "./components/SignInHelpView";
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -26,7 +25,10 @@ export interface Task {
 }
 
 export default function App() {
-  const [entryScreen, setEntryScreen] = useState<"welcome" | "signin-help" | "app">("welcome");
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [authStep, setAuthStep] = useState<"signin" | "help">("signin");
+  const [showContactCaregiverConfirm, setShowContactCaregiverConfirm] = useState(false);
+  const [caregiverRequestSent, setCaregiverRequestSent] = useState(false);
   const [activeNav, setActiveNav] = useState<NavPage>("Dashboard");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCompleteTaskId, setPendingCompleteTaskId] = useState<string | null>(null);
@@ -70,27 +72,47 @@ export default function App() {
     },
   ]);
 
-  const handleEntryNavigation = (screen: ScreenId) => {
-    if (screen === "dashboard") {
-      setActiveNav("Dashboard");
-      setEntryScreen("app");
-      return;
-    }
-
-    if (screen === "signin-help") {
-      setEntryScreen("signin-help");
-      return;
-    }
-
-    setEntryScreen("welcome");
-  };
-
-  if (entryScreen === "welcome") {
-    return <WelcomeScreen onGo={handleEntryNavigation} />;
-  }
-
-  if (entryScreen === "signin-help") {
-    return <SignInHelpScreen onGo={handleEntryNavigation} />;
+  if (!isSignedIn) {
+    return (
+      <>
+        <SignInView
+          onSignIn={() => setIsSignedIn(true)}
+          onNeedHelp={() => {
+            setAuthStep("help");
+            setCaregiverRequestSent(false);
+          }}
+        />
+        {authStep === "help" && (
+          <SignInHelpView
+            onResetAccess={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onClose={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
+            caregiverRequestSent={caregiverRequestSent}
+          />
+        )}
+        <ConfirmDialog
+          isOpen={showContactCaregiverConfirm}
+          title="Contact caregiver?"
+          message="This will send a caregiver contact request."
+          confirmText="Contact"
+          cancelText="Cancel"
+          variant="primary"
+          onConfirm={() => {
+            setShowContactCaregiverConfirm(false);
+            setCaregiverRequestSent(true);
+          }}
+          onCancel={() => setShowContactCaregiverConfirm(false)}
+        />
+      </>
+    );
   }
 
   const handleMarkComplete = (taskId: string) => {
@@ -204,9 +226,33 @@ export default function App() {
     setEditingTaskId(null);
   };
 
+  const handleQuickAddTask = (taskData: { title: string; dueDate?: string; dueTime?: string }) => {
+    const now = new Date();
+    const fallbackDate = now.toISOString().slice(0, 10);
+    const fallbackTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    const newTask: Task = {
+      id: String(Date.now()),
+      title: taskData.title,
+      description: "",
+      dueDateTime: new Date(`${taskData.dueDate ?? fallbackDate}T${taskData.dueTime ?? fallbackTime}`),
+      priority: "medium",
+      status: "pending",
+    };
+
+    setTasks((prev) => [...prev, newTask]);
+  };
+
   let content: React.ReactNode;
   if (activeNav === "Dashboard") {
-    content = <DashboardView tasks={tasks} onOpenTasks={() => setActiveNav("Tasks")} />;
+    content = (
+      <DashboardView
+        tasks={tasks}
+        onOpenTasks={() => setActiveNav("Tasks")}
+        onMarkComplete={handleMarkComplete}
+        onQuickAddTask={handleQuickAddTask}
+      />
+    );
   } else if (activeNav === "Tasks") {
     content = (
       <TasksView
