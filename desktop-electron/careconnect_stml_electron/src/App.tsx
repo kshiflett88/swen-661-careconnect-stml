@@ -2,7 +2,7 @@ import { useState, type MouseEvent } from "react";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { DashboardView } from "./components/DashboardView";
 import { TasksView } from "./components/TasksView";
-import { SettingsView } from "./components/SettingsView";
+import SettingsView from "./components/SettingsView";
 import { ContactsView } from "./components/ContactsView";
 import { ContextMenu } from "./components/ContextMenu";
 import { EmergencyModal } from "./components/EmergencyModal";
