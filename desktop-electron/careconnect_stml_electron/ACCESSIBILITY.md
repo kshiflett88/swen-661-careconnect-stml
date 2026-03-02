@@ -90,11 +90,11 @@ All screens and components are designed with two primary goals:
 ## STML-Specific Features
 
 ### 1. Persistent Orientation Cues
-- **Date/time always visible** at top of dashboard
-- Updates every minute
-- Located in consistent position
+- **Date and task summary are always visible** in the persistent footer
+- Dashboard has a clear page-orientation banner: "You are on: Dashboard"
+- Orientation information remains in a consistent location across views
 
-**Code location**: `src/screens/DashboardScreen.tsx` - Header section
+**Code location**: `src/App.tsx` (footer summary) and `src/components/DashboardView.tsx` (orientation banner)
 
 ### 2. Clear Visual Hierarchy
 - Next task prominently highlighted with yellow border
@@ -108,7 +108,7 @@ All screens and components are designed with two primary goals:
 - Current page clearly indicated
 - Emergency SOS button always accessible
 
-**Code location**: `src/screens/DashboardScreen.tsx` - Sidebar nav
+**Code location**: `src/App.tsx` and `src/AppShell.css` (sidebar/nav shell)
 
 ### 4. Reduced Cognitive Load
 - Single primary action per screen
@@ -226,8 +226,8 @@ STML Features:
 
 ## Screen Documentation
 
-### WelcomeScreen
-**File**: `src/screens/WelcomeScreen.tsx`
+### SignInView
+**File**: `src/components/SignInView.tsx`
 
 Key Features:
 - Centered card layout reduces cognitive load
@@ -236,18 +236,18 @@ Key Features:
 - High contrast logo and text
 - Semantic heading hierarchy
 
-### DashboardScreen
-**File**: `src/screens/DashboardScreen.tsx`
+### DashboardView
+**File**: `src/components/DashboardView.tsx`
 
 Key Features:
-- Persistent date/time orientation
+- Clear orientation cue at top of dashboard
 - Next task prominently highlighted
-- Sidebar navigation with large targets
+- Upcoming tasks grouped directly beneath next task
+- Health log card with simple mood selection and optional note
 - Quick-add form for common tasks
-- Emergency SOS always accessible
 
-### TaskListScreen
-**File**: `src/screens/TaskListScreen.tsx`
+### TasksView
+**File**: `src/components/TasksView.tsx`
 
 Key Features:
 - List + detail panel layout
@@ -257,6 +257,51 @@ Key Features:
 - Back navigation always visible
 
 ## Testing Checklist
+
+## Assignment Enforcement Checklist (Desktop)
+
+This section maps directly to the desktop accessibility assignment requirements.
+
+### 1) Keyboard-only navigation (required)
+- Launch app and do not use mouse.
+- Use `Tab` and `Shift+Tab` to move through all interactive controls on:
+	- Sign in screen (`SignInView`)
+	- Sign in help screen (`SignInHelpView`)
+	- Contact caregiver confirmation (`ConfirmDialog`)
+- Use `Enter` and `Space` to activate controls.
+- Use `Escape` to dismiss confirmation dialog.
+- Verify no keyboard trap exists and focus order is logical.
+
+### 2) Focus indicators (required)
+- While tabbing, confirm every interactive element shows a visible focus indicator.
+- Verify focus outline contrast is clearly visible against background.
+- Confirm focus remains visible in modal dialogs and after dialog closes.
+
+### 3) Screen reader support (required)
+- Windows: NVDA
+- macOS: VoiceOver
+- Validate:
+	- Page landmarks (`main`) are announced.
+	- Buttons and links announce meaningful names.
+	- Dialog announces as `alertdialog` with title and message.
+	- Action labels are clear (e.g., Contact caregiver, Back to sign in).
+
+### 4) High contrast / increased contrast (required)
+- Windows: enable High Contrast mode.
+- macOS: enable Increase Contrast.
+- Validate:
+	- Text remains readable and controls are still distinguishable.
+	- Focus indicators remain visible.
+	- Primary vs secondary actions remain perceivable.
+
+### Automation status in this repo
+- Automated with Jest + React Testing Library:
+	- Keyboard activation checks for sign-in/help interactions.
+	- ARIA/role assertions for dialog and major controls.
+	- IPC wiring tests and window management tests for Electron main/preload.
+- Manual required:
+	- NVDA/VoiceOver validation.
+	- OS-level high contrast mode verification.
 
 ### Keyboard Navigation
 - [ ] Can tab through all interactive elements

@@ -9,9 +9,9 @@ import { EmergencyModal } from "./components/EmergencyModal";
 import { AddTaskModal } from "./components/AddTaskModal";
 import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
-import WelcomeScreen from "./screens/WelcomeScreen";
-import SignInHelpScreen from "./screens/SignInHelpScreen";
-import type { ScreenId } from "./types";
+import { SignInView } from "./components/SignInView";
+import { SignInHelpView } from "./components/SignInHelpView";
+import { typography } from "./constants/accessibility";
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -26,7 +26,10 @@ export interface Task {
 }
 
 export default function App() {
-  const [entryScreen, setEntryScreen] = useState<"welcome" | "signin-help" | "app">("welcome");
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [authStep, setAuthStep] = useState<"signin" | "help">("signin");
+  const [showContactCaregiverConfirm, setShowContactCaregiverConfirm] = useState(false);
+  const [caregiverRequestSent, setCaregiverRequestSent] = useState(false);
   const [activeNav, setActiveNav] = useState<NavPage>("Dashboard");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCompleteTaskId, setPendingCompleteTaskId] = useState<string | null>(null);
@@ -69,29 +72,6 @@ export default function App() {
       status: "pending",
     },
   ]);
-
-  const handleEntryNavigation = (screen: ScreenId) => {
-    if (screen === "dashboard") {
-      setActiveNav("Dashboard");
-      setEntryScreen("app");
-      return;
-    }
-
-    if (screen === "signin-help") {
-      setEntryScreen("signin-help");
-      return;
-    }
-
-    setEntryScreen("welcome");
-  };
-
-  if (entryScreen === "welcome") {
-    return <WelcomeScreen onGo={handleEntryNavigation} />;
-  }
-
-  if (entryScreen === "signin-help") {
-    return <SignInHelpScreen onGo={handleEntryNavigation} />;
-  }
 
   const handleMarkComplete = (taskId: string) => {
     setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: "completed" } : task)));
@@ -196,6 +176,49 @@ export default function App() {
     setEditingTaskId(null);
   };
 
+  if (!isSignedIn) {
+    return (
+      <>
+        <SignInView
+          onSignIn={() => setIsSignedIn(true)}
+          onNeedHelp={() => {
+            setAuthStep("help");
+            setCaregiverRequestSent(false);
+          }}
+        />
+        {authStep === "help" && (
+          <SignInHelpView
+            onResetAccess={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onClose={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
+            caregiverRequestSent={caregiverRequestSent}
+          />
+        )}
+        <ConfirmDialog
+          isOpen={showContactCaregiverConfirm}
+          title="Contact caregiver?"
+          message="This will send a caregiver contact request."
+          confirmText="Contact"
+          cancelText="Cancel"
+          variant="primary"
+          onConfirm={() => {
+            setShowContactCaregiverConfirm(false);
+            setCaregiverRequestSent(true);
+          }}
+          onCancel={() => setShowContactCaregiverConfirm(false)}
+        />
+      </>
+    );
+  }
+
   let content: React.ReactNode;
   if (activeNav === "Dashboard") {
     content = <DashboardView tasks={tasks} onOpenTasks={() => setActiveNav("Tasks")} />;
@@ -224,6 +247,22 @@ export default function App() {
   } else {
     content = <SettingsView />;
   }
+
+  const activeTasksCount = tasks.filter((task) => task.status !== "completed").length;
+  const nextPendingTask = [...tasks]
+    .filter((task) => task.status !== "completed")
+    .sort((first, second) => first.dueDateTime.getTime() - second.dueDateTime.getTime())[0];
+
+  const footerDate = new Date().toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const nextTaskDue = nextPendingTask
+    ? `${nextPendingTask.dueDateTime.toLocaleDateString([], { month: "long", day: "numeric" })} at ${nextPendingTask.dueDateTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+    : "No upcoming tasks";
 
   return (
     <div className="app-shell">
@@ -270,8 +309,16 @@ export default function App() {
         <main className="app-content">{content}</main>
       </div>
 
-      <footer className="app-footer">
-        Active tasks: {tasks.filter((task) => task.status !== "completed").length}
+      <footer className="app-footer" style={{ fontFamily: typography.fontFamilyBase }}>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Current Date:</strong> {footerDate}
+        </span>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Active Tasks:</strong> {activeTasksCount}
+        </span>
+        <span style={{ fontFamily: typography.fontFamilyBase }}>
+          <strong>Next Task Due:</strong> {nextTaskDue}
+        </span>
       </footer>
 
       <ConfirmDialog

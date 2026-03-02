@@ -33,7 +33,9 @@ export function TasksView({
 
     if (filterMode === "search") {
       const query = searchQuery.trim().toLowerCase();
-      return task.title.toLowerCase().includes(query) || task.description.toLowerCase().includes(query);
+      const titleLower = task.title.toLowerCase();
+      const descriptionLower = (task.description ?? "").toLowerCase();
+      return titleLower.includes(query) || descriptionLower.includes(query);
     }
 
     return true;
