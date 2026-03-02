@@ -187,7 +187,7 @@ jest.mock("../components/EmergencyModal", () => ({
 }));
 
 jest.mock("../components/ContactsView", () => ({ ContactsView: () => <div>mock-contacts</div> }));
-jest.mock("../components/SettingsView", () => ({ SettingsView: () => <div>mock-settings</div> }));
+jest.mock("../components/SettingsView", () => ({ __esModule: true, default: () => <div>mock-settings</div> }));
 
 describe("App state flow coverage", () => {
   test("covers sign-in help and caregiver confirm branches", () => {

@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { DashboardView } from "./components/DashboardView";
 import { TasksView } from "./components/TasksView";
@@ -43,6 +43,7 @@ export default function App() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [showDeleteTaskConfirmModal, setShowDeleteTaskConfirmModal] = useState(false);
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [textScalePercent, setTextScalePercent] = useState(100);
 
   const [tasks, setTasks] = useState<Task[]>([
     {
@@ -71,6 +72,59 @@ export default function App() {
       status: "pending",
     },
   ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.careconnect) {
+      return;
+    }
+
+    const unsubscribeNavigate = window.careconnect.onNavigate((route) => {
+      if (!isSignedIn) {
+        return;
+      }
+
+      if (route === "dashboard") {
+        setActiveNav("Dashboard");
+        return;
+      }
+
+      if (route === "task-list") {
+        setActiveNav("Tasks");
+        return;
+      }
+
+      if (route === "contacts") {
+        setActiveNav("Contacts");
+        return;
+      }
+
+      if (route === "emergency") {
+        setEmergencyConfirmed(false);
+        setShowEmergencyModal(true);
+        return;
+      }
+
+    });
+
+    const unsubscribeTextScale = window.careconnect.onTextScale((action) => {
+      setTextScalePercent((prev) => {
+        if (action === "reset") {
+          return 100;
+        }
+
+        if (action === "up") {
+          return Math.min(prev + 10, 150);
+        }
+
+        return Math.max(prev - 10, 80);
+      });
+    });
+
+    return () => {
+      unsubscribeNavigate();
+      unsubscribeTextScale();
+    };
+  }, [isSignedIn]);
 
   if (!isSignedIn) {
     return (
@@ -327,7 +381,7 @@ export default function App() {
   })();
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" style={{ zoom: textScalePercent / 100 }}>
       <header className="app-toolbar">
         <button className="toolbar-button toolbar-primary toolbar-with-icon" onClick={() => setShowAddTaskModal(true)}>
           <svg

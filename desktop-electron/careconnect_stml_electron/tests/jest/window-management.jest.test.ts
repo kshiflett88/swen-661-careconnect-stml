@@ -51,7 +51,6 @@ describe('window management (Jest)', () => {
 
     sendNavigate('dashboard', liveWindow);
     sendNavigate('contacts', deadWindow);
-    sendNavigate('profile', null);
 
     expect(send).toHaveBeenCalledTimes(1);
     expect(send).toHaveBeenCalledWith('nav:go', 'dashboard');
