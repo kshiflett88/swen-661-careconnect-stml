@@ -1,0 +1,57 @@
+.task-context-menu {
+  position: fixed;
+  z-index: 1300;
+  min-width: 180px;
+  background: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  padding: 4px 0;
+}
+
+.task-context-menu-item {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #333333;
+  cursor: pointer;
+  text-align: left;
+}
+
+.task-context-menu-item:hover,
+.task-context-menu-item:focus-visible {
+  background: #e6f2ff;
+  outline: none;
+}
+
+.task-context-menu-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4d4d4d;
+}
+
+.task-context-menu-separator {
+  height: 1px;
+  background: #d0d0d0;
+  margin: 2px 0;
+}
+
+.task-context-menu-item.destructive,
+.task-context-menu-item.destructive .task-context-menu-icon {
+  color: #cc0000;
+}
+
+.task-context-menu-item.destructive:hover,
+.task-context-menu-item.destructive:focus-visible {
+  background: #ffe6e6;
+}

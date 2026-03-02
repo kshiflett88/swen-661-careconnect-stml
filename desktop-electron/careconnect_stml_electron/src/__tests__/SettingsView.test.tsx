@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import SettingsView from '../components/SettingsView';
 
 describe('SettingsView', () => {
@@ -32,13 +32,13 @@ describe('SettingsView', () => {
     const highContrast = screen.getByRole('switch', { name: /high contrast mode/i });
     const simplified = screen.getByRole('switch', { name: /simplified layout mode/i });
 
-    expect(highContrast).toHaveAttribute('aria-checked', 'true');
+    expect(highContrast).toHaveAttribute('aria-checked', 'false');
     expect(simplified).toHaveAttribute('aria-checked', 'false');
 
     fireEvent.click(highContrast);
     fireEvent.click(simplified);
 
-    expect(highContrast).toHaveAttribute('aria-checked', 'false');
+    expect(highContrast).toHaveAttribute('aria-checked', 'true');
     expect(simplified).toHaveAttribute('aria-checked', 'true');
   });
 
@@ -60,16 +60,18 @@ describe('SettingsView', () => {
   });
 
   test('reset to defaults sets medium text size and turns all toggles off', () => {
-    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
-
     render(<SettingsView />);
 
     fireEvent.click(screen.getByRole('radio', { name: 'Large' }));
     fireEvent.click(screen.getByRole('switch', { name: /simplified layout mode/i }));
 
     fireEvent.click(screen.getByRole('button', { name: /reset to defaults/i }));
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText('This will reset all settings to their default values. Continue?')).toBeInTheDocument();
 
-    expect(confirmSpy).toHaveBeenCalledWith('This will reset all settings to their default values. Continue?');
+    fireEvent.click(within(dialog).getByRole('button', { name: /reset to defaults/i }));
+
     expect(screen.getByRole('radio', { name: 'Medium' })).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByRole('switch', { name: /high contrast mode/i })).toHaveAttribute('aria-checked', 'false');
     expect(screen.getByRole('switch', { name: /simplified layout mode/i })).toHaveAttribute('aria-checked', 'false');
@@ -77,7 +79,5 @@ describe('SettingsView', () => {
       'aria-checked',
       'false'
     );
-
-    confirmSpy.mockRestore();
   });
 });

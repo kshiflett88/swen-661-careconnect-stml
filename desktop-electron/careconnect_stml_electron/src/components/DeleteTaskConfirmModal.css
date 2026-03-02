@@ -1,0 +1,150 @@
+.delete-task-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.5);
+}
+
+.delete-task-confirm-modal {
+  width: min(520px, calc(100vw - 1.5rem));
+  border-radius: 10px;
+  border: 1px solid #b8bfc9;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(16, 24, 40, 0.28);
+  overflow: hidden;
+}
+
+.delete-task-confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 84px;
+  padding: 0 1.35rem;
+  border-bottom: 1px solid #bfc5cf;
+}
+
+.delete-task-confirm-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.delete-task-confirm-warning-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #dc0000;
+}
+
+.delete-task-confirm-warning-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: #ffffff;
+}
+
+.delete-task-confirm-header h2 {
+  margin: 0;
+  color: #1f2328;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.delete-task-confirm-close {
+  border: none;
+  background: transparent;
+  color: #70757f;
+  font-size: 2rem;
+  line-height: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.delete-task-confirm-close:hover {
+  color: #373b44;
+  background: #f3f4f6;
+}
+
+.delete-task-confirm-close:focus-visible,
+.delete-task-confirm-cancel:focus-visible,
+.delete-task-confirm-delete:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.delete-task-confirm-body {
+  padding: 1.8rem 1.35rem 2rem;
+}
+
+#delete-task-description {
+  margin: 0;
+  color: #2f333b;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.delete-task-confirm-task-box {
+  margin-top: 1.45rem;
+  border-radius: 4px;
+  border: 1px solid #c4c8cf;
+  background: #f4f5f7;
+  padding: 1.2rem 1.25rem;
+}
+
+.delete-task-confirm-task-name {
+  margin: 0;
+  color: #5b6068;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.delete-task-confirm-actions {
+  margin-top: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  padding: 1rem 1.35rem 1.35rem;
+  border-top: 1px solid #bfc5cf;
+  background: #f8f8f8;
+}
+
+.delete-task-confirm-cancel,
+.delete-task-confirm-delete {
+  min-width: 134px;
+  height: 50px;
+  border-radius: 8px;
+  padding: 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-task-confirm-cancel {
+  border: 1px solid #c6ccd5;
+  background: #ffffff;
+  color: #1f2328;
+}
+
+.delete-task-confirm-cancel:hover {
+  background: #f6f7f8;
+}
+
+.delete-task-confirm-delete {
+  border: 1px solid #dc0000;
+  background: #dc0000;
+  color: #ffffff;
+}
+
+.delete-task-confirm-delete:hover {
+  background: #b80000;
+}

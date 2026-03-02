@@ -1,9 +1,18 @@
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
+
+function getElectronRefs() {
+  const electron = require("electron");
+  return {
+    app: electron.app,
+    BrowserWindow: electron.BrowserWindow,
+    Menu: electron.Menu,
+    ipcMain: electron.ipcMain,
+  };
+}
 
 let win: any = null;
 
-export type Route = "dashboard" | "task-list" | "health-log" | "contacts" | "profile" | "emergency";
+export type Route = "dashboard" | "task-list" | "contacts" | "emergency";
 
 export function getDevServerUrl(env: NodeJS.ProcessEnv = process.env): string {
   return env.VITE_DEV_SERVER_URL || "http://localhost:4173";
@@ -22,6 +31,7 @@ export function createWindow(
     env?: NodeJS.ProcessEnv;
   } = {}
 ) {
+  const { app, BrowserWindow } = getElectronRefs();
   const appRef = options.appRef ?? app;
   const BrowserWindowRef = options.BrowserWindowRef ?? BrowserWindow;
   const pathRef = options.pathRef ?? path;
@@ -62,6 +72,7 @@ export function buildMenu(
     targetWindow?: any;
   } = {}
 ) {
+  const { app, Menu } = getElectronRefs();
   const appRef = options.appRef ?? app;
   const MenuRef = options.MenuRef ?? Menu;
   const platform = options.platform ?? process.platform;
@@ -97,19 +108,9 @@ const template: any[] = [
           click: () => sendNavigate("task-list", targetWindow),
         },
         {
-          label: "Health Log",
-          accelerator: isMac ? "Cmd+3" : "Ctrl+3",
-          click: () => sendNavigate("health-log", targetWindow),
-        },
-        {
           label: "Contacts",
-          accelerator: isMac ? "Cmd+4" : "Ctrl+4",
+          accelerator: isMac ? "Cmd+3" : "Ctrl+3",
           click: () => sendNavigate("contacts", targetWindow),
-        },
-        {
-          label: "Profile",
-          accelerator: isMac ? "Cmd+5" : "Ctrl+5",
-          click: () => sendNavigate("profile", targetWindow),
         },
         { type: "separator" },
         {
@@ -159,8 +160,8 @@ const template: any[] = [
 }
 
 export function registerIpcHandlers(
-  ipcMainRef: any = ipcMain,
-  appRef: any = app,
+  ipcMainRef: any = getElectronRefs().ipcMain,
+  appRef: any = getElectronRefs().app,
   nowProvider: () => Date = () => new Date()
 ) {
   ipcMainRef.handle("system:getStatus", () => {
@@ -179,6 +180,7 @@ export function registerAppLifecycle(
     dirname?: string;
   } = {}
 ) {
+  const { app, BrowserWindow } = getElectronRefs();
   const appRef = options.appRef ?? app;
   const BrowserWindowRef = options.BrowserWindowRef ?? BrowserWindow;
   const platform = options.platform ?? process.platform;

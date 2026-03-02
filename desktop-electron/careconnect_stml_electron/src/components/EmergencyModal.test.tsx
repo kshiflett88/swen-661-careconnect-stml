@@ -1,7 +1,5 @@
-// src/components/__tests__/EmergencyModal.test.tsx
-import { describe, expect, test, jest} from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { EmergencyModal } from "../EmergencyModal";
+import { EmergencyModal } from "./EmergencyModal";
 
 describe("EmergencyModal", () => {
   test("does not render when closed", () => {

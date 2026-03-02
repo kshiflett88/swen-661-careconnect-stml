@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-type Route = "dashboard" | "task-list" | "health-log" | "contacts" | "profile" | "emergency";
+type Route = "dashboard" | "task-list" | "contacts" | "emergency";
 
 export function createCareconnectApi(ipcRendererRef: any = ipcRenderer) {
   return {

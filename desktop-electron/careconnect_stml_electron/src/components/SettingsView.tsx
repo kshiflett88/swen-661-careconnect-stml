@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ContactActionModal } from './ContactActionModal';
 
 type TextSize = 'small' | 'medium' | 'large';
 
@@ -453,7 +454,7 @@ function Toggle({ id, label, description, checked, onChange }: ToggleProps) {
 
 export default function SettingsView() {
   const [textSize, setTextSize] = useState<TextSize>('medium');
-  const [highContrastMode, setHighContrastMode] = useState(true);
+  const [highContrastMode, setHighContrastMode] = useState(false);
   const [simplifiedLayout, setSimplifiedLayout] = useState(false);
   const [reminderFrequency, setReminderFrequency] = useState('twice');
   const [defaultReminderTime, setDefaultReminderTime] = useState('09:00');
@@ -461,14 +462,18 @@ export default function SettingsView() {
   const [caregiverName, setCaregiverName] = useState('Sarah Miller');
   const [caregiverPhone, setCaregiverPhone] = useState('(555) 123-4567');
   const [isEditingCaregiver, setIsEditingCaregiver] = useState(false);
+  const [showResetDefaultsModal, setShowResetDefaultsModal] = useState(false);
 
   const handleResetFilters = () => {
-    if (window.confirm('This will reset all settings to their default values. Continue?')) {
-      setTextSize('medium');
-      setHighContrastMode(false);
-      setSimplifiedLayout(false);
-      setConfirmComplete(false);
-    }
+    setShowResetDefaultsModal(true);
+  };
+
+  const handleConfirmResetDefaults = () => {
+    setTextSize('medium');
+    setHighContrastMode(false);
+    setSimplifiedLayout(false);
+    setConfirmComplete(false);
+    setShowResetDefaultsModal(false);
   };
 
   const rootClassName = [
@@ -679,6 +684,18 @@ export default function SettingsView() {
           </p>
         </div>
       </div>
+
+      <ContactActionModal
+        isOpen={showResetDefaultsModal}
+        title="Reset to Defaults"
+        description="This will reset all settings to their default values. Continue?"
+        contextText="Display, contrast, and simplified layout settings will be reset."
+        confirmLabel="Reset to Defaults"
+        variant="danger"
+        icon="alert"
+        onCancel={() => setShowResetDefaultsModal(false)}
+        onConfirm={handleConfirmResetDefaults}
+      />
     </div>
   );
 }

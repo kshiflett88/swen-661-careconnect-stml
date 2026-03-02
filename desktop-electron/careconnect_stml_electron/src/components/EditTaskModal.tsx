@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import "./EditTaskModal.css";
 
-interface EditableTask {
+interface EditTask {
   id: string;
   title: string;
+  description?: string;
   dueDateTime: Date;
   priority: "high" | "medium" | "low";
 }
@@ -14,159 +16,260 @@ interface EditTaskModalProps {
     taskId: string,
     taskData: {
       title: string;
+      description: string;
       dueDate: string;
       dueTime: string;
       priority: "high" | "medium" | "low";
     }
   ) => void;
   onDelete: (taskId: string) => void;
-  task: EditableTask | null;
+  task: EditTask | null;
 }
 
 export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: EditTaskModalProps) {
-  const [title, setTitle] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [dueTime, setDueTime] = useState("09:00");
+  const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const titleInputRef = useRef<HTMLInputElement | null>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
+
+  const taskNameRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!task) {
+    if (!isOpen || !task) {
       return;
     }
-    setTitle(task.title);
-    setDueDate(task.dueDateTime.toISOString().slice(0, 10));
-    setDueTime(task.dueDateTime.toTimeString().slice(0, 5));
+
+    setTaskName(task.title);
+    setDescription(task.description ?? "");
+
+    const date = new Date(task.dueDateTime);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    setDueDate(`${year}-${month}-${day}`);
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    setDueTime(`${hours}:${minutes}`);
+
     setPriority(task.priority);
-  }, [task]);
+    setShowValidation(false);
+
+    const timer = window.setTimeout(() => {
+      taskNameRef.current?.focus();
+    }, 100);
+
+    return () => window.clearTimeout(timer);
+  }, [isOpen, task]);
 
   useEffect(() => {
     if (!isOpen) {
-      if (previouslyFocusedElementRef.current) {
-        previouslyFocusedElementRef.current.focus();
-      }
       return;
     }
 
-    previouslyFocusedElementRef.current = document.activeElement as HTMLElement;
-    titleInputRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        event.preventDefault();
         onCancel();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onCancel]);
+
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) {
+      return;
+    }
+
+    const modal = modalRef.current;
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+      "input, select, button, [tabindex]:not([tabindex='-1'])"
+    );
+
+    if (focusableElements.length === 0) {
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") {
         return;
       }
 
-      if (event.key !== "Tab" || !dialogRef.current) {
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
         return;
       }
 
-      const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-
-      if (focusableElements.length === 0) {
-        return;
-      }
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (event.shiftKey && document.activeElement === firstElement) {
-        event.preventDefault();
-        lastElement.focus();
-      } else if (!event.shiftKey && document.activeElement === lastElement) {
+      if (document.activeElement === lastElement) {
         event.preventDefault();
         firstElement.focus();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onCancel]);
+    modal.addEventListener("keydown", handleTab);
+    return () => modal.removeEventListener("keydown", handleTab);
+  }, [isOpen]);
 
   if (!isOpen || !task) {
     return null;
   }
 
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!dueDate || !dueTime) {
+      setShowValidation(true);
+      return;
+    }
+
+    const finalTaskName = taskName.trim() || "Untitled Task";
+    onSave(task.id, {
+      title: finalTaskName,
+      description: description.trim(),
+      dueDate,
+      dueTime,
+      priority,
+    });
+
+    setShowValidation(false);
+  };
+
+  const handleCancel = () => {
+    setShowValidation(false);
+    onCancel();
+  };
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-      onClick={onCancel}
-      role="presentation"
-    >
+    <div className="edit-task-overlay" onClick={handleCancel}>
       <div
-        ref={dialogRef}
+        ref={modalRef}
+        className="edit-task-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-task-title"
-        style={{
-          background: "var(--color-background)",
-          color: "var(--color-foreground)",
-          border: "1px solid var(--color-border)",
-          width: 420,
-          maxWidth: "90vw",
-          borderRadius: 8,
-          padding: 16,
-        }}
         onClick={(event) => event.stopPropagation()}
       >
-      <form
-        style={{
-          display: "grid",
-          gap: 8,
-        }}
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!title.trim() || !dueDate || !dueTime) {
-            return;
-          }
-          onSave(task.id, { title: title.trim(), dueDate, dueTime, priority });
-        }}
-      >
-        <h2 id="edit-task-title">Edit Task</h2>
-        <label htmlFor="edit-task-title-input">Task title</label>
-        <input
-          id="edit-task-title-input"
-          ref={titleInputRef}
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="Task title"
-          required
-        />
-        <label htmlFor="edit-task-date-input">Due date</label>
-        <input id="edit-task-date-input" type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} required />
-        <label htmlFor="edit-task-time-input">Due time</label>
-        <input id="edit-task-time-input" type="time" value={dueTime} onChange={(event) => setDueTime(event.target.value)} required />
-        <label htmlFor="edit-task-priority-select">Priority</label>
-        <select id="edit-task-priority-select" value={priority} onChange={(event) => setPriority(event.target.value as "high" | "medium" | "low")}>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-          <button type="button" onClick={() => onDelete(task.id)}>
-            Delete
-          </button>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button type="button" onClick={onCancel}>
-              Cancel
+        <form onSubmit={handleSubmit}>
+          <div className="edit-task-header">
+            <div className="edit-task-header-left">
+              <div className="edit-task-icon-circle" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 20H8L18 10L14 6L4 16V20Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M12 8L16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h2 id="edit-task-title">Edit Task</h2>
+            </div>
+            <button type="button" className="edit-task-close" onClick={handleCancel} aria-label="Close">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
             </button>
-            <button type="submit">Save</button>
           </div>
-        </div>
-      </form>
+
+          <div className="edit-task-body">
+            <div className="edit-task-field">
+              <label htmlFor="edit-task-name">Task Name</label>
+              <input
+                ref={taskNameRef}
+                type="text"
+                id="edit-task-name"
+                value={taskName}
+                onChange={(event) => setTaskName(event.target.value)}
+                placeholder="Enter task name"
+                required
+              />
+            </div>
+
+            <div className="edit-task-field">
+              <label htmlFor="edit-task-description">Description</label>
+              <textarea
+                id="edit-task-description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Enter task description"
+              />
+            </div>
+
+            <div className="edit-task-field">
+              <label htmlFor="edit-due-date">Due Date</label>
+              <input
+                type="date"
+                id="edit-due-date"
+                value={dueDate}
+                onChange={(event) => {
+                  setDueDate(event.target.value);
+                  setShowValidation(false);
+                }}
+                required
+              />
+            </div>
+
+            <div className="edit-task-field">
+              <label htmlFor="edit-due-time">Due Time</label>
+              <input
+                type="time"
+                id="edit-due-time"
+                value={dueTime}
+                onChange={(event) => {
+                  setDueTime(event.target.value);
+                  setShowValidation(false);
+                }}
+                required
+              />
+            </div>
+
+            <div className="edit-task-field">
+              <label htmlFor="edit-priority">Priority</label>
+              <select
+                id="edit-priority"
+                value={priority}
+                onChange={(event) => setPriority(event.target.value as "high" | "medium" | "low")}
+              >
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            {showValidation && (!dueDate || !dueTime) && (
+              <div className="edit-task-validation">
+                <p>Please select a due date and time.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="edit-task-footer">
+            <button type="button" className="edit-task-delete" onClick={() => onDelete(task.id)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 6V4H16V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M7 6L8 20H16L17 6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+              <span>Delete Task</span>
+            </button>
+
+            <div className="edit-task-footer-right">
+              <button type="button" className="edit-task-cancel" onClick={handleCancel}>
+                Cancel
+              </button>
+              <button type="submit" className="edit-task-save">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );

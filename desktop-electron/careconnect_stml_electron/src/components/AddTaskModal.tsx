@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import "./AddTaskModal.css";
 
 interface AddTaskModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onSave: (taskData: {
     title: string;
+    description: string;
     dueDate: string;
     dueTime: string;
     priority: "high" | "medium" | "low";
@@ -12,138 +14,228 @@ interface AddTaskModalProps {
 }
 
 export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
-  const [title, setTitle] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [dueTime, setDueTime] = useState("09:00");
+  const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const titleInputRef = useRef<HTMLInputElement | null>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
+
+  const taskNameRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
-      if (previouslyFocusedElementRef.current) {
-        previouslyFocusedElementRef.current.focus();
-      }
       return;
     }
 
-    previouslyFocusedElementRef.current = document.activeElement as HTMLElement;
-    titleInputRef.current?.focus();
+    setTaskName("");
+    setDescription("");
+    setDueDate("");
+    setDueTime("");
+    setPriority("medium");
+    setShowValidation(false);
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    taskNameRef.current?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        event.preventDefault();
         onCancel();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onCancel]);
+
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) {
+      return;
+    }
+
+    const modal = modalRef.current;
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+      "#task-name, #task-description, #due-date, #due-time, #priority, .add-task-cancel, .add-task-save"
+    );
+
+    if (focusableElements.length === 0) {
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") {
         return;
       }
 
-      if (event.key !== "Tab" || !dialogRef.current) {
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
         return;
       }
 
-      const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-
-      if (focusableElements.length === 0) {
-        return;
-      }
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (event.shiftKey && document.activeElement === firstElement) {
-        event.preventDefault();
-        lastElement.focus();
-      } else if (!event.shiftKey && document.activeElement === lastElement) {
+      if (document.activeElement === lastElement) {
         event.preventDefault();
         firstElement.focus();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onCancel]);
+    modal.addEventListener("keydown", handleTab);
+    return () => modal.removeEventListener("keydown", handleTab);
+  }, [isOpen]);
 
   if (!isOpen) {
     return null;
   }
 
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!dueDate || !dueTime) {
+      setShowValidation(true);
+      return;
+    }
+
+    const finalTaskName = taskName.trim() || "Untitled Task";
+
+    onSave({
+      title: finalTaskName,
+      description: description.trim(),
+      dueDate,
+      dueTime,
+      priority,
+    });
+
+    setTaskName("");
+    setDescription("");
+    setDueDate("");
+    setDueTime("");
+    setPriority("medium");
+    setShowValidation(false);
+  };
+
+  const handleCancel = () => {
+    setShowValidation(false);
+    onCancel();
+  };
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-      onClick={onCancel}
-      role="presentation"
-    >
+    <div className="add-task-overlay" onClick={handleCancel}>
       <div
-        ref={dialogRef}
+        ref={modalRef}
+        className="add-task-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-task-title"
-        style={{
-          background: "var(--color-background)",
-          color: "var(--color-foreground)",
-          border: "1px solid var(--color-border)",
-          width: 420,
-          maxWidth: "90vw",
-          borderRadius: 8,
-          padding: 16,
-        }}
         onClick={(event) => event.stopPropagation()}
       >
-      <form
-        style={{
-          display: "grid",
-          gap: 8,
-        }}
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!title.trim() || !dueDate || !dueTime) {
-            return;
-          }
-          onSave({ title: title.trim(), dueDate, dueTime, priority });
-          setTitle("");
-          setDueDate("");
-          setDueTime("09:00");
-          setPriority("medium");
-        }}
-      >
-        <h2 id="add-task-title">Add Task</h2>
-        <label htmlFor="add-task-title-input">Task title</label>
-        <input
-          id="add-task-title-input"
-          ref={titleInputRef}
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="Task title"
-          required
-        />
-        <label htmlFor="add-task-date-input">Due date</label>
-        <input id="add-task-date-input" type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} required />
-        <label htmlFor="add-task-time-input">Due time</label>
-        <input id="add-task-time-input" type="time" value={dueTime} onChange={(event) => setDueTime(event.target.value)} required />
-        <label htmlFor="add-task-priority-select">Priority</label>
-        <select id="add-task-priority-select" value={priority} onChange={(event) => setPriority(event.target.value as "high" | "medium" | "low")}>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button type="button" onClick={onCancel}>
-            Cancel
-          </button>
-          <button type="submit">Save</button>
-        </div>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="add-task-header">
+            <div className="add-task-header-left">
+              <div className="add-task-icon-circle" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h2 id="add-task-title">Add New Task</h2>
+            </div>
+            <button type="button" className="add-task-close" onClick={handleCancel} aria-label="Close">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="add-task-body">
+            <div className="add-task-field">
+              <label htmlFor="task-name">Task Name</label>
+              <input
+                ref={taskNameRef}
+                type="text"
+                id="task-name"
+                value={taskName}
+                onChange={(event) => setTaskName(event.target.value)}
+                placeholder="Task title"
+              />
+            </div>
+
+            <div className="add-task-field">
+              <label htmlFor="task-description">Description</label>
+              <textarea
+                id="task-description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Enter task description"
+              />
+            </div>
+
+            <div className="add-task-field">
+              <label htmlFor="due-date">Due Date</label>
+              <input
+                type="date"
+                id="due-date"
+                value={dueDate}
+                onChange={(event) => {
+                  setDueDate(event.target.value);
+                  setShowValidation(false);
+                }}
+              />
+            </div>
+
+            <div className="add-task-field">
+              <label htmlFor="due-time">Due Time</label>
+              <input
+                type="time"
+                id="due-time"
+                value={dueTime}
+                onChange={(event) => {
+                  setDueTime(event.target.value);
+                  setShowValidation(false);
+                }}
+              />
+            </div>
+
+            <div className="add-task-field">
+              <label htmlFor="priority">Priority</label>
+              <select
+                id="priority"
+                value={priority}
+                onChange={(event) => setPriority(event.target.value as "high" | "medium" | "low")}
+              >
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            {showValidation && (!dueDate || !dueTime) && (
+              <div className="add-task-validation">
+                <p>Please select a due date and time.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="add-task-footer">
+            <button type="button" className="add-task-cancel" onClick={handleCancel}>
+              Cancel
+            </button>
+            <button type="submit" className="add-task-save">
+              Save
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

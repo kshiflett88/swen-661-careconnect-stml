@@ -32,7 +32,7 @@ describe('DashboardView', () => {
       buildTask({ id: 'later', title: 'Call caregiver', dueDateTime: new Date('2026-03-01T10:00:00') }),
     ];
 
-    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /how .*feeling/i })).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('DashboardView', () => {
   test('uses ordering wrappers so tasks column is left and health log is right', () => {
     const tasks: Task[] = [buildTask({ id: 'a', title: 'Task A' })];
 
-    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     const nextTaskHeading = screen.getByRole('heading', { name: 'Next Task' });
     const upcomingTasksHeading = screen.getByRole('heading', { name: 'Upcoming Tasks' });
@@ -62,7 +62,7 @@ describe('DashboardView', () => {
   });
 
   test('selects, saves, and clears mood check-in', () => {
-    render(<DashboardView tasks={[]} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={[]} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     const saveButton = screen.getByRole('button', { name: /save selected mood/i });
     const clearButton = screen.getByRole('button', { name: /clear mood check-in/i });
@@ -87,6 +87,8 @@ describe('DashboardView', () => {
 
   test('shows next task from earliest pending and opens tasks from task actions', () => {
     const onOpenTasks = jest.fn();
+    const onMarkComplete = jest.fn();
+    const onQuickAddTask = jest.fn();
     const tasks: Task[] = [
       buildTask({ id: 'complete-1', title: 'Completed task', dueDateTime: new Date('2026-03-01T06:00:00'), status: 'completed' }),
       buildTask({ id: 'pending-1', title: 'Earliest pending', dueDateTime: new Date('2026-03-01T07:00:00') }),
@@ -94,23 +96,29 @@ describe('DashboardView', () => {
       buildTask({ id: 'pending-3', title: 'Third pending', dueDateTime: new Date('2026-03-01T09:00:00') }),
     ];
 
-    render(<DashboardView tasks={tasks} onOpenTasks={onOpenTasks} />);
+    render(<DashboardView tasks={tasks} onOpenTasks={onOpenTasks} onMarkComplete={onMarkComplete} onQuickAddTask={onQuickAddTask} />);
 
     expect(screen.getByText('Earliest pending')).toBeInTheDocument();
     expect(screen.getByText('Second pending')).toBeInTheDocument();
     expect(screen.getByText('Third pending')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /open tasks and mark next task complete/i }));
+    fireEvent.click(screen.getByRole('button', { name: /mark next task complete/i }));
     fireEvent.click(screen.getByRole('button', { name: /open tasks and view second pending/i }));
 
-    const addTaskButton = screen.getByRole('button', { name: /open tasks screen to add this task/i });
+    const addTaskButton = screen.getByRole('button', { name: /add quick task/i });
     expect(addTaskButton).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText('What do you need to remember?'), { target: { value: 'Buy groceries' } });
     expect(addTaskButton).toBeEnabled();
     fireEvent.click(addTaskButton);
 
-    expect(onOpenTasks).toHaveBeenCalledTimes(3);
+    expect(onQuickAddTask).toHaveBeenCalledWith({
+      title: 'Buy groceries',
+      dueDate: undefined,
+      dueTime: undefined,
+    });
+    expect(onMarkComplete).toHaveBeenCalledWith('pending-1');
+    expect(onOpenTasks).toHaveBeenCalledTimes(1);
   });
 
   test('shows empty-state messaging when there are no pending tasks', () => {
@@ -118,7 +126,7 @@ describe('DashboardView', () => {
       buildTask({ id: 'done-1', title: 'Completed item', status: 'completed' }),
     ];
 
-    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     expect(screen.getByText('No pending tasks for now.')).toBeInTheDocument();
     expect(screen.getByText('No additional upcoming tasks.')).toBeInTheDocument();
@@ -138,14 +146,14 @@ describe('DashboardView', () => {
       buildTask({ id: 'tomorrow-1', title: 'Tomorrow task', dueDateTime: tomorrowTaskTime }),
     ];
 
-    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={tasks} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     expect(screen.getByText(/Due: Today at/i)).toBeInTheDocument();
     expect(screen.getByText(/Tomorrow at/i)).toBeInTheDocument();
   });
 
   test('supports quick add due date/time inputs and clear resets all fields', () => {
-    render(<DashboardView tasks={[]} onOpenTasks={() => undefined} />);
+    render(<DashboardView tasks={[]} onOpenTasks={() => undefined} onMarkComplete={() => undefined} onQuickAddTask={() => undefined} />);
 
     const titleInput = screen.getByLabelText('What do you need to remember?') as HTMLInputElement;
     const dateInput = screen.getByLabelText('Due Date') as HTMLInputElement;

@@ -1,5 +1,6 @@
 :root {
   --font-size: 16px;
+  --font-family-base: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
@@ -130,6 +131,7 @@ html {
 
 body {
   margin: 0;
+  font-family: var(--font-family-base);
   background: var(--color-background);
   color: var(--color-foreground);
 }
@@ -168,4 +170,53 @@ button {
 
 input {
   font-weight: var(--font-weight-normal);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-family-base);
+}
+
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+  border-color: #0066cc;
+}
+
+@media (forced-colors: active) {
+  :root {
+    --color-background: Canvas;
+    --color-foreground: CanvasText;
+    --color-card: Canvas;
+    --color-border: ButtonText;
+    --color-ring: Highlight;
+  }
+
+  * {
+    forced-color-adjust: auto;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="menuitem"] {
+    border: 1px solid ButtonText !important;
+    background: ButtonFace !important;
+    color: ButtonText !important;
+  }
+
+  *:focus,
+  *:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
 }

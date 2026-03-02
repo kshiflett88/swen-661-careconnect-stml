@@ -7,6 +7,8 @@ import { Card } from "./Card";
 interface DashboardViewProps {
   tasks: Task[];
   onOpenTasks: () => void;
+  onMarkComplete: (taskId: string) => void;
+  onQuickAddTask: (taskData: { title: string; dueDate?: string; dueTime?: string }) => void;
 }
 
 type MoodValue = "happy" | "okay" | "sad";
@@ -17,7 +19,7 @@ const moodOptions: Array<{ value: MoodValue; label: string; emoji: string }> = [
   { value: "sad", label: "Sad", emoji: "😢" },
 ];
 
-export function DashboardView({ tasks, onOpenTasks }: DashboardViewProps) {
+export function DashboardView({ tasks, onOpenTasks, onMarkComplete, onQuickAddTask }: DashboardViewProps) {
   const [quickTask, setQuickTask] = useState("");
   const [quickDate, setQuickDate] = useState("");
   const [quickTime, setQuickTime] = useState("");
@@ -323,7 +325,12 @@ export function DashboardView({ tasks, onOpenTasks }: DashboardViewProps) {
                 >
                   Due: {formatDueTime(nextTask.dueDateTime)}
                 </p>
-                <Button onClick={onOpenTasks} variant="success" fullWidth ariaLabel="Open tasks and mark next task complete">
+                <Button
+                  onClick={() => onMarkComplete(nextTask.id)}
+                  variant="success"
+                  fullWidth
+                  ariaLabel="Mark next task complete"
+                >
                   Mark Complete
                 </Button>
               </div>
@@ -489,9 +496,24 @@ export function DashboardView({ tasks, onOpenTasks }: DashboardViewProps) {
 
           <div style={{ display: "flex", gap: sizing.spaceSm, marginTop: sizing.spaceMd }}>
             <Button
-              onClick={onOpenTasks}
+              onClick={() => {
+                const title = quickTask.trim();
+                if (!title) {
+                  return;
+                }
+
+                onQuickAddTask({
+                  title,
+                  dueDate: quickDate || undefined,
+                  dueTime: quickTime || undefined,
+                });
+
+                setQuickTask("");
+                setQuickDate("");
+                setQuickTime("");
+              }}
               variant="primary"
-              ariaLabel="Open tasks screen to add this task"
+              ariaLabel="Add quick task"
               disabled={!quickTask.trim()}
             >
               Add Task

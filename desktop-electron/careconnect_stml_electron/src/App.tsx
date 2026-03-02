@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { DashboardView } from "./components/DashboardView";
 import { TasksView } from "./components/TasksView";
@@ -11,7 +11,6 @@ import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
 import { SignInView } from "./components/SignInView";
 import { SignInHelpView } from "./components/SignInHelpView";
-import { typography } from "./constants/accessibility";
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -44,6 +43,7 @@ export default function App() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [showDeleteTaskConfirmModal, setShowDeleteTaskConfirmModal] = useState(false);
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [textScalePercent, setTextScalePercent] = useState(100);
 
   const [tasks, setTasks] = useState<Task[]>([
     {
@@ -72,6 +72,102 @@ export default function App() {
       status: "pending",
     },
   ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.careconnect) {
+      return;
+    }
+
+    const unsubscribeNavigate = window.careconnect.onNavigate((route) => {
+      if (!isSignedIn) {
+        return;
+      }
+
+      if (route === "dashboard") {
+        setActiveNav("Dashboard");
+        return;
+      }
+
+      if (route === "task-list") {
+        setActiveNav("Tasks");
+        return;
+      }
+
+      if (route === "contacts") {
+        setActiveNav("Contacts");
+        return;
+      }
+
+      if (route === "emergency") {
+        setEmergencyConfirmed(false);
+        setShowEmergencyModal(true);
+        return;
+      }
+
+    });
+
+    const unsubscribeTextScale = window.careconnect.onTextScale((action) => {
+      setTextScalePercent((prev) => {
+        if (action === "reset") {
+          return 100;
+        }
+
+        if (action === "up") {
+          return Math.min(prev + 10, 150);
+        }
+
+        return Math.max(prev - 10, 80);
+      });
+    });
+
+    return () => {
+      unsubscribeNavigate();
+      unsubscribeTextScale();
+    };
+  }, [isSignedIn]);
+
+  if (!isSignedIn) {
+    return (
+      <>
+        <SignInView
+          onSignIn={() => setIsSignedIn(true)}
+          onNeedHelp={() => {
+            setAuthStep("help");
+            setCaregiverRequestSent(false);
+          }}
+        />
+        {authStep === "help" && (
+          <SignInHelpView
+            onResetAccess={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onClose={() => {
+              setAuthStep("signin");
+              setShowContactCaregiverConfirm(false);
+              setCaregiverRequestSent(false);
+            }}
+            onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
+            caregiverRequestSent={caregiverRequestSent}
+          />
+        )}
+        <ConfirmDialog
+          isOpen={showContactCaregiverConfirm}
+          title="Contact caregiver?"
+          message="This will send a caregiver contact request."
+          confirmText="Contact"
+          cancelText="Cancel"
+          variant="primary"
+          onConfirm={() => {
+            setShowContactCaregiverConfirm(false);
+            setCaregiverRequestSent(true);
+          }}
+          onCancel={() => setShowContactCaregiverConfirm(false)}
+        />
+      </>
+    );
+  }
 
   const handleMarkComplete = (taskId: string) => {
     setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: "completed" } : task)));
@@ -131,6 +227,7 @@ export default function App() {
 
   const handleAddTaskSubmit = (taskData: {
     title: string;
+    description: string;
     dueDate: string;
     dueTime: string;
     priority: "high" | "medium" | "low";
@@ -138,7 +235,7 @@ export default function App() {
     const newTask: Task = {
       id: String(Date.now()),
       title: taskData.title,
-      description: "",
+      description: taskData.description,
       dueDateTime: new Date(`${taskData.dueDate}T${taskData.dueTime}`),
       priority: taskData.priority,
       status: "pending",
@@ -152,7 +249,13 @@ export default function App() {
 
   const handleEditTaskSubmit = (
     taskId: string,
-    taskData: { title: string; dueDate: string; dueTime: string; priority: "high" | "medium" | "low" }
+    taskData: {
+      title: string;
+      description: string;
+      dueDate: string;
+      dueTime: string;
+      priority: "high" | "medium" | "low";
+    }
   ) => {
     setTasks((prev) =>
       prev.map((task) =>
@@ -160,6 +263,7 @@ export default function App() {
           ? {
               ...task,
               title: taskData.title,
+              description: taskData.description,
               dueDateTime: new Date(`${taskData.dueDate}T${taskData.dueTime}`),
               priority: taskData.priority,
             }
@@ -176,52 +280,33 @@ export default function App() {
     setEditingTaskId(null);
   };
 
-  if (!isSignedIn) {
-    return (
-      <>
-        <SignInView
-          onSignIn={() => setIsSignedIn(true)}
-          onNeedHelp={() => {
-            setAuthStep("help");
-            setCaregiverRequestSent(false);
-          }}
-        />
-        {authStep === "help" && (
-          <SignInHelpView
-            onResetAccess={() => {
-              setAuthStep("signin");
-              setShowContactCaregiverConfirm(false);
-              setCaregiverRequestSent(false);
-            }}
-            onClose={() => {
-              setAuthStep("signin");
-              setShowContactCaregiverConfirm(false);
-              setCaregiverRequestSent(false);
-            }}
-            onContactCaregiver={() => setShowContactCaregiverConfirm(true)}
-            caregiverRequestSent={caregiverRequestSent}
-          />
-        )}
-        <ConfirmDialog
-          isOpen={showContactCaregiverConfirm}
-          title="Contact caregiver?"
-          message="This will send a caregiver contact request."
-          confirmText="Contact"
-          cancelText="Cancel"
-          variant="primary"
-          onConfirm={() => {
-            setShowContactCaregiverConfirm(false);
-            setCaregiverRequestSent(true);
-          }}
-          onCancel={() => setShowContactCaregiverConfirm(false)}
-        />
-      </>
-    );
-  }
+  const handleQuickAddTask = (taskData: { title: string; dueDate?: string; dueTime?: string }) => {
+    const now = new Date();
+    const fallbackDate = now.toISOString().slice(0, 10);
+    const fallbackTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    const newTask: Task = {
+      id: String(Date.now()),
+      title: taskData.title,
+      description: "",
+      dueDateTime: new Date(`${taskData.dueDate ?? fallbackDate}T${taskData.dueTime ?? fallbackTime}`),
+      priority: "medium",
+      status: "pending",
+    };
+
+    setTasks((prev) => [...prev, newTask]);
+  };
 
   let content: React.ReactNode;
   if (activeNav === "Dashboard") {
-    content = <DashboardView tasks={tasks} onOpenTasks={() => setActiveNav("Tasks")} />;
+    content = (
+      <DashboardView
+        tasks={tasks}
+        onOpenTasks={() => setActiveNav("Tasks")}
+        onMarkComplete={handleMarkComplete}
+        onQuickAddTask={handleQuickAddTask}
+      />
+    );
   } else if (activeNav === "Tasks") {
     content = (
       <TasksView
@@ -248,45 +333,124 @@ export default function App() {
     content = <SettingsView />;
   }
 
-  const activeTasksCount = tasks.filter((task) => task.status !== "completed").length;
+  const activeTaskCount = tasks.filter((task) => task.status !== "completed").length;
   const nextPendingTask = [...tasks]
-    .filter((task) => task.status !== "completed")
-    .sort((first, second) => first.dueDateTime.getTime() - second.dueDateTime.getTime())[0];
+    .filter((task) => task.status === "pending")
+    .sort((a, b) => a.dueDateTime.getTime() - b.dueDateTime.getTime())[0];
 
-  const footerDate = new Date().toLocaleDateString([], {
+  const currentDateLabel = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
-  const nextTaskDue = nextPendingTask
-    ? `${nextPendingTask.dueDateTime.toLocaleDateString([], { month: "long", day: "numeric" })} at ${nextPendingTask.dueDateTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
-    : "No upcoming tasks";
+  const nextTaskDueLabel = (() => {
+    if (!nextPendingTask) {
+      return "No upcoming tasks";
+    }
+
+    const date = nextPendingTask.dueDateTime;
+    const now = new Date();
+
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const dueDay = new Date(date);
+    dueDay.setHours(0, 0, 0, 0);
+
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    if (dueDay.getTime() === today.getTime()) {
+      return `Today at ${time}`;
+    }
+
+    if (dueDay.getTime() === tomorrow.getTime()) {
+      return `Tomorrow at ${time}`;
+    }
+
+    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+    return `${weekday} at ${time}`;
+  })();
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" style={{ zoom: textScalePercent / 100 }}>
       <header className="app-toolbar">
-        <button className="toolbar-button toolbar-primary" onClick={() => setShowAddTaskModal(true)}>
-          Add Task
+        <button className="toolbar-button toolbar-primary toolbar-with-icon" onClick={() => setShowAddTaskModal(true)}>
+          <svg
+            className="toolbar-add-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path d="M12 5V19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span>Add Task</span>
         </button>
-        <input
-          value={searchInputValue}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Search tasks..."
-          className="toolbar-search"
-        />
-        <button className="toolbar-button" onClick={handleTodayClick}>
-          {taskFilterMode === "today" ? "Today ✓" : "Today"}
+        <div className="toolbar-search-wrap">
+          <span className="toolbar-search-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+              <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </span>
+          <input
+            value={searchInputValue}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search tasks..."
+            className="toolbar-search"
+          />
+        </div>
+        <button
+          className={`toolbar-button toolbar-with-icon toolbar-today ${taskFilterMode === "today" ? "toolbar-today-active" : ""}`}
+          onClick={handleTodayClick}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+            <path d="M8 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M16 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          <span>Today</span>
         </button>
         <button
-          className="toolbar-button toolbar-sos"
+          className="toolbar-button toolbar-with-icon toolbar-sos"
           onClick={() => {
             setEmergencyConfirmed(false);
             setShowEmergencyModal(true);
           }}
         >
-          SOS
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 7.5V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="12" cy="16.5" r="1.2" fill="currentColor" />
+          </svg>
+          <span>SOS</span>
         </button>
       </header>
 
@@ -306,19 +470,25 @@ export default function App() {
           </nav>
         </aside>
 
-        <main className="app-content">{content}</main>
+        <main className="app-content">
+          <div className="app-context-bar">
+            <strong>You are on:</strong> {activeNav}
+          </div>
+          {content}
+        </main>
       </div>
 
-      <footer className="app-footer" style={{ fontFamily: typography.fontFamilyBase }}>
-        <span style={{ fontFamily: typography.fontFamilyBase }}>
-          <strong>Current Date:</strong> {footerDate}
+      <footer className="app-footer" role="contentinfo">
+        <span className="app-footer-item">
+          <strong>Current Date:</strong> {currentDateLabel}
         </span>
-        <span style={{ fontFamily: typography.fontFamilyBase }}>
-          <strong>Active Tasks:</strong> {activeTasksCount}
+        <span className="app-footer-item app-footer-divider">
+          <strong>Active Tasks:</strong> {activeTaskCount}
         </span>
-        <span style={{ fontFamily: typography.fontFamilyBase }}>
-          <strong>Next Task Due:</strong> {nextTaskDue}
+        <span className="app-footer-item app-footer-divider">
+          <strong>Next Task Due:</strong> {nextTaskDueLabel}
         </span>
+        <span className="app-footer-help">Help is always available in the Help menu</span>
       </footer>
 
       <ConfirmDialog
@@ -375,21 +545,24 @@ export default function App() {
           setEditingTaskId(null);
         }}
         onSave={handleEditTaskSubmit}
-        onDelete={handleDeleteTask}
+        onDelete={(taskId) => {
+          setDeletingTaskId(taskId);
+          setShowDeleteTaskConfirmModal(true);
+          setShowEditTaskModal(false);
+          setEditingTaskId(null);
+        }}
         task={tasks.find((task) => task.id === editingTaskId) ?? null}
       />
 
       <DeleteTaskConfirmModal
         isOpen={showDeleteTaskConfirmModal}
-        taskTitle={tasks.find((task) => task.id === deletingTaskId)?.title ?? ""}
+        task={tasks.find((task) => task.id === deletingTaskId) ?? null}
         onCancel={() => {
           setShowDeleteTaskConfirmModal(false);
           setDeletingTaskId(null);
         }}
-        onConfirm={() => {
-          if (deletingTaskId) {
-            handleDeleteTask(deletingTaskId);
-          }
+        onConfirmDelete={(taskId) => {
+          handleDeleteTask(taskId);
           setShowDeleteTaskConfirmModal(false);
           setDeletingTaskId(null);
         }}
