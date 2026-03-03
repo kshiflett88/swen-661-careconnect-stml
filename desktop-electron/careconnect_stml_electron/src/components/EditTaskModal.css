@@ -1,0 +1,187 @@
+.edit-task-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.edit-task-modal {
+  width: 600px;
+  max-width: 92vw;
+  background: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+}
+
+.edit-task-header {
+  padding: 24px 24px 16px;
+  border-bottom: 2px solid #d0d0d0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edit-task-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-task-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #0066cc;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-task-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.edit-task-close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #666666;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.edit-task-close:hover {
+  color: #1a1a1a;
+  background: #f0f0f0;
+}
+
+.edit-task-body {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.edit-task-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.edit-task-field input,
+.edit-task-field select,
+.edit-task-field textarea {
+  width: 100%;
+  border: 2px solid #d0d0d0;
+  border-radius: 4px;
+  padding: 0 12px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: #ffffff;
+}
+
+.edit-task-field input,
+.edit-task-field select {
+  height: 44px;
+}
+
+.edit-task-field textarea {
+  min-height: 96px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  resize: vertical;
+}
+
+.edit-task-validation {
+  background: #fff9e6;
+  border: 2px solid #ffd966;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.edit-task-validation p {
+  margin: 0;
+  font-size: 14px;
+  color: #cc8800;
+}
+
+.edit-task-footer {
+  padding: 16px 24px 24px;
+  border-top: 2px solid #d0d0d0;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 0 0 8px 8px;
+}
+
+.edit-task-delete {
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #cc0000;
+  font-size: 15px;
+  font-weight: 700;
+  height: 50px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.edit-task-delete:hover {
+  background: #ffe6e6;
+}
+
+.edit-task-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-task-cancel,
+.edit-task-save {
+  min-width: 120px;
+  height: 50px;
+  border-radius: 4px;
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.edit-task-cancel {
+  border: 2px solid #d0d0d0;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.edit-task-cancel:hover {
+  background: #f0f0f0;
+}
+
+.edit-task-save {
+  border: 2px solid #0066cc;
+  background: #0066cc;
+  color: #ffffff;
+}
+
+.edit-task-save:hover {
+  border-color: #0052a3;
+  background: #0052a3;
+}

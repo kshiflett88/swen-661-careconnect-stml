@@ -1,22 +1,59 @@
-const { contextBridge, ipcRenderer } = require("electron");
+import { contextBridge, ipcRenderer } from "electron";
 
-type Route = "dashboard" | "task-list" | "health-log" | "contacts" | "profile" | "emergency";
+type Route = "dashboard" | "task-list" | "contacts" | "emergency";
+type TextScaleAction = "up" | "down" | "reset";
 
-contextBridge.exposeInMainWorld("careconnect", {
-  // IPC demo: main -> renderer
-  getSystemStatus: () => ipcRenderer.invoke("system:getStatus"),
+const isRoute = (value: unknown): value is Route => {
+  return value === "dashboard" || value === "task-list" || value === "contacts" || value === "emergency";
+};
 
-  // main -> renderer navigation events
-  onNavigate: (cb: (route: Route) => void) => {
-    const handler = (_: unknown, route: Route) => cb(route);
-    ipcRenderer.on("nav:go", handler);
-    return () => ipcRenderer.removeListener("nav:go", handler);
-  },
+const isTextScaleAction = (value: unknown): value is TextScaleAction => {
+  return value === "up" || value === "down" || value === "reset";
+};
 
-  // menu shortcut demo: text scaling events
-  onTextScale: (cb: (action: "up" | "down" | "reset") => void) => {
-    const handler = (_: unknown, action: "up" | "down" | "reset") => cb(action);
-    ipcRenderer.on("a11y:textScale", handler);
-    return () => ipcRenderer.removeListener("a11y:textScale", handler);
-  },
-});
+type IpcRendererRefLike = {
+  invoke: (channel: string) => Promise<unknown>;
+  on: (channel: string, listener: (...args: unknown[]) => void) => void;
+  removeListener: (channel: string, listener: (...args: unknown[]) => void) => void;
+};
+
+type ContextBridgeRefLike = {
+  exposeInMainWorld: (apiKey: string, api: unknown) => void;
+};
+
+export function createCareconnectApi(ipcRendererRef: IpcRendererRefLike = ipcRenderer) {
+  return {
+    getSystemStatus: () => ipcRendererRef.invoke("system:getStatus"),
+    onNavigate: (cb: (route: Route) => void) => {
+      const handler = (_: unknown, route: unknown) => {
+        if (isRoute(route)) {
+          cb(route);
+        }
+      };
+      ipcRendererRef.on("nav:go", handler);
+      return () => ipcRendererRef.removeListener("nav:go", handler);
+    },
+    onTextScale: (cb: (action: TextScaleAction) => void) => {
+      const handler = (_: unknown, action: unknown) => {
+        if (isTextScaleAction(action)) {
+          cb(action);
+        }
+      };
+      ipcRendererRef.on("a11y:textScale", handler);
+      return () => ipcRendererRef.removeListener("a11y:textScale", handler);
+    },
+  };
+}
+
+export function exposeCareconnect(
+  contextBridgeRef: ContextBridgeRefLike = contextBridge,
+  ipcRendererRef: IpcRendererRefLike = ipcRenderer
+) {
+  const api = createCareconnectApi(ipcRendererRef);
+  contextBridgeRef.exposeInMainWorld("careconnect", api);
+  return api;
+}
+
+if (!process.env.JEST_WORKER_ID) {
+  exposeCareconnect();
+}
