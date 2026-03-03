@@ -5,7 +5,7 @@ jest.mock('electron', () => ({
   ipcMain: { handle: jest.fn() },
 }));
 
-const { getDevServerUrl, shouldQuitOnAllWindowsClosed } = require('../../electron/main');
+import { getDevServerUrl, shouldQuitOnAllWindowsClosed } from '../../electron/main';
 
 describe('business logic (Jest)', () => {
   test('returns configured dev server url when present', () => {

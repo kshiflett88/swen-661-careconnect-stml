@@ -24,17 +24,19 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
   const taskNameRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
+  const resetFormState = () => {
     setTaskName("");
     setDescription("");
     setDueDate("");
     setDueTime("");
     setPriority("medium");
     setShowValidation(false);
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
 
     taskNameRef.current?.focus();
   }, [isOpen]);
@@ -116,16 +118,11 @@ export function AddTaskModal({ isOpen, onCancel, onSave }: AddTaskModalProps) {
       priority,
     });
 
-    setTaskName("");
-    setDescription("");
-    setDueDate("");
-    setDueTime("");
-    setPriority("medium");
-    setShowValidation(false);
+    resetFormState();
   };
 
   const handleCancel = () => {
-    setShowValidation(false);
+    resetFormState();
     onCancel();
   };
 

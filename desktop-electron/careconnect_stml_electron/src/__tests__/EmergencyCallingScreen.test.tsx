@@ -1,9 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import EmergencyCallingScreen from '../screens/EmergencyCallingScreen';
+import type { ScreenId } from '../screens';
+
+type ShellMockProps = {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+};
 
 jest.mock('../screens/_ScreenShell', () => ({
   __esModule: true,
-  default: ({ title, description, children }: any) => (
+  default: ({ title, description, children }: ShellMockProps) => (
     <div>
       <h1>{title}</h1>
       <p>{description}</p>
@@ -14,7 +21,7 @@ jest.mock('../screens/_ScreenShell', () => ({
 
 describe('EmergencyCallingScreen', () => {
   test('renders WCAG semantics and status content', () => {
-    render(<EmergencyCallingScreen onGo={jest.fn() as any} />);
+    render(<EmergencyCallingScreen onGo={jest.fn<void, [ScreenId]>()} />);
 
     expect(screen.getAllByRole('heading', { name: /emergency calling/i }).length).toBeGreaterThan(0);
     expect(screen.getByText(/caregiver contact is in progress/i)).toBeInTheDocument();
@@ -27,9 +34,9 @@ describe('EmergencyCallingScreen', () => {
   });
 
   test('handles Return and Done navigation actions', () => {
-    const onGo = jest.fn();
+    const onGo = jest.fn<void, [ScreenId]>();
 
-    render(<EmergencyCallingScreen onGo={onGo as any} />);
+    render(<EmergencyCallingScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /return to emergency screen/i }));
     fireEvent.click(screen.getByRole('button', { name: /return to tasks after emergency/i }));
@@ -40,7 +47,7 @@ describe('EmergencyCallingScreen', () => {
   });
 
   test('focus moves to the heading on mount for keyboard/screen reader users', () => {
-    render(<EmergencyCallingScreen onGo={jest.fn() as any} />);
+    render(<EmergencyCallingScreen onGo={jest.fn<void, [ScreenId]>()} />);
 
     const heading = screen.getAllByRole('heading', { name: /emergency calling/i })[1];
     expect(document.activeElement).toBe(heading);

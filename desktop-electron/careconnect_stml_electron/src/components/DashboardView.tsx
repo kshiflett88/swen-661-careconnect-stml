@@ -100,20 +100,6 @@ export function DashboardView({ tasks, onOpenTasks, onMarkComplete, onQuickAddTa
         fontFamily: typography.fontFamilyBase,
       }}
     >
-      <div
-        style={{
-          backgroundColor: colors.primaryLight,
-          border: `1px solid ${colors.border}`,
-          borderRadius: sizing.borderRadiusSm,
-          padding: `${sizing.spaceSm}px ${sizing.spaceMd}px`,
-          fontSize: typography.fontSizeMd,
-          fontWeight: typography.fontWeightBold,
-          color: colors.text,
-        }}
-      >
-        You are on: Dashboard
-      </div>
-
       <h1 style={{ margin: 0, fontSize: typography.fontSizeXl, fontWeight: typography.fontWeightNormal, color: colors.text }}>
         Dashboard
       </h1>

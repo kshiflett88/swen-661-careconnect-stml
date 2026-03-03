@@ -165,13 +165,21 @@ describe("main process integration", () => {
     const template = menuTemplateRef.template as Array<{ label?: string; submenu?: Array<{ label?: string; click?: () => void }> }>;
     expect(template).toBeTruthy();
 
-    const navigateMenu = template.find((item) => item.label === "Navigate");
+    const topLabels = template.map((item) => item.label).filter(Boolean);
+    expect(topLabels).toEqual(expect.arrayContaining(["File", "Edit", "View", "Help"]));
+
+    const viewMenu = template.find((item) => item.label === "View");
+    const navigateMenu = viewMenu?.submenu?.find((item) => item.label === "Navigate") as
+      | { label?: string; submenu?: Array<{ label?: string; click?: () => void }> }
+      | undefined;
     const dashboardItem = navigateMenu?.submenu?.find((item) => item.label === "Dashboard");
     dashboardItem?.click?.();
 
     expect(windowInstances[0].webContents.send).toHaveBeenCalledWith("nav:go", "dashboard");
 
-    const accessibilityMenu = template.find((item) => item.label === "Accessibility");
+    const accessibilityMenu = viewMenu?.submenu?.find((item) => item.label === "Accessibility") as
+      | { label?: string; submenu?: Array<{ label?: string; click?: () => void }> }
+      | undefined;
     const increaseTextItem = accessibilityMenu?.submenu?.find((item) => item.label === "Increase Text Size (Demo)");
     increaseTextItem?.click?.();
 

@@ -1,9 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import EmergencyConfirmationScreen from '../screens/EmergencyConfirmationScreen';
+import type { ScreenId } from '../screens';
+
+type ShellMockProps = {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+};
 
 jest.mock('../screens/_ScreenShell', () => ({
   __esModule: true,
-  default: ({ title, description, children }: any) => (
+  default: ({ title, description, children }: ShellMockProps) => (
     <div>
       <h1>{title}</h1>
       <p>{description}</p>
@@ -14,7 +21,7 @@ jest.mock('../screens/_ScreenShell', () => ({
 
 describe('EmergencyConfirmationScreen', () => {
   test('renders WCAG semantics and content', () => {
-    render(<EmergencyConfirmationScreen onGo={jest.fn() as any} />);
+    render(<EmergencyConfirmationScreen onGo={jest.fn<void, [ScreenId]>()} />);
 
     expect(screen.getByRole('heading', { name: /emergency confirmation/i })).toBeInTheDocument();
     expect(screen.getByText(/confirms that contacting the caregiver will begin/i)).toBeInTheDocument();
@@ -29,9 +36,9 @@ describe('EmergencyConfirmationScreen', () => {
   });
 
   test('handles Back and Start Calling navigation actions', () => {
-    const onGo = jest.fn();
+    const onGo = jest.fn<void, [ScreenId]>();
 
-    render(<EmergencyConfirmationScreen onGo={onGo as any} />);
+    render(<EmergencyConfirmationScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /go back to emergency screen/i }));
     fireEvent.click(screen.getByRole('button', { name: /start contacting caregiver/i }));
@@ -42,7 +49,7 @@ describe('EmergencyConfirmationScreen', () => {
   });
 
   test('focus moves to the heading on mount for keyboard/screen reader users', () => {
-    render(<EmergencyConfirmationScreen onGo={jest.fn() as any} />);
+    render(<EmergencyConfirmationScreen onGo={jest.fn<void, [ScreenId]>()} />);
 
     const heading = screen.getByText(/confirm emergency contact/i);
     expect(document.activeElement).toBe(heading);

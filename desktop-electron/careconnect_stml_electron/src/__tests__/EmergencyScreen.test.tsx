@@ -1,9 +1,28 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import EmergencyScreen from '../screens/EmergencyScreen';
+import type { ScreenId } from '../screens';
+
+type ShellMockProps = {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+};
+
+type ModalMockProps = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  ariaHint?: string;
+  confirmText: string;
+  cancelText: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  onClose: () => void;
+};
 
 jest.mock('../screens/_ScreenShell', () => ({
   __esModule: true,
-  default: ({ title, description, children }: any) => (
+  default: ({ title, description, children }: ShellMockProps) => (
     <div>
       <h1>{title}</h1>
       <p>{description}</p>
@@ -13,7 +32,7 @@ jest.mock('../screens/_ScreenShell', () => ({
 }), { virtual: true });
 
 jest.mock('../components/EmergencyModal', () => ({
-  EmergencyModal: (props: any) => {
+  EmergencyModal: (props: ModalMockProps) => {
     if (!props.isOpen) {
       return null;
     }
@@ -32,14 +51,14 @@ jest.mock('../components/EmergencyModal', () => ({
 }));
 
 describe('EmergencyScreen', () => {
-  const onGo = jest.fn();
+  const onGo = jest.fn<void, [ScreenId]>();
 
   beforeEach(() => {
     onGo.mockReset();
   });
 
   it('renders the main emergency UI content', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     expect(screen.getByText('Emergency Services')).toBeInTheDocument();
     expect(screen.getByText('For immediate medical help')).toBeInTheDocument();
@@ -50,7 +69,7 @@ describe('EmergencyScreen', () => {
   });
 
   it('opens the confirmation modal when CTA is clicked', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /call emergency services/i }));
 
@@ -62,7 +81,7 @@ describe('EmergencyScreen', () => {
   });
 
   it('closes the modal when Cancel is clicked', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /call emergency services/i }));
     expect(screen.getByRole('dialog', { name: 'Emergency Assistance' })).toBeInTheDocument();
@@ -74,7 +93,7 @@ describe('EmergencyScreen', () => {
   });
 
   it('navigates to emergency-confirmation when Confirm is clicked', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /call emergency services/i }));
     fireEvent.click(screen.getByRole('button', { name: 'CONTACT CAREGIVER NOW' }));
@@ -84,7 +103,7 @@ describe('EmergencyScreen', () => {
   });
 
   it('modal closes when Close is clicked (overlay close behavior simulated)', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     fireEvent.click(screen.getByRole('button', { name: /call emergency services/i }));
     expect(screen.getByRole('dialog', { name: 'Emergency Assistance' })).toBeInTheDocument();
@@ -94,7 +113,7 @@ describe('EmergencyScreen', () => {
   });
 
   it('has the CTA described by emergencyHelp text (aria-describedby)', () => {
-    render(<EmergencyScreen onGo={onGo as any} />);
+    render(<EmergencyScreen onGo={onGo} />);
 
     const button = screen.getByRole('button', { name: /call emergency services/i });
     expect(button).toHaveAttribute('aria-describedby', 'emergencyHelp');

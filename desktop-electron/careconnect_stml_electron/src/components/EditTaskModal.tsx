@@ -27,43 +27,38 @@ interface EditTaskModalProps {
 }
 
 export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }: EditTaskModalProps) {
-  const [taskName, setTaskName] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [dueTime, setDueTime] = useState("");
-  const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
+  const initialDate = task ? new Date(task.dueDateTime) : null;
+  const initialTaskName = task?.title ?? "";
+  const initialDescription = task?.description ?? "";
+  const initialDueDate = initialDate
+    ? `${initialDate.getFullYear()}-${String(initialDate.getMonth() + 1).padStart(2, "0")}-${String(initialDate.getDate()).padStart(2, "0")}`
+    : "";
+  const initialDueTime = initialDate
+    ? `${String(initialDate.getHours()).padStart(2, "0")}:${String(initialDate.getMinutes()).padStart(2, "0")}`
+    : "";
+  const initialPriority = task?.priority ?? "medium";
+
+  const [taskName, setTaskName] = useState(initialTaskName);
+  const [description, setDescription] = useState(initialDescription);
+  const [dueDate, setDueDate] = useState(initialDueDate);
+  const [dueTime, setDueTime] = useState(initialDueTime);
+  const [priority, setPriority] = useState<"high" | "medium" | "low">(initialPriority);
   const [showValidation, setShowValidation] = useState(false);
 
   const taskNameRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isOpen || !task) {
+    if (!isOpen) {
       return;
     }
-
-    setTaskName(task.title);
-    setDescription(task.description ?? "");
-
-    const date = new Date(task.dueDateTime);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    setDueDate(`${year}-${month}-${day}`);
-
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    setDueTime(`${hours}:${minutes}`);
-
-    setPriority(task.priority);
-    setShowValidation(false);
 
     const timer = window.setTimeout(() => {
       taskNameRef.current?.focus();
     }, 100);
 
     return () => window.clearTimeout(timer);
-  }, [isOpen, task]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
