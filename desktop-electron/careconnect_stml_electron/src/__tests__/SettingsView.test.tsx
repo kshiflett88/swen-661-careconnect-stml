@@ -1,9 +1,11 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import SettingsView from '../components/SettingsView';
 
+const onSignOut = jest.fn();
+
 describe('SettingsView', () => {
   test('renders core Figma sections and helper text', () => {
-    render(<SettingsView />);
+    render(<SettingsView onSignOut={onSignOut} />);
 
     expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Display & Simplicity' })).toBeInTheDocument();
@@ -13,7 +15,7 @@ describe('SettingsView', () => {
   });
 
   test('supports text size radio selection', () => {
-    render(<SettingsView />);
+    render(<SettingsView onSignOut={onSignOut} />);
 
     const medium = screen.getByRole('radio', { name: 'Medium' });
     const large = screen.getByRole('radio', { name: 'Large' });
@@ -27,7 +29,7 @@ describe('SettingsView', () => {
   });
 
   test('toggles switch controls', () => {
-    render(<SettingsView />);
+    render(<SettingsView onSignOut={onSignOut} />);
 
     const highContrast = screen.getByRole('switch', { name: /high contrast mode/i });
     const simplified = screen.getByRole('switch', { name: /simplified layout mode/i });
@@ -43,7 +45,7 @@ describe('SettingsView', () => {
   });
 
   test('allows editing caregiver info and saving back to view mode', () => {
-    render(<SettingsView />);
+    render(<SettingsView onSignOut={onSignOut} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
@@ -60,7 +62,7 @@ describe('SettingsView', () => {
   });
 
   test('reset to defaults sets medium text size and turns all toggles off', () => {
-    render(<SettingsView />);
+    render(<SettingsView onSignOut={onSignOut} />);
 
     fireEvent.click(screen.getByRole('radio', { name: 'Large' }));
     fireEvent.click(screen.getByRole('switch', { name: /simplified layout mode/i }));

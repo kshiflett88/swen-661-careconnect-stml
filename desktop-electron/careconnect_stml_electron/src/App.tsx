@@ -297,6 +297,15 @@ export default function App() {
     setTasks((prev) => [...prev, newTask]);
   };
 
+  const handleSignOut = () => {
+  setIsSignedIn(false);
+  setAuthStep("signin");          // ensures Welcome/SignIn state is consistent
+  setActiveNav("Dashboard");      // reset nav for next sign-in
+  setShowEmergencyModal(false);   // close any modal if open
+  setEmergencyConfirmed(false);
+  setContextMenu(null);
+};
+
   let content: React.ReactNode;
   if (activeNav === "Dashboard") {
     content = (
@@ -330,7 +339,7 @@ export default function App() {
   } else if (activeNav === "Contacts") {
     content = <ContactsView />;
   } else {
-    content = <SettingsView />;
+    content = <SettingsView onSignOut={handleSignOut} />;
   }
 
   const activeTaskCount = tasks.filter((task) => task.status !== "completed").length;
