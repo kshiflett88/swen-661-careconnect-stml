@@ -452,7 +452,7 @@ function Toggle({ id, label, description, checked, onChange }: ToggleProps) {
   );
 }
 
-export default function SettingsView() {
+export default function SettingsView(props: { onSignOut: () => void }) {
   const [textSize, setTextSize] = useState<TextSize>('medium');
   const [highContrastMode, setHighContrastMode] = useState(false);
   const [simplifiedLayout, setSimplifiedLayout] = useState(false);
@@ -463,7 +463,7 @@ export default function SettingsView() {
   const [caregiverPhone, setCaregiverPhone] = useState('(555) 123-4567');
   const [isEditingCaregiver, setIsEditingCaregiver] = useState(false);
   const [showResetDefaultsModal, setShowResetDefaultsModal] = useState(false);
-
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const handleResetFilters = () => {
     setShowResetDefaultsModal(true);
   };
@@ -674,6 +674,31 @@ export default function SettingsView() {
           </div>
         </section>
 
+        <section className="section" aria-labelledby="account-section-heading">
+          <div className="sectionTitleWrap">
+            <h2 id="account-section-heading">Account</h2>
+          </div>
+
+          <div className="card">
+            <div className="block">
+              <label className="fieldLabel">Sign Out</label>
+              <p className="fieldHelp">
+                End your session and return to the Welcome screen. This is recommended on shared computers.
+              </p>
+
+              <button
+                type="button"
+                className="actionButton"
+                style={{ background: "var(--danger)", borderColor: "var(--danger)", color: "#fff" }}
+                onClick={() => setShowSignOutModal(true)}
+                aria-label="Sign out and return to welcome screen"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </section>
+
         <div className="infoBox" role="note" aria-label="Settings autosave information">
           <div style={{ color: 'var(--primary)', marginTop: 2 }}>
             <InfoIcon />
@@ -683,7 +708,11 @@ export default function SettingsView() {
             make them.
           </p>
         </div>
+        
+        
       </div>
+
+      
 
       <ContactActionModal
         isOpen={showResetDefaultsModal}
@@ -695,6 +724,21 @@ export default function SettingsView() {
         icon="alert"
         onCancel={() => setShowResetDefaultsModal(false)}
         onConfirm={handleConfirmResetDefaults}
+      />
+
+      <ContactActionModal
+        isOpen={showSignOutModal}
+        title="Sign Out"
+        description="Are you sure you want to sign out?"
+        contextText="You will return to the Welcome screen and will need to sign in again to continue."
+        confirmLabel="Sign Out"
+        variant="danger"
+        icon="alert"
+        onCancel={() => setShowSignOutModal(false)}
+        onConfirm={() => {
+          setShowSignOutModal(false);
+          props.onSignOut();
+        }}
       />
     </div>
   );
