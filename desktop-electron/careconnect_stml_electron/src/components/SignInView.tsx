@@ -85,7 +85,8 @@ export function SignInView({ onSignIn, onNeedHelp }: SignInViewProps) {
     fontSize: typography.fontSizeBase,
     fontFamily: typography.fontFamilyBase,
     color: colors.primary,
-    textDecoration: "none",
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
     cursor: "pointer",
   };
 
@@ -156,17 +157,9 @@ export function SignInView({ onSignIn, onNeedHelp }: SignInViewProps) {
                 style={helpLinkStyles}
                 onFocus={(e) => {
                   e.currentTarget.style.outline = colors.focusOutline;
-                  e.currentTarget.style.textDecoration = "underline";
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.outline = "none";
-                  e.currentTarget.style.textDecoration = "none";
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.textDecoration = "underline";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.textDecoration = "none";
                 }}
               >
                 Need help signing in?

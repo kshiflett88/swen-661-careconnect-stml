@@ -156,7 +156,7 @@ export function TasksView({
 
               {filteredCompletedTasks.length > 0 && (
                 <>
-                  <div className="completed-divider">
+                  <div className="completed-divider" role="listitem" aria-label="Completed tasks section">
                     <div />
                     <span>Completed Tasks</span>
                     <div />
@@ -203,7 +203,7 @@ export function TasksView({
           )}
 
           {filteredTasks.length === 0 && (
-            <div className="empty-state">
+            <div className="empty-state" role="listitem">
               <p>{filterMode === "search" ? "No tasks found matching your search." : "No tasks due today."}</p>
               {filterMode !== "all" && (
                 <button type="button" onClick={onClearFilter}>
