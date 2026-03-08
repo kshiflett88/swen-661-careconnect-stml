@@ -21,6 +21,7 @@ const styles = `
     --line-color: #e0e0e0;
     --line-soft: #d0d0d0;
     --primary: #0066cc;
+    --focus-ring: #111827;
     --danger: #cc0000;
     flex: 1;
     background: var(--page-bg);
@@ -381,8 +382,9 @@ const styles = `
   button:focus-visible,
   select:focus-visible,
   input:focus-visible {
-    outline: 4px solid var(--primary);
+    outline: 4px solid var(--focus-ring);
     outline-offset: 2px;
+    box-shadow: 0 0 0 2px #ffffff;
   }
 
   @media (max-width: 720px) {

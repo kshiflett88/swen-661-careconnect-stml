@@ -20,7 +20,7 @@ interface EmergencyModalProps {
 
 const styles = `
   :root{
-    --focus:#2563eb;
+    --focus:#111827;
     --text:#111827;
     --muted:#6b7280;
     --border:#e5e7eb;
@@ -112,6 +112,7 @@ const styles = `
     outline:4px solid var(--focus);
     outline-offset:4px;
     border-radius:18px;
+    box-shadow: 0 0 0 2px #ffffff;
   }
 `;
 

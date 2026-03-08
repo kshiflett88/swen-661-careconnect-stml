@@ -43,8 +43,8 @@ export const colors = {
   borderDark: '#999999',   // Darker borders for emphasis
   
   // Focus indicators - WCAG requires visible focus
-  focus: '#0056b3',        // Blue focus ring
-  focusOutline: '3px solid #0056b3', // Thick, visible outline
+  focus: '#111827',        // Dark focus ring (clear against blue and light backgrounds)
+  focusOutline: '3px solid #111827', // Thick, visible outline
 };
 
 // WCAG 2.2 AA minimum touch target sizes

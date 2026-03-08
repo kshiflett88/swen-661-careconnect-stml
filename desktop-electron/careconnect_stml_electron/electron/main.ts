@@ -351,7 +351,7 @@ export function buildMenu(
     { type: "separator" },
     ...(isMac
       ? [{ role: "close" as const }]
-      : [{ role: "quit" as const }]),
+      : [{ role: "quit" as const, accelerator: "Alt+F4" }]),
   ];
 
   const editSubmenu: MenuItemConstructorOptions[] = [

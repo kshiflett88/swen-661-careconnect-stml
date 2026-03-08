@@ -1,4 +1,4 @@
-// src/screens/EmergencyScreen.tsx
+﻿// src/screens/EmergencyScreen.tsx
 import React, { useMemo, useState } from "react";
 import ScreenShell from "./_ScreenShell";
 import type { ScreenId } from "./index";
@@ -12,7 +12,7 @@ const styles = `
     --muted:#6b7280;
     --border:#e5e7eb;
     --bg:#ffffff;
-    --focus:#2563eb;
+    --focus:#111827;
   }
   .srOnly{
     position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
@@ -107,6 +107,7 @@ const styles = `
   .cta:focus-visible{
     outline:4px solid var(--focus);
     outline-offset:4px;
+    box-shadow: 0 0 0 2px #ffffff;
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -202,3 +203,4 @@ export default function EmergencyScreen(props: { onGo: (screen: ScreenId) => voi
     </ScreenShell>
   );
 }
+

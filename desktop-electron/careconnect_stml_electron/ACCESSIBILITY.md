@@ -32,6 +32,10 @@ All screens and components are designed with two primary goals:
 - Tab navigation through focusable elements
 - Enter/Space activation for buttons and links
 - Escape key closes modal dialogs
+- Application menu bar is keyboard accessible:
+	- **Windows/Linux**: `Alt` focuses menu bar, `Left/Right` moves menus, `Up/Down` navigates items, `Enter` activates, `Esc` closes.
+	- **Windows/Linux**: `Alt+F` opens the File menu directly.
+	- **macOS**: `Ctrl+F2` (or `Fn+Ctrl+F2`) moves focus to the menu bar; use arrows + `Enter`.
 
 **Example**: `src/components/Button.tsx` - handleKeyDown implementation
 
@@ -366,6 +370,9 @@ Use this checklist as evidence for the assignment rubric section:
 - Verify `Enter`/`Space` activate focused controls.
 - Verify modal dialogs close with `Escape`.
 - Verify task context menu supports keyboard navigation (`ArrowUp`, `ArrowDown`, `Home`, `End`, `Escape`).
+- Verify app menu bar keyboard access:
+	- **Windows/Linux**: `Alt` to focus menu bar, `Alt+F` for File menu, arrows to navigate, `Enter` to activate, `Esc` to close.
+	- **macOS**: `Ctrl+F2` (or `Fn+Ctrl+F2`) to focus menu bar, arrows to navigate, `Enter` to activate.
 
 ### 2) Focus Indicators
 - Confirm visible focus ring appears on all interactive elements while tabbing.
