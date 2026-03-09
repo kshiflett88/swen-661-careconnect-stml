@@ -157,9 +157,13 @@ export function SignInView({ onSignIn, onNeedHelp }: SignInViewProps) {
                 style={helpLinkStyles}
                 onFocus={(e) => {
                   e.currentTarget.style.outline = colors.focusOutline;
+                  e.currentTarget.style.outlineOffset = '2px';
+                  e.currentTarget.style.boxShadow = '0 0 0 2px #ffffff';
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.outline = "none";
+                  e.currentTarget.style.outlineOffset = '0';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 Need help signing in?

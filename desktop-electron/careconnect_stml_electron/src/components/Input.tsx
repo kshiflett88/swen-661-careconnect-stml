@@ -119,7 +119,7 @@ export function Input({
         // WCAG 2.4.7: Visible focus indicator
         onFocus={(e) => {
           e.currentTarget.style.borderColor = colors.focus;
-          e.currentTarget.style.boxShadow = `0 0 0 1px ${colors.focus}`;
+          e.currentTarget.style.boxShadow = `0 0 0 2px #ffffff, 0 0 0 5px ${colors.focus}`;
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = error ? colors.danger : colors.border;

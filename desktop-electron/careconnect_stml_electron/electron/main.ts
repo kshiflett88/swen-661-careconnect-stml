@@ -351,7 +351,12 @@ export function buildMenu(
     { type: "separator" },
     ...(isMac
       ? [{ role: "close" as const }]
-      : [{ role: "quit" as const }]),
+      : [
+          {
+            role: "quit" as const,
+            ...(process.platform === "win32" ? { accelerator: "Alt+F4" } : {}),
+          },
+        ]),
   ];
 
   const editSubmenu: MenuItemConstructorOptions[] = [

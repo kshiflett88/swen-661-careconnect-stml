@@ -28,7 +28,8 @@
 .task-context-menu-item:hover,
 .task-context-menu-item:focus-visible {
   background: #e6f2ff;
-  outline: none;
+  outline: 3px solid var(--color-ring);
+  outline-offset: -3px;
 }
 
 .task-context-menu-icon {

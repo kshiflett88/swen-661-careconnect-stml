@@ -9,7 +9,7 @@ const styles = `
     --text:#111827;
     --muted:#6b7280;
     --border:#e5e7eb;
-    --focus:#2563eb;
+    --focus:#111827;
   }
   .wrap{max-width:980px;margin:0 auto;padding:16px 18px}
   .panel{
@@ -50,6 +50,7 @@ const styles = `
   .btn:focus-visible{
     outline:4px solid var(--focus);
     outline-offset:4px;
+    box-shadow: 0 0 0 2px #ffffff;
   }
   .live{
     font-weight:800;
@@ -78,7 +79,7 @@ export default function EmergencyCallingScreen(props: { onGo: (screen: ScreenId)
             Emergency Calling
           </h1>
           <p className="status">
-            Status: <span className="live" aria-live="polite">Calling caregiver now…</span>
+            Status: <span className="live" aria-live="polite">Calling caregiver now...</span>
           </p>
 
           <div className="callRow" role="group" aria-label="Calling actions">
@@ -105,3 +106,4 @@ export default function EmergencyCallingScreen(props: { onGo: (screen: ScreenId)
     </ScreenShell>
   );
 }
+
