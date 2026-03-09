@@ -101,7 +101,7 @@ export function Button({
       style={styles}
       // WCAG 2.4.7: Clear focus indicator
       onFocus={(e) => {
-        e.currentTarget.style.boxShadow = `0 0 0 3px ${colors.focus}`;
+        e.currentTarget.style.boxShadow = `0 0 0 2px #ffffff, 0 0 0 5px ${colors.focus}`;
         e.currentTarget.style.outline = 'none';
       }}
       onBlur={(e) => {

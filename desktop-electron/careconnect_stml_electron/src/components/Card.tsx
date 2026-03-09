@@ -67,7 +67,7 @@ export function Card({
       // WCAG 2.4.7: Focus indicator for interactive cards
       onFocus={(e) => {
         if (isInteractive) {
-          e.currentTarget.style.boxShadow = `0 0 0 3px ${colors.focus}, 0 2px 8px rgba(0, 0, 0, 0.1)`;
+          e.currentTarget.style.boxShadow = `0 0 0 2px #ffffff, 0 0 0 5px ${colors.focus}, 0 2px 8px rgba(0, 0, 0, 0.1)`;
         }
       }}
       onBlur={(e) => {

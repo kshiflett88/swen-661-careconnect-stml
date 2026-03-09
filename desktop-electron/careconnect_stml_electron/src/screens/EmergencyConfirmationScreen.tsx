@@ -9,7 +9,7 @@ const styles = `
     --text:#111827;
     --muted:#6b7280;
     --border:#e5e7eb;
-    --focus:#2563eb;
+    --focus:#111827;
   }
   .wrap{max-width:980px;margin:0 auto;padding:16px 18px}
   .panel{
@@ -47,6 +47,7 @@ const styles = `
   .btn:focus-visible{
     outline:4px solid var(--focus);
     outline-offset:4px;
+    box-shadow: 0 0 0 2px #ffffff;
   }
 `;
 
@@ -98,3 +99,4 @@ export default function EmergencyConfirmationScreen(props: { onGo: (screen: Scre
     </ScreenShell>
   );
 }
+
