@@ -1,4 +1,4 @@
-﻿// src/screens/EmergencyConfirmationScreen.tsx
+// src/screens/EmergencyConfirmationScreen.tsx
 import React, { useEffect, useRef } from "react";
 import ScreenShell from "./_ScreenShell";
 import type { ScreenId } from "./index";

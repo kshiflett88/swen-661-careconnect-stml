@@ -1,4 +1,4 @@
-﻿// src/screens/EmergencyScreen.tsx
+// src/screens/EmergencyScreen.tsx
 import React, { useMemo, useState } from "react";
 import ScreenShell from "./_ScreenShell";
 import type { ScreenId } from "./index";

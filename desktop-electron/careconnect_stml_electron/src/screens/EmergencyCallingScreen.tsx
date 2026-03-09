@@ -1,4 +1,4 @@
-﻿// src/screens/EmergencyCallingScreen.tsx
+// src/screens/EmergencyCallingScreen.tsx
 import React, { useEffect, useRef } from "react";
 import ScreenShell from "./_ScreenShell";
 import type { ScreenId } from "./index";
@@ -79,7 +79,7 @@ export default function EmergencyCallingScreen(props: { onGo: (screen: ScreenId)
             Emergency Calling
           </h1>
           <p className="status">
-            Status: <span className="live" aria-live="polite">Calling caregiver nowâ€¦</span>
+            Status: <span className="live" aria-live="polite">Calling caregiver now...</span>
           </p>
 
           <div className="callRow" role="group" aria-label="Calling actions">
