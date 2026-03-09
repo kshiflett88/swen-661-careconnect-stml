@@ -87,8 +87,8 @@
 }
 
 .filter-clear.search {
-  color: #cc8800;
-  border-color: #cc8800;
+  color: #8a5c00;
+  border-color: #8a5c00;
 }
 
 .filter-clear.today {
@@ -205,8 +205,8 @@
 }
 
 .priority-medium {
-  color: #cc8800;
-  border-color: #cc8800;
+  color: #8a5c00;
+  border-color: #8a5c00;
 }
 
 .priority-low {
@@ -423,7 +423,7 @@
 .task-detail-footer {
   padding: 14px 20px;
   border-top: 1px solid #c8c8c8;
-  color: #888888;
+  color: #595959;
   font-size: 13px;
   font-style: italic;
   background: #f0f0f0;
