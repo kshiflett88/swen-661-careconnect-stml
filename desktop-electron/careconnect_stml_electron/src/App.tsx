@@ -45,6 +45,20 @@ export default function App() {
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
   const [textScalePercent, setTextScalePercent] = useState(100);
 
+  const applyTextScaleAction = (action: "up" | "down" | "reset") => {
+    setTextScalePercent((prev) => {
+      if (action === "reset") {
+        return 100;
+      }
+
+      if (action === "up") {
+        return Math.min(prev + 10, 150);
+      }
+
+      return Math.max(prev - 10, 80);
+    });
+  };
+
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: "1",
@@ -107,17 +121,7 @@ export default function App() {
     });
 
     const unsubscribeTextScale = window.careconnect.onTextScale((action) => {
-      setTextScalePercent((prev) => {
-        if (action === "reset") {
-          return 100;
-        }
-
-        if (action === "up") {
-          return Math.min(prev + 10, 150);
-        }
-
-        return Math.max(prev - 10, 80);
-      });
+      applyTextScaleAction(action);
     });
 
     return () => {
@@ -125,6 +129,34 @@ export default function App() {
       unsubscribeTextScale();
     };
   }, [isSignedIn]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) {
+        return;
+      }
+
+      if (event.key === "+" || event.key === "=" || event.code === "NumpadAdd") {
+        event.preventDefault();
+        applyTextScaleAction("up");
+        return;
+      }
+
+      if (event.key === "-" || event.key === "_" || event.code === "NumpadSubtract") {
+        event.preventDefault();
+        applyTextScaleAction("down");
+        return;
+      }
+
+      if (event.key === "0" || event.code === "Numpad0") {
+        event.preventDefault();
+        applyTextScaleAction("reset");
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (!isSignedIn) {
     return (
