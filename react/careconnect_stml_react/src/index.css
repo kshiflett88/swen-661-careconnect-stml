@@ -1,0 +1,16 @@
+@import "./font.css";
+@import "./theme.css";
+@import "./base.css";
+@import "./AppShell.css";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  min-width: 320px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

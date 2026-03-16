@@ -1,0 +1,20 @@
+/* Base/reset styles (plain CSS, no Tailwind dependency). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
