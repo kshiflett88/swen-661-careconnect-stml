@@ -49,14 +49,16 @@ describe("App", () => {
   it("navigates to Contacts view", () => {
     render(<App />);
     signIn();
-    fireEvent.click(screen.getByText("Contacts"));
+    const contactsBtns = screen.getAllByText("Contacts");
+    fireEvent.click(contactsBtns[0]);
     expect(screen.getByText("Primary Caregiver")).toBeInTheDocument();
   });
 
   it("navigates to Settings view", () => {
     render(<App />);
     signIn();
-    fireEvent.click(screen.getByText("Settings"));
+    const settingsBtns = screen.getAllByText("Settings");
+    fireEvent.click(settingsBtns[0]);
     expect(screen.getByText("Display & Simplicity")).toBeInTheDocument();
   });
 
@@ -93,7 +95,8 @@ describe("App", () => {
   it("signs out and returns to sign-in page", () => {
     render(<App />);
     signIn();
-    fireEvent.click(screen.getByText("Settings"));
+    const settingsBtns = screen.getAllByText("Settings");
+    fireEvent.click(settingsBtns[0]);
     fireEvent.click(screen.getByLabelText("Sign out and return to welcome screen"));
     // Find and click confirm Sign Out in the modal
     const signOutButtons = screen.getAllByText("Sign Out");

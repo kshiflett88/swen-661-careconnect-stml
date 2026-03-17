@@ -500,6 +500,58 @@ export default function App() {
         <span className="app-footer-help">Help is always available in the Help menu</span>
       </footer>
 
+      {/* Bottom navigation bar for mobile/tablet */}
+      <nav className="bottom-nav" aria-label="Primary navigation">
+        <button
+          className={`bottom-nav-btn${activeNav === "Dashboard" ? " bottom-nav-active" : ""}`}
+          onClick={() => handleNavClick("Dashboard")}
+          aria-current={activeNav === "Dashboard" ? "page" : undefined}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="2" />
+            <rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="2" />
+            <rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="2" />
+            <rect x="13" y="13" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button
+          className={`bottom-nav-btn${activeNav === "Tasks" ? " bottom-nav-active" : ""}`}
+          onClick={() => handleNavClick("Tasks")}
+          aria-current={activeNav === "Tasks" ? "page" : undefined}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+            <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>Tasks</span>
+        </button>
+        <button
+          className={`bottom-nav-btn${activeNav === "Contacts" ? " bottom-nav-active" : ""}`}
+          onClick={() => handleNavClick("Contacts")}
+          aria-current={activeNav === "Contacts" ? "page" : undefined}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="9" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
+            <path d="M3 19C3 16.2386 5.23858 14 8 14H10C12.7614 14 15 16.2386 15 19V20H3V19Z" stroke="currentColor" strokeWidth="2" />
+            <circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="2" />
+            <path d="M17 14.5C19.2091 14.5 21 16.2909 21 18.5V20H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          <span>Contacts</span>
+        </button>
+        <button
+          className={`bottom-nav-btn${activeNav === "Settings" ? " bottom-nav-active" : ""}`}
+          onClick={() => handleNavClick("Settings")}
+          aria-current={activeNav === "Settings" ? "page" : undefined}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+
       <ConfirmDialog
         isOpen={showConfirmDialog}
         title="Mark task complete?"

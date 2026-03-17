@@ -219,7 +219,7 @@
   white-space: nowrap;
 }
 
-/* ── Hamburger button (hidden on desktop) ── */
+/* ── Hamburger button (hidden on desktop, also hidden on mobile now — replaced by bottom nav) ── */
 .toolbar-hamburger {
   display: none;
   width: 40px;
@@ -249,6 +249,68 @@
   white-space: nowrap;
 }
 
+/* ── Bottom navigation bar (hidden on desktop, shown on mobile/tablet) ── */
+.bottom-nav {
+  display: none;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  background: var(--color-card);
+  border-top: 1px solid var(--color-border);
+  height: 64px;
+  flex-shrink: 0;
+  align-items: stretch;
+  justify-content: space-around;
+  padding: 0;
+}
+
+.bottom-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  color: #555555;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-btn svg {
+  flex-shrink: 0;
+}
+
+.bottom-nav-btn span {
+  line-height: 1;
+}
+
+.bottom-nav-btn:hover {
+  color: #0066cc;
+}
+
+.bottom-nav-btn:focus-visible {
+  outline: 3px solid var(--color-ring);
+  outline-offset: -3px;
+  border-radius: 4px;
+}
+
+.bottom-nav-active {
+  color: #0066cc;
+  font-weight: 700;
+}
+
+.bottom-nav-active svg {
+  stroke-width: 2.3;
+}
+
 /* Sidebar overlay backdrop */
 .sidebar-overlay {
   display: none;
@@ -273,11 +335,25 @@
   background: var(--color-accent);
 }
 
-/* ── Responsive: mobile (≤ 768px) ── */
+/* ── Responsive: mobile/tablet (≤ 768px) ── */
 @media (max-width: 768px) {
-  /* Hamburger visible */
+  /* Show bottom nav instead of hamburger sidebar */
+  .bottom-nav {
+    display: flex;
+  }
+
+  /* Hide hamburger — bottom nav replaces it */
   .toolbar-hamburger {
-    display: inline-flex;
+    display: none !important;
+  }
+
+  /* Hide sidebar entirely on mobile — bottom nav replaces it */
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .sidebar-overlay {
+    display: none !important;
   }
 
   .toolbar-mobile-title {
@@ -332,35 +408,6 @@
   .app-toolbar .toolbar-sos {
     width: 40px;
     padding: 8px;
-  }
-
-  /* Sidebar: drawer overlay */
-  .app-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: 1000;
-    width: 260px;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    box-shadow: none;
-  }
-
-  .app-sidebar.sidebar-open {
-    transform: translateX(0);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.18);
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    background: rgba(0, 0, 0, 0.4);
-  }
-
-  .sidebar-overlay.sidebar-overlay-visible {
-    display: block;
   }
 
   /* Footer: wrap items */
