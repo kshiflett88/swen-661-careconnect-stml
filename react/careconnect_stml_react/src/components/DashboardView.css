@@ -1,0 +1,42 @@
+/* DashboardView responsive overrides */
+.dashboard-section {
+  padding: 20px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.dashboard-quick-add-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: end;
+}
+
+@media (max-width: 768px) {
+  .dashboard-section {
+    padding: 14px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid > *:first-child {
+    order: 0 !important;
+  }
+
+  .dashboard-grid > *:nth-child(2) {
+    order: 1 !important;
+  }
+
+  .dashboard-quick-add-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-section h1 {
+    font-size: 1.5rem;
+  }
+}
