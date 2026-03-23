@@ -1,10 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import SettingsView from "../SettingsView";
 
 describe("SettingsView", () => {
   const defaultProps = {
-    onSignOut: vi.fn(),
+    onSignOut: jest.fn(),
   };
 
   it("renders Settings heading", () => {
@@ -86,7 +85,7 @@ describe("SettingsView", () => {
   });
 
   it("calls onSignOut after confirming sign out", () => {
-    const onSignOut = vi.fn();
+    const onSignOut = jest.fn();
     render(<SettingsView onSignOut={onSignOut} />);
     fireEvent.click(screen.getByLabelText("Sign out and return to welcome screen"));
     // Click the confirm button inside the modal

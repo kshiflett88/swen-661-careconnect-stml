@@ -1,11 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SignInView } from "../SignInView";
 
 describe("SignInView", () => {
   const defaultProps = {
-    onSignIn: vi.fn(),
-    onNeedHelp: vi.fn(),
+    onSignIn: jest.fn(),
+    onNeedHelp: jest.fn(),
   };
 
   it("renders welcome heading", () => {
@@ -24,16 +23,16 @@ describe("SignInView", () => {
   });
 
   it("calls onSignIn when sign-in button is clicked", () => {
-    const onSignIn = vi.fn();
-    render(<SignInView onSignIn={onSignIn} onNeedHelp={vi.fn()} />);
+    const onSignIn = jest.fn();
+    render(<SignInView onSignIn={onSignIn} onNeedHelp={jest.fn()} />);
     const signInBtn = screen.getByRole("button", { name: /sign in with this device/i });
     fireEvent.click(signInBtn);
     expect(onSignIn).toHaveBeenCalledTimes(1);
   });
 
   it("calls onNeedHelp when help link is clicked", () => {
-    const onNeedHelp = vi.fn();
-    render(<SignInView onSignIn={vi.fn()} onNeedHelp={onNeedHelp} />);
+    const onNeedHelp = jest.fn();
+    render(<SignInView onSignIn={jest.fn()} onNeedHelp={onNeedHelp} />);
     const helpLink = screen.getByText(/Need help signing in/i);
     fireEvent.click(helpLink);
     expect(onNeedHelp).toHaveBeenCalledTimes(1);
@@ -45,16 +44,16 @@ describe("SignInView", () => {
   });
 
   it("calls onNeedHelp with keyboard Enter", () => {
-    const onNeedHelp = vi.fn();
-    render(<SignInView onSignIn={vi.fn()} onNeedHelp={onNeedHelp} />);
+    const onNeedHelp = jest.fn();
+    render(<SignInView onSignIn={jest.fn()} onNeedHelp={onNeedHelp} />);
     const helpLink = screen.getByText(/Need help signing in/i);
     fireEvent.keyDown(helpLink, { key: "Enter" });
     expect(onNeedHelp).toHaveBeenCalledTimes(1);
   });
 
   it("calls onNeedHelp with keyboard Space", () => {
-    const onNeedHelp = vi.fn();
-    render(<SignInView onSignIn={vi.fn()} onNeedHelp={onNeedHelp} />);
+    const onNeedHelp = jest.fn();
+    render(<SignInView onSignIn={jest.fn()} onNeedHelp={onNeedHelp} />);
     const helpLink = screen.getByText(/Need help signing in/i);
     fireEvent.keyDown(helpLink, { key: " " });
     expect(onNeedHelp).toHaveBeenCalledTimes(1);

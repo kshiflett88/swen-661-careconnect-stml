@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DeleteTaskConfirmModal } from "../DeleteTaskConfirmModal";
 
 const makeTask = () => ({
@@ -15,8 +14,8 @@ describe("DeleteTaskConfirmModal", () => {
   const defaultProps = {
     isOpen: true,
     task: makeTask(),
-    onCancel: vi.fn(),
-    onConfirmDelete: vi.fn(),
+    onCancel: jest.fn(),
+    onConfirmDelete: jest.fn(),
   };
 
   it("renders nothing when closed", () => {
@@ -51,28 +50,28 @@ describe("DeleteTaskConfirmModal", () => {
   });
 
   it("calls onConfirmDelete with task id on delete click", () => {
-    const onConfirmDelete = vi.fn();
+    const onConfirmDelete = jest.fn();
     render(<DeleteTaskConfirmModal {...defaultProps} onConfirmDelete={onConfirmDelete} />);
     fireEvent.click(screen.getByText("Delete Task"));
     expect(onConfirmDelete).toHaveBeenCalledWith("42");
   });
 
   it("calls onCancel when Cancel is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<DeleteTaskConfirmModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when Escape is pressed", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<DeleteTaskConfirmModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when overlay is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<DeleteTaskConfirmModal {...defaultProps} onCancel={onCancel} />);
     const overlay = document.querySelector(".delete-task-confirm-overlay");
     fireEvent.click(overlay);
@@ -90,5 +89,46 @@ describe("DeleteTaskConfirmModal", () => {
   it("has close button with aria-label", () => {
     render(<DeleteTaskConfirmModal {...defaultProps} />);
     expect(screen.getByLabelText("Close delete task confirmation")).toBeInTheDocument();
+  });
+
+  it("calls onCancel when the close button is clicked", () => {
+    const onCancel = jest.fn();
+    render(<DeleteTaskConfirmModal {...defaultProps} onCancel={onCancel} />);
+    fireEvent.click(screen.getByLabelText("Close delete task confirmation"));
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call onCancel when the modal content is clicked", () => {
+    const onCancel = jest.fn();
+    render(<DeleteTaskConfirmModal {...defaultProps} onCancel={onCancel} />);
+    fireEvent.click(screen.getByRole("alertdialog"));
+    expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it("focuses the delete button when opened", async () => {
+    render(<DeleteTaskConfirmModal {...defaultProps} />);
+    await waitFor(() => expect(screen.getByText("Delete Task")).toHaveFocus());
+  });
+
+  it("keeps focus trapped when tabbing forward from the last focusable element", () => {
+    render(<DeleteTaskConfirmModal {...defaultProps} />);
+    const closeButton = screen.getByLabelText("Close delete task confirmation");
+    const deleteButton = screen.getByText("Delete Task");
+
+    deleteButton.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+
+    expect(closeButton).toHaveFocus();
+  });
+
+  it("keeps focus trapped when tabbing backward from the first focusable element", () => {
+    render(<DeleteTaskConfirmModal {...defaultProps} />);
+    const closeButton = screen.getByLabelText("Close delete task confirmation");
+    const deleteButton = screen.getByText("Delete Task");
+
+    closeButton.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+
+    expect(deleteButton).toHaveFocus();
   });
 });

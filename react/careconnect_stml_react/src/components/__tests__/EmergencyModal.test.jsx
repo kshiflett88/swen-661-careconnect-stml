@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { EmergencyModal } from "../EmergencyModal";
 
@@ -6,9 +5,9 @@ describe("EmergencyModal", () => {
   const defaultProps = {
     isOpen: true,
     confirmed: false,
-    onConfirm: vi.fn(),
-    onCancel: vi.fn(),
-    onClose: vi.fn(),
+    onConfirm: jest.fn(),
+    onCancel: jest.fn(),
+    onClose: jest.fn(),
   };
 
   it("renders nothing when closed", () => {
@@ -35,14 +34,14 @@ describe("EmergencyModal", () => {
   });
 
   it("calls onConfirm when confirm button clicked", () => {
-    const onConfirm = vi.fn();
+    const onConfirm = jest.fn();
     render(<EmergencyModal {...defaultProps} onConfirm={onConfirm} />);
     fireEvent.click(screen.getByText("Confirm"));
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when cancel button clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<EmergencyModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
@@ -58,14 +57,14 @@ describe("EmergencyModal", () => {
   });
 
   it("calls onClose when Escape is pressed", () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     render(<EmergencyModal {...defaultProps} onClose={onClose} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("calls onClose when overlay is clicked", () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     render(<EmergencyModal {...defaultProps} onClose={onClose} />);
     const overlay = screen.getByRole("presentation");
     fireEvent.mouseDown(overlay);
@@ -89,5 +88,51 @@ describe("EmergencyModal", () => {
     render(<EmergencyModal {...defaultProps} confirmText="Call Now" cancelText="Go Back" />);
     expect(screen.getByText("Call Now")).toBeInTheDocument();
     expect(screen.getByText("Go Back")).toBeInTheDocument();
+  });
+
+  it("does not call onClose when mousedown starts inside the dialog", () => {
+    const onClose = jest.fn();
+    render(<EmergencyModal {...defaultProps} onClose={onClose} />);
+    fireEvent.mouseDown(screen.getByRole("dialog"));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("applies a custom border color", () => {
+    render(<EmergencyModal {...defaultProps} borderColor="#123456" />);
+    expect(screen.getByRole("dialog")).toHaveStyle({ borderColor: "#123456" });
+  });
+
+  it("traps focus when tabbing forward from the last button", () => {
+    render(<EmergencyModal {...defaultProps} />);
+    const confirmButton = screen.getByText("Confirm");
+    const cancelButton = screen.getByText("Cancel");
+
+    cancelButton.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+
+    expect(confirmButton).toHaveFocus();
+  });
+
+  it("traps focus when tabbing backward from the first button", () => {
+    render(<EmergencyModal {...defaultProps} />);
+    const confirmButton = screen.getByText("Confirm");
+    const cancelButton = screen.getByText("Cancel");
+
+    confirmButton.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+
+    expect(cancelButton).toHaveFocus();
+  });
+
+  it("returns focus to the previously focused element when closed", () => {
+    const previousButton = document.createElement("button");
+    document.body.appendChild(previousButton);
+    previousButton.focus();
+
+    const { unmount } = render(<EmergencyModal {...defaultProps} />);
+    unmount();
+
+    expect(previousButton).toHaveFocus();
+    previousButton.remove();
   });
 });

@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Input } from "../Input";
 
@@ -9,7 +8,7 @@ describe("Input", () => {
   });
 
   it("calls onChange with value", () => {
-    const onChange = vi.fn();
+    const onChange = jest.fn();
     render(<Input id="test" label="Email" value="" onChange={onChange} />);
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "a@b.com" } });
     expect(onChange).toHaveBeenCalledWith("a@b.com");

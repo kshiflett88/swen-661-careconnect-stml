@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Button } from "../Button";
 
@@ -9,14 +8,14 @@ describe("Button", () => {
   });
 
   it("calls onClick when clicked", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Button onClick={onClick}>Press</Button>);
     fireEvent.click(screen.getByText("Press"));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it("does not call onClick when disabled", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Button onClick={onClick} disabled>Press</Button>);
     fireEvent.click(screen.getByText("Press"));
     expect(onClick).not.toHaveBeenCalled();
@@ -49,14 +48,14 @@ describe("Button", () => {
   });
 
   it("handles Enter keydown", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Button onClick={onClick}>Key</Button>);
     fireEvent.keyDown(screen.getByText("Key"), { key: "Enter" });
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it("handles Space keydown", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Button onClick={onClick}>Space</Button>);
     fireEvent.keyDown(screen.getByText("Space"), { key: " " });
     expect(onClick).toHaveBeenCalledTimes(1);
@@ -109,7 +108,7 @@ describe("Button", () => {
   });
 
   it("does not fire keyDown handler when disabled", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Button onClick={onClick} disabled>Dis</Button>);
     fireEvent.keyDown(screen.getByText("Dis"), { key: "Enter" });
     expect(onClick).not.toHaveBeenCalled();

@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ConfirmDialog } from "../ConfirmDialog";
 
@@ -10,8 +9,8 @@ describe("ConfirmDialog", () => {
     confirmText: "Yes",
     cancelText: "No",
     variant: "danger",
-    onConfirm: vi.fn(),
-    onCancel: vi.fn(),
+    onConfirm: jest.fn(),
+    onCancel: jest.fn(),
   };
 
   it("renders nothing when closed", () => {
@@ -32,28 +31,28 @@ describe("ConfirmDialog", () => {
   });
 
   it("calls onConfirm when confirm button clicked", () => {
-    const onConfirm = vi.fn();
+    const onConfirm = jest.fn();
     render(<ConfirmDialog {...defaultProps} onConfirm={onConfirm} />);
     fireEvent.click(screen.getByText("Yes"));
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when cancel button clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ConfirmDialog {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("No"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel on Escape key", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ConfirmDialog {...defaultProps} onCancel={onCancel} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when overlay is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ConfirmDialog {...defaultProps} onCancel={onCancel} />);
     // The overlay is the presentation role element
     const overlay = screen.getByRole("presentation");

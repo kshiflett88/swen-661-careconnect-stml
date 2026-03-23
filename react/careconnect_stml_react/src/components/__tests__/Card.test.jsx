@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Card } from "../Card";
 
@@ -16,7 +15,7 @@ describe("Card", () => {
   });
 
   it("is interactive when onClick is provided", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Click card">Interactive</Card>);
     const card = screen.getByRole("button", { name: "Click card" });
     expect(card).toBeInTheDocument();
@@ -25,7 +24,7 @@ describe("Card", () => {
   });
 
   it("handles Enter key when interactive", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Pressable">Content</Card>);
     const card = screen.getByRole("button");
     fireEvent.keyDown(card, { key: "Enter" });
@@ -38,7 +37,7 @@ describe("Card", () => {
   });
 
   it("applies focus shadow on interactive card focus", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Focusable">Focus</Card>);
     const card = screen.getByRole("button");
     fireEvent.focus(card);
@@ -46,7 +45,7 @@ describe("Card", () => {
   });
 
   it("clears focus shadow on blur", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Blurrable">Blur</Card>);
     const card = screen.getByRole("button");
     fireEvent.focus(card);
@@ -55,7 +54,7 @@ describe("Card", () => {
   });
 
   it("applies hover shadow on mouseEnter", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Hoverable">Hover</Card>);
     const card = screen.getByRole("button");
     fireEvent.mouseEnter(card);
@@ -63,7 +62,7 @@ describe("Card", () => {
   });
 
   it("restores shadow on mouseLeave", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Leave">Leave</Card>);
     const card = screen.getByRole("button");
     fireEvent.mouseEnter(card);
@@ -72,7 +71,7 @@ describe("Card", () => {
   });
 
   it("handles Space key when interactive", () => {
-    const onClick = vi.fn();
+    const onClick = jest.fn();
     render(<Card onClick={onClick} ariaLabel="Spaceable">Space</Card>);
     fireEvent.keyDown(screen.getByRole("button"), { key: " " });
     expect(onClick).toHaveBeenCalledTimes(1);

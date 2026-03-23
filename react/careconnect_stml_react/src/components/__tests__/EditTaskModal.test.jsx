@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { EditTaskModal } from "../EditTaskModal";
 
@@ -14,9 +13,9 @@ const makeTask = () => ({
 describe("EditTaskModal", () => {
   const defaultProps = {
     isOpen: true,
-    onCancel: vi.fn(),
-    onSave: vi.fn(),
-    onDelete: vi.fn(),
+    onCancel: jest.fn(),
+    onSave: jest.fn(),
+    onDelete: jest.fn(),
     task: makeTask(),
   };
 
@@ -72,7 +71,7 @@ describe("EditTaskModal", () => {
   });
 
   it("calls onSave with task id and updated data on submit", () => {
-    const onSave = vi.fn();
+    const onSave = jest.fn();
     render(<EditTaskModal {...defaultProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText("Task Name"), { target: { value: "Updated task" } });
@@ -82,21 +81,21 @@ describe("EditTaskModal", () => {
   });
 
   it("calls onDelete with task id when Delete is clicked", () => {
-    const onDelete = vi.fn();
+    const onDelete = jest.fn();
     render(<EditTaskModal {...defaultProps} onDelete={onDelete} />);
     fireEvent.click(screen.getByText("Delete Task"));
     expect(onDelete).toHaveBeenCalledWith("42");
   });
 
   it("calls onCancel when Cancel is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<EditTaskModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("closes on Escape key", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<EditTaskModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onCancel).toHaveBeenCalledTimes(1);

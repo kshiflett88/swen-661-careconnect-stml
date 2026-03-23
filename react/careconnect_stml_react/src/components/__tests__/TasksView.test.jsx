@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { TasksView } from "../TasksView";
 
 const makeTasks = () => [
@@ -31,16 +30,20 @@ const makeTasks = () => [
 ];
 
 describe("TasksView", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const defaultProps = {
     tasks: makeTasks(),
     filterMode: "all",
     searchQuery: "",
-    onClearFilter: vi.fn(),
-    onEditTask: vi.fn(),
-    onDeleteTask: vi.fn(),
-    onMarkComplete: vi.fn(),
-    onUndoComplete: vi.fn(),
-    onContextMenu: vi.fn(),
+    onClearFilter: jest.fn(),
+    onEditTask: jest.fn(),
+    onDeleteTask: jest.fn(),
+    onMarkComplete: jest.fn(),
+    onUndoComplete: jest.fn(),
+    onContextMenu: jest.fn(),
   };
 
   it("renders All Tasks heading", () => {
@@ -80,7 +83,7 @@ describe("TasksView", () => {
   });
 
   it("calls onMarkComplete when Mark Complete clicked", () => {
-    const onMarkComplete = vi.fn();
+    const onMarkComplete = jest.fn();
     render(<TasksView {...defaultProps} onMarkComplete={onMarkComplete} />);
     // Click the detail pane's Mark Complete button
     const completeButtons = screen.getAllByText("Mark Complete");
@@ -89,14 +92,14 @@ describe("TasksView", () => {
   });
 
   it("calls onEditTask when Edit clicked", () => {
-    const onEditTask = vi.fn();
+    const onEditTask = jest.fn();
     render(<TasksView {...defaultProps} onEditTask={onEditTask} />);
     fireEvent.click(screen.getByText("Edit Task"));
     expect(onEditTask).toHaveBeenCalledWith("1");
   });
 
   it("calls onDeleteTask when Delete clicked", () => {
-    const onDeleteTask = vi.fn();
+    const onDeleteTask = jest.fn();
     render(<TasksView {...defaultProps} onDeleteTask={onDeleteTask} />);
     fireEvent.click(screen.getByText("Delete Task"));
     expect(onDeleteTask).toHaveBeenCalledWith("1");
@@ -125,7 +128,7 @@ describe("TasksView", () => {
   });
 
   it("calls onClearFilter when clear button clicked", () => {
-    const onClearFilter = vi.fn();
+    const onClearFilter = jest.fn();
     render(<TasksView {...defaultProps} filterMode="search" searchQuery="test" onClearFilter={onClearFilter} />);
     fireEvent.click(screen.getByText("✕ Clear Search"));
     expect(onClearFilter).toHaveBeenCalledTimes(1);
@@ -143,7 +146,7 @@ describe("TasksView", () => {
   });
 
   it("calls onClearFilter when View all tasks is clicked", () => {
-    const onClearFilter = vi.fn();
+    const onClearFilter = jest.fn();
     render(<TasksView {...defaultProps} tasks={[]} filterMode="today" onClearFilter={onClearFilter} />);
     fireEvent.click(screen.getByText("View all tasks"));
     expect(onClearFilter).toHaveBeenCalledTimes(1);
@@ -180,7 +183,7 @@ describe("TasksView", () => {
   });
 
   it("fires onContextMenu on right-click", () => {
-    const onContextMenu = vi.fn();
+    const onContextMenu = jest.fn();
     render(<TasksView {...defaultProps} onContextMenu={onContextMenu} />);
     const cards = screen.getAllByRole("listitem");
     fireEvent.contextMenu(cards[0]);
@@ -195,5 +198,136 @@ describe("TasksView", () => {
   it("renders medium priority badge", () => {
     render(<TasksView {...defaultProps} />);
     expect(screen.getAllByText("MEDIUM PRIORITY").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders low priority badge for completed tasks", () => {
+    render(<TasksView {...defaultProps} />);
+    fireEvent.click(screen.getByText("Completed task"));
+    expect(screen.getAllByText("LOW PRIORITY").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("uses the singular task label when one task is in the search results", () => {
+    render(<TasksView {...defaultProps} filterMode="search" searchQuery="Doctor" />);
+    expect(screen.getByText("1 task found")).toBeInTheDocument();
+  });
+
+  it("uses the singular task label when one task is due today", () => {
+    render(
+      <TasksView
+        {...defaultProps}
+        tasks={[
+          {
+            ...makeTasks()[0],
+            dueDateTime: new Date(),
+          },
+        ]}
+        filterMode="today"
+      />
+    );
+    expect(screen.getByText("1 task due today")).toBeInTheDocument();
+  });
+
+  it("falls back to the first filtered task when the previously selected task is not in the result set", () => {
+    const { rerender } = render(<TasksView {...defaultProps} />);
+    fireEvent.click(screen.getByText("Doctor appointment"));
+    rerender(<TasksView {...defaultProps} filterMode="search" searchQuery="medication" />);
+    expect(screen.getByText("Take prescribed medication with food.")).toBeInTheDocument();
+  });
+
+  it("does not change selection for unrelated key presses", () => {
+    render(<TasksView {...defaultProps} />);
+    const cards = screen.getAllByRole("listitem");
+    fireEvent.keyDown(cards[1], { key: "ArrowDown" });
+    expect(screen.getByText("Take prescribed medication with food.")).toBeInTheDocument();
+  });
+
+  it("toggles card expansion when a task card is clicked twice", () => {
+    render(<TasksView {...defaultProps} />);
+    const doctorCard = screen.getAllByText("Doctor appointment")[0].closest("article");
+
+    fireEvent.click(screen.getAllByText("Doctor appointment")[0]);
+    expect(doctorCard).toHaveClass("expanded");
+
+    fireEvent.click(screen.getAllByText("Doctor appointment")[0]);
+    expect(doctorCard).not.toHaveClass("expanded");
+  });
+
+  it("marks a task complete from the mobile action button and clears expansion", () => {
+    jest.useFakeTimers();
+    const onMarkComplete = jest.fn();
+    render(<TasksView {...defaultProps} onMarkComplete={onMarkComplete} />);
+    const doctorCard = screen.getAllByText("Doctor appointment")[0].closest("article");
+
+    fireEvent.click(screen.getAllByText("Doctor appointment")[0]);
+    expect(doctorCard).toHaveClass("expanded");
+
+    fireEvent.click(doctorCard.querySelector(".mobile-action-complete"));
+    expect(onMarkComplete).toHaveBeenCalledWith("2");
+    expect(doctorCard).not.toHaveClass("expanded");
+
+    jest.runAllTimers();
+  });
+
+  it("calls edit from the mobile action button without changing the selection", () => {
+    const onEditTask = jest.fn();
+    render(<TasksView {...defaultProps} onEditTask={onEditTask} />);
+    const doctorCard = screen.getAllByText("Doctor appointment")[0].closest("article");
+    fireEvent.click(screen.getAllByText("Doctor appointment")[0]);
+    fireEvent.click(doctorCard.querySelector(".mobile-action-edit"));
+    expect(onEditTask).toHaveBeenCalledWith("2");
+    expect(screen.getByText("Annual checkup.")).toBeInTheDocument();
+  });
+
+  it("calls delete from the mobile action button without changing the selection", () => {
+    const onDeleteTask = jest.fn();
+    render(<TasksView {...defaultProps} onDeleteTask={onDeleteTask} />);
+    const doctorCard = screen.getAllByText("Doctor appointment")[0].closest("article");
+    fireEvent.click(screen.getAllByText("Doctor appointment")[0]);
+    fireEvent.click(doctorCard.querySelector(".mobile-action-delete"));
+    expect(onDeleteTask).toHaveBeenCalledWith("2");
+    expect(screen.getByText("Annual checkup.")).toBeInTheDocument();
+  });
+
+  it("shows the undo completion action after completing a task from the detail pane", () => {
+    jest.useFakeTimers();
+    const onMarkComplete = jest.fn();
+    const completedTask = { ...makeTasks()[0], status: "completed" };
+    const { rerender } = render(<TasksView {...defaultProps} onMarkComplete={onMarkComplete} />);
+
+    fireEvent.click(screen.getAllByText("Mark Complete")[0]);
+    rerender(<TasksView {...defaultProps} onMarkComplete={onMarkComplete} tasks={[completedTask, ...makeTasks().slice(1)]} />);
+
+    expect(screen.getByText("Undo Completion")).toBeInTheDocument();
+
+    jest.advanceTimersByTime(5000);
+  });
+
+  it("calls undo from the detail pane after a recent completion", () => {
+    jest.useFakeTimers();
+    const onUndoComplete = jest.fn();
+    const completedTask = { ...makeTasks()[0], status: "completed" };
+    const { rerender } = render(<TasksView {...defaultProps} />);
+
+    fireEvent.click(screen.getAllByText("Mark Complete")[0]);
+    rerender(<TasksView {...defaultProps} onUndoComplete={onUndoComplete} tasks={[completedTask, ...makeTasks().slice(1)]} />);
+
+    fireEvent.click(screen.getByText("Undo Completion"));
+    expect(onUndoComplete).toHaveBeenCalledWith("1");
+
+    jest.runAllTimers();
+  });
+
+  it("calls undo from the completed task mobile action button", () => {
+    const onUndoComplete = jest.fn();
+    render(<TasksView {...defaultProps} onUndoComplete={onUndoComplete} />);
+    fireEvent.click(screen.getByText("Completed task"));
+    fireEvent.click(document.querySelector(".mobile-action-undo"));
+    expect(onUndoComplete).toHaveBeenCalledWith("3");
+  });
+
+  it("shows no view-all button when the filter mode is all and there are no tasks", () => {
+    render(<TasksView {...defaultProps} tasks={[]} filterMode="all" />);
+    expect(screen.getByText("No tasks due today.")).toBeInTheDocument();
+    expect(screen.queryByText("View all tasks")).not.toBeInTheDocument();
   });
 });
