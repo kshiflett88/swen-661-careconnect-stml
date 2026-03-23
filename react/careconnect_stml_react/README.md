@@ -6,7 +6,7 @@ This project uses:
 
 - `React` + `Vite` for the app
 - `Jest` + `React Testing Library` for unit and component tests
-- `Playwright` for end-to-end tests across Chromium, Firefox, and WebKit
+- `Playwright` for end-to-end tests across Chromium, Firefox, and Safari compatibility via WebKit
 
 ## What The App Does
 
@@ -26,7 +26,9 @@ Key folders and files:
 
 - `src/App.jsx` - main application flow and screen switching
 - `src/components/` - UI components and view-level components
-- `src/components/__tests__/` - Jest component and unit tests
+- `src/components/__tests__/` - component tests for views, modals, and user interaction flows
+- `src/unit/__tests__/` - unit tests for small isolated UI building blocks
+- `src/utils/__tests__/` - unit tests for utility functions
 - `src/test/` - Jest setup helpers
 - `e2e/` - Playwright end-to-end tests
 - `playwright.config.js` - Playwright browser and web server configuration
@@ -62,15 +64,22 @@ Development and build:
 - `npm run preview` - preview the production build locally
 - `npm run lint` - run ESLint
 
-Jest unit and component testing:
+Jest testing:
 
-- `npm test` - run all Jest tests once
+- `npm test` - run the full Jest suite
 - `npm run test:watch` - run Jest in watch mode
-- `npm run test:coverage` - generate a Jest coverage report
+- `npm run test:coverage` - generate coverage for the full Jest suite
+- `npm run test:a11y` - run dedicated automated accessibility tests
+- `npm run test:a11y:coverage` - generate coverage for only accessibility tests
+- `npm run test:unit` - run only unit tests
+- `npm run test:unit:coverage` - generate coverage for only unit tests
+- `npm run test:component` - run only component tests
+- `npm run test:component:coverage` - generate coverage for only component tests
 
 Playwright end-to-end testing:
 
 - `npm run test:e2e` - run all Playwright tests
+- `npm run test:e2e:a11y` - run browser-based accessibility smoke tests
 - `npm run test:e2e:headed` - run Playwright in headed mode
 - `npm run test:e2e:ui` - open the Playwright UI runner
 
@@ -82,7 +91,19 @@ The project includes three testing layers:
 - `Component tests` with React Testing Library
 - `End-to-end tests` with Playwright
 
-To generate the Jest coverage report:
+It also includes a dedicated automated accessibility test layer built with:
+
+- `Jest`
+- `React Testing Library`
+- `jest-axe`
+
+Current Jest split:
+
+- Unit tests are located in `src/unit/__tests__/` and `src/utils/__tests__/`
+- Component tests are located in `src/components/__tests__/`
+- Accessibility tests are located in `src/accessibility/__tests__/`
+
+To generate the full Jest coverage report:
 
 ```bash
 npm run test:coverage
@@ -104,6 +125,60 @@ Playwright HTML results are written to:
 
 ```text
 playwright-report/index.html
+```
+
+## Current Unit Test Scope
+
+The dedicated unit layer currently covers:
+
+- `Button`
+- `Card`
+- `Input`
+- `PriorityBadge`
+- `taskUtils`
+
+These tests verify smaller isolated behaviors such as formatting, rendering, props, and callback handling.
+
+## Current Component Test Scope
+
+The component layer currently covers:
+
+- `App`
+- `DashboardView`
+- `TasksView`
+- `ContactsView`
+- `SettingsView`
+- sign-in and help flows
+- dialogs, context menus, and task modals
+
+These tests validate user-facing UI behavior and state transitions in a jsdom environment.
+
+## Current Accessibility Test Scope
+
+The dedicated accessibility layer covers:
+
+- automated `axe` checks for sign-in, help, dialog, modal, menu, and settings flows
+- keyboard-only navigation for sign-in and help flows
+- focus trapping and `Escape` handling for task modals
+- keyboard navigation for the task context menu
+- WCAG 2.1 baseline checks for minimum target sizes and contrast ratios
+- STML-oriented guardrails for larger touch targets on primary actions
+- browser-based Playwright accessibility smoke checks across Chromium, Firefox, and Safari via WebKit
+- responsive large-text and high-contrast checks on mobile-sized viewports
+- real-browser ARIA state checks for navigation and search controls
+
+Run this layer with:
+
+```bash
+npm run test:a11y
+```
+
+This accessibility suite is intended to catch obvious regressions early, especially around keyboard access, dialog behavior, and high-clarity interaction patterns that matter for patients with STML.
+
+For browser-level accessibility smoke checks, run:
+
+```bash
+npm run test:e2e:a11y
 ```
 
 ## Current E2E Flows

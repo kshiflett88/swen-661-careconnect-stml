@@ -1,7 +1,7 @@
 module.exports = {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/src/test/setup.js"],
-  testMatch: ["<rootDir>/src/components/__tests__/**/*.test.jsx"],
+  testMatch: ["<rootDir>/src/**/__tests__/**/*.test.[jt]s?(x)"],
   transform: {
     "^.+\\.[jt]sx?$": "babel-jest",
   },
@@ -11,7 +11,7 @@ module.exports = {
   },
   collectCoverageFrom: [
     "src/**/*.{js,jsx}",
-    "!src/components/__tests__/**",
+    "!src/**/__tests__/**",
     "!src/test/**",
   ],
   coverageDirectory: "<rootDir>/coverage",

@@ -277,6 +277,7 @@ describe("App", () => {
   });
 
   it("adds a quick task from the dashboard and updates the footer count", () => {
+    jest.useFakeTimers();
     jest.setSystemTime(new Date("2026-03-23T10:00:00"));
     render(<App />);
     signIn();

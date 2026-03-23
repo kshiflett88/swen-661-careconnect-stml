@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, act } from "@testing-library/react";
 import { TasksView } from "../TasksView";
 
 const makeTasks = () => [
@@ -265,7 +265,9 @@ describe("TasksView", () => {
     expect(onMarkComplete).toHaveBeenCalledWith("2");
     expect(doctorCard).not.toHaveClass("expanded");
 
-    jest.runAllTimers();
+    act(() => {
+      jest.runAllTimers();
+    });
   });
 
   it("calls edit from the mobile action button without changing the selection", () => {
@@ -299,7 +301,9 @@ describe("TasksView", () => {
 
     expect(screen.getByText("Undo Completion")).toBeInTheDocument();
 
-    jest.advanceTimersByTime(5000);
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
   });
 
   it("calls undo from the detail pane after a recent completion", () => {
@@ -314,7 +318,9 @@ describe("TasksView", () => {
     fireEvent.click(screen.getByText("Undo Completion"));
     expect(onUndoComplete).toHaveBeenCalledWith("1");
 
-    jest.runAllTimers();
+    act(() => {
+      jest.runAllTimers();
+    });
   });
 
   it("calls undo from the completed task mobile action button", () => {
