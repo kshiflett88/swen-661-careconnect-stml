@@ -4,9 +4,19 @@ CareConnect is a React frontend prototype for an accessible care-support applica
 
 This project uses:
 
-- `React` + `Vite` for the app
-- `Jest` + `React Testing Library` for unit and component tests
+- `React 19` + `Vite 8` for the app
+- `React Router` (HashRouter) for client-side routing
+- `Tailwind CSS 4` for styling
+- `Jest 30` + `React Testing Library` for unit and component tests
 - `Playwright` for end-to-end tests across Chromium, Firefox, and Safari compatibility via WebKit
+
+## Live Demo
+
+The app is deployed to GitHub Pages at:
+
+```text
+https://kshiflett88.github.io/swen-661-careconnect-stml/
+```
 
 ## What The App Does
 
@@ -15,33 +25,37 @@ The current prototype includes:
 - A sign-in screen with a help path for caregiver assistance
 - A dashboard with mood check-in, next tasks, upcoming tasks, and quick add
 - A tasks area with search, filtering, completion, edit, and delete flows
+- Success banner notifications on task add and delete
 - A contacts area with caregiver, family, doctor, and emergency support actions
 - A settings area for display, reminder, support, and sign-out options
+- URL-based navigation between views (Dashboard, Tasks, Contacts, Settings)
+
+The app is a Progressive Web App (PWA) with a manifest, service worker, and installable icons (192×192 and 512×512).
 
 The app is currently frontend-only. It does not use a backend API or persistent database. Most application data is stored in React state for demonstration and testing purposes.
 
-## Project Structure
+## Prerequisites
 
-Key folders and files:
+- **Node.js** >= 20 (tested with v20.19.6)
+- **npm** >= 10
 
-- `src/App.jsx` - main application flow and screen switching
-- `src/components/` - UI components and view-level components
-- `src/components/__tests__/` - component tests for views, modals, and user interaction flows
-- `src/unit/__tests__/` - unit tests for small isolated UI building blocks
-- `src/utils/__tests__/` - unit tests for utility functions
-- `src/test/` - Jest setup helpers
-- `e2e/` - Playwright end-to-end tests
-- `playwright.config.js` - Playwright browser and web server configuration
-- `jest.config.cjs` - Jest configuration
-- `babel.config.cjs` - Babel configuration for Jest
+## Cloning and Setup
 
-## Getting Started
-
-Install dependencies:
+This React app lives inside a subfolder of a larger repository. To clone and get running:
 
 ```bash
+git clone https://github.com/kshiflett88/swen-661-careconnect-stml.git
+cd swen-661-careconnect-stml/react/careconnect_stml_react
 npm install
 ```
+
+If you plan to run Playwright end-to-end tests, also install browser binaries:
+
+```bash
+npx playwright install
+```
+
+## Running the App
 
 Start the local development server:
 
@@ -49,39 +63,92 @@ Start the local development server:
 npm run dev
 ```
 
-By default, Vite will serve the app locally, typically at:
+Vite will serve the app locally, typically at:
 
 ```text
 http://localhost:5173
 ```
 
+To create and preview a production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Project Structure
+
+Key folders and files:
+
+- `src/App.jsx` — main application component with React Router routes and state management
+- `src/main.jsx` — app entry point; wraps `<App />` in `HashRouter`
+- `src/components/` — UI components, view-level components, and modals
+- `src/components/__tests__/` — component tests for views, modals, and user interaction flows
+- `src/unit/__tests__/` — unit tests for small isolated UI building blocks
+- `src/utils/` — utility functions (`taskUtils.js`)
+- `src/utils/__tests__/` — unit tests for utility functions
+- `src/accessibility/__tests__/` — automated accessibility tests (axe, keyboard, focus)
+- `src/test/` — Jest setup helpers
+- `e2e/` — Playwright end-to-end tests
+- `public/` — static assets: `manifest.json`, `sw.js`, icons, screenshots
+- `playwright.config.js` — Playwright browser and web server configuration
+- `jest.config.cjs` — Jest configuration
+- `babel.config.cjs` — Babel configuration for Jest
+- `vite.config.js` — Vite build configuration (includes `base` path for GitHub Pages)
+
 ## Available Scripts
 
 Development and build:
 
-- `npm run dev` - start the Vite development server
-- `npm run build` - create a production build
-- `npm run preview` - preview the production build locally
-- `npm run lint` - run ESLint
+- `npm run dev` — start the Vite development server
+- `npm run build` — create a production build
+- `npm run preview` — preview the production build locally
+- `npm run lint` — run ESLint
+
+Deployment:
+
+- `npm run deploy` — build and deploy to the `gh-pages` branch (runs `predeploy` automatically)
 
 Jest testing:
 
-- `npm test` - run the full Jest suite
-- `npm run test:watch` - run Jest in watch mode
-- `npm run test:coverage` - generate coverage for the full Jest suite
-- `npm run test:a11y` - run dedicated automated accessibility tests
-- `npm run test:a11y:coverage` - generate coverage for only accessibility tests
-- `npm run test:unit` - run only unit tests
-- `npm run test:unit:coverage` - generate coverage for only unit tests
-- `npm run test:component` - run only component tests
-- `npm run test:component:coverage` - generate coverage for only component tests
+- `npm test` — run the full Jest suite
+- `npm run test:watch` — run Jest in watch mode
+- `npm run test:coverage` — generate coverage for the full Jest suite
+- `npm run test:a11y` — run dedicated automated accessibility tests
+- `npm run test:a11y:coverage` — generate coverage for only accessibility tests
+- `npm run test:unit` — run only unit tests
+- `npm run test:unit:coverage` — generate coverage for only unit tests
+- `npm run test:component` — run only component tests
+- `npm run test:component:coverage` — generate coverage for only component tests
 
 Playwright end-to-end testing:
 
-- `npm run test:e2e` - run all Playwright tests
-- `npm run test:e2e:a11y` - run browser-based accessibility smoke tests
-- `npm run test:e2e:headed` - run Playwright in headed mode
-- `npm run test:e2e:ui` - open the Playwright UI runner
+- `npm run test:e2e` — run all Playwright tests
+- `npm run test:e2e:a11y` — run browser-based accessibility smoke tests
+- `npm run test:e2e:headed` — run Playwright in headed mode
+- `npm run test:e2e:ui` — open the Playwright UI runner
+
+## Running Tests
+
+To run all Jest tests (unit + component + accessibility):
+
+```bash
+npm test
+```
+
+To run only one test layer:
+
+```bash
+npm run test:unit        # unit tests only
+npm run test:component   # component tests only
+npm run test:a11y        # accessibility tests only
+```
+
+To run Playwright end-to-end tests (requires `npx playwright install` first):
+
+```bash
+npm run test:e2e
+```
 
 ## Test Coverage
 
@@ -203,6 +270,8 @@ Note:
 
 ## Notes
 
-- The app registers a simple service worker for placeholder offline behavior.
+- The app is a PWA with a `manifest.json`, service worker (`sw.js`), and installable icons.
+- Client-side routing uses `HashRouter` for GitHub Pages compatibility (no server-side routing required).
+- The Vite `base` path is set to `/swen-661-careconnect-stml/` for the GitHub Pages deployment.
 - The project still contains prototype data and placeholder interactions in a few areas.
 - The UI is intentionally testable through accessible labels and roles where possible.
