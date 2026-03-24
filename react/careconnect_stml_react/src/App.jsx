@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { DashboardView } from "./components/DashboardView";
 import { TasksView } from "./components/TasksView";
@@ -9,15 +10,33 @@ import { EmergencyModal } from "./components/EmergencyModal";
 import { AddTaskModal } from "./components/AddTaskModal";
 import { EditTaskModal } from "./components/EditTaskModal";
 import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
+import { SuccessBanner } from "./components/SuccessBanner";
 import { SignInView } from "./components/SignInView";
 import { SignInHelpView } from "./components/SignInHelpView";
 
+const NAV_ROUTES = {
+  "/dashboard": "Dashboard",
+  "/tasks": "Tasks",
+  "/contacts": "Contacts",
+  "/settings": "Settings",
+};
+
+const NAV_PATHS = {
+  Dashboard: "/dashboard",
+  Tasks: "/tasks",
+  Contacts: "/contacts",
+  Settings: "/settings",
+};
+
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activeNav = NAV_ROUTES[location.pathname] ?? "Dashboard";
+
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [authStep, setAuthStep] = useState("signin");
   const [showContactCaregiverConfirm, setShowContactCaregiverConfirm] = useState(false);
   const [caregiverRequestSent, setCaregiverRequestSent] = useState(false);
-  const [activeNav, setActiveNav] = useState("Dashboard");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingCompleteTaskId, setPendingCompleteTaskId] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
@@ -34,6 +53,17 @@ export default function App() {
   const [textScalePercent, setTextScalePercent] = useState(100);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState("");
+  const [bannerVisible, setBannerVisible] = useState(false);
+
+  const showBanner = useCallback((message) => {
+    setBannerMessage(message);
+    setBannerVisible(true);
+  }, []);
+
+  const dismissBanner = useCallback(() => {
+    setBannerVisible(false);
+  }, []);
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
@@ -176,7 +206,7 @@ export default function App() {
 
   const handleSearchChange = (value) => {
     setSearchInputValue(value);
-    setActiveNav("Tasks");
+    navigate("/tasks");
     if (value.trim()) {
       setTaskFilterMode("search");
       setSearchQuery(value);
@@ -187,7 +217,7 @@ export default function App() {
   };
 
   const handleTodayClick = () => {
-    setActiveNav("Tasks");
+    navigate("/tasks");
     setTaskFilterMode((prev) => (prev === "today" ? "all" : "today"));
     setSearchQuery("");
     setSearchInputValue("");
@@ -211,8 +241,9 @@ export default function App() {
 
     setTasks((prev) => [...prev, newTask]);
     setShowAddTaskModal(false);
-    setActiveNav("Tasks");
+    navigate("/tasks");
     handleClearFilter();
+    showBanner(`Success: ${newTask.title} was added!`);
   };
 
   const handleEditTaskSubmit = (taskId, taskData) => {
@@ -234,9 +265,13 @@ export default function App() {
   };
 
   const handleDeleteTask = (taskId) => {
+    const deletedTask = tasks.find((task) => task.id === taskId);
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
     setShowEditTaskModal(false);
     setEditingTaskId(null);
+    if (deletedTask) {
+      showBanner(`Success: ${deletedTask.title} was deleted!`);
+    }
   };
 
   const handleQuickAddTask = (taskData) => {
@@ -254,52 +289,52 @@ export default function App() {
     };
 
     setTasks((prev) => [...prev, newTask]);
+    showBanner(`Success: ${newTask.title} was added!`);
   };
 
   const handleSignOut = () => {
     setIsSignedIn(false);
     setAuthStep("signin");
-    setActiveNav("Dashboard");
+    navigate("/dashboard");
     setShowEmergencyModal(false);
     setEmergencyConfirmed(false);
     setContextMenu(null);
   };
 
-  let content;
-  if (activeNav === "Dashboard") {
-    content = (
-      <DashboardView
-        tasks={tasks}
-        onOpenTasks={() => setActiveNav("Tasks")}
-        onMarkComplete={handleMarkComplete}
-        onQuickAddTask={handleQuickAddTask}
-      />
-    );
-  } else if (activeNav === "Tasks") {
-    content = (
-      <TasksView
-        onContextMenu={handleContextMenu}
-        filterMode={taskFilterMode}
-        searchQuery={searchQuery}
-        onClearFilter={handleClearFilter}
-        tasks={tasks}
-        onEditTask={(taskId) => {
-          setEditingTaskId(taskId);
-          setShowEditTaskModal(true);
-        }}
-        onDeleteTask={(taskId) => {
-          setDeletingTaskId(taskId);
-          setShowDeleteTaskConfirmModal(true);
-        }}
-        onMarkComplete={handleMarkComplete}
-        onUndoComplete={handleUndoComplete}
-      />
-    );
-  } else if (activeNav === "Contacts") {
-    content = <ContactsView />;
-  } else {
-    content = <SettingsView onSignOut={handleSignOut} />;
-  }
+  const routeContent = (
+    <Routes>
+      <Route path="/dashboard" element={
+        <DashboardView
+          tasks={tasks}
+          onOpenTasks={() => navigate("/tasks")}
+          onMarkComplete={handleMarkComplete}
+          onQuickAddTask={handleQuickAddTask}
+        />
+      } />
+      <Route path="/tasks" element={
+        <TasksView
+          onContextMenu={handleContextMenu}
+          filterMode={taskFilterMode}
+          searchQuery={searchQuery}
+          onClearFilter={handleClearFilter}
+          tasks={tasks}
+          onEditTask={(taskId) => {
+            setEditingTaskId(taskId);
+            setShowEditTaskModal(true);
+          }}
+          onDeleteTask={(taskId) => {
+            setDeletingTaskId(taskId);
+            setShowDeleteTaskConfirmModal(true);
+          }}
+          onMarkComplete={handleMarkComplete}
+          onUndoComplete={handleUndoComplete}
+        />
+      } />
+      <Route path="/contacts" element={<ContactsView />} />
+      <Route path="/settings" element={<SettingsView onSignOut={handleSignOut} />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
 
   const activeTaskCount = tasks.filter((task) => task.status !== "completed").length;
   const nextPendingTask = [...tasks]
@@ -342,7 +377,7 @@ export default function App() {
   })();
 
   const handleNavClick = (item) => {
-    setActiveNav(item);
+    navigate(NAV_PATHS[item]);
     setSidebarOpen(false);
   };
 
@@ -483,7 +518,7 @@ export default function App() {
           <div className="app-context-bar">
             <strong>You are on:</strong> {activeNav}
           </div>
-          {content}
+          {routeContent}
         </main>
       </div>
 
@@ -551,6 +586,12 @@ export default function App() {
           <span>Settings</span>
         </button>
       </nav>
+
+      <SuccessBanner
+        message={bannerMessage}
+        isVisible={bannerVisible}
+        onDismiss={dismissBanner}
+      />
 
       <ConfirmDialog
         isOpen={showConfirmDialog}

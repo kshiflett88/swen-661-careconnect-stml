@@ -1,6 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import App from "../../App";
+
+function renderApp(initialRoute = "/dashboard") {
+  return render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <App />
+    </MemoryRouter>
+  );
+}
 
 describe("App", () => {
   const signIn = () => {
@@ -9,36 +18,36 @@ describe("App", () => {
   };
 
   it("renders sign-in view by default", () => {
-    render(<App />);
+    renderApp();
     expect(screen.getByText("Welcome back")).toBeInTheDocument();
   });
 
   it("shows the help view when Need Help is clicked", () => {
-    render(<App />);
+    renderApp();
     fireEvent.click(screen.getByText(/need help signing in/i));
     expect(screen.getByText("Having trouble signing in?")).toBeInTheDocument();
   });
 
   it("navigates to Dashboard after signing in", () => {
-    render(<App />);
+    renderApp();
     signIn();
     expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
   });
 
   it("shows the app toolbar after sign-in", () => {
-    render(<App />);
+    renderApp();
     signIn();
     expect(screen.getByLabelText("Toggle navigation menu")).toBeInTheDocument();
   });
 
   it("shows sidebar navigation items", () => {
-    render(<App />);
+    renderApp();
     signIn();
     expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();
   });
 
   it("navigates to Tasks view", () => {
-    render(<App />);
+    renderApp();
     signIn();
     // Click Tasks in sidebar
     const navButtons = screen.getAllByText("Tasks");
@@ -47,7 +56,7 @@ describe("App", () => {
   });
 
   it("navigates to Contacts view", () => {
-    render(<App />);
+    renderApp();
     signIn();
     const contactsBtns = screen.getAllByText("Contacts");
     fireEvent.click(contactsBtns[0]);
@@ -55,7 +64,7 @@ describe("App", () => {
   });
 
   it("navigates to Settings view", () => {
-    render(<App />);
+    renderApp();
     signIn();
     const settingsBtns = screen.getAllByText("Settings");
     fireEvent.click(settingsBtns[0]);
@@ -63,7 +72,7 @@ describe("App", () => {
   });
 
   it("opens Add Task modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     // Navigate away from Dashboard to avoid the Quick Add "Add Task" button
     const navButtons = screen.getAllByText("Tasks");
@@ -73,27 +82,27 @@ describe("App", () => {
   });
 
   it("opens Emergency modal when SOS clicked", () => {
-    render(<App />);
+    renderApp();
     signIn();
     fireEvent.click(screen.getByText("SOS"));
     expect(screen.getByText("Emergency")).toBeInTheDocument();
   });
 
   it("shows footer with current date and active task count", () => {
-    render(<App />);
+    renderApp();
     signIn();
     expect(screen.getByText(/Active Tasks:/)).toBeInTheDocument();
     expect(screen.getByText(/Current Date:/)).toBeInTheDocument();
   });
 
   it("shows context bar with current view name", () => {
-    render(<App />);
+    renderApp();
     signIn();
     expect(screen.getByText(/You are on:/)).toBeInTheDocument();
   });
 
   it("signs out and returns to sign-in page", () => {
-    render(<App />);
+    renderApp();
     signIn();
     const settingsBtns = screen.getAllByText("Settings");
     fireEvent.click(settingsBtns[0]);
@@ -112,7 +121,7 @@ describe("App", () => {
   };
 
   it("searches tasks from toolbar", () => {
-    render(<App />);
+    renderApp();
     signIn();
     const searchInput = screen.getByPlaceholderText("Search tasks...");
     fireEvent.change(searchInput, { target: { value: "medication" } });
@@ -120,7 +129,7 @@ describe("App", () => {
   });
 
   it("clears search from toolbar", () => {
-    render(<App />);
+    renderApp();
     signIn();
     const searchInput = screen.getByPlaceholderText("Search tasks...");
     fireEvent.change(searchInput, { target: { value: "medication" } });
@@ -129,7 +138,7 @@ describe("App", () => {
   });
 
   it("toggles Today filter", () => {
-    render(<App />);
+    renderApp();
     signIn();
     fireEvent.click(screen.getByText("Today"));
     expect(screen.getByText(/Today's Tasks/i)).toBeInTheDocument();
@@ -138,7 +147,7 @@ describe("App", () => {
   });
 
   it("adds a new task via modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     fireEvent.click(screen.getByText("Add Task"));
@@ -151,7 +160,7 @@ describe("App", () => {
   });
 
   it("edits a task via Edit Task modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     const editBtn = document.querySelector(".action-edit");
@@ -164,7 +173,7 @@ describe("App", () => {
   });
 
   it("deletes a task via Delete confirm modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     fireEvent.click(screen.getByText("Delete Task"));
@@ -175,7 +184,7 @@ describe("App", () => {
   });
 
   it("marks task complete from detail pane", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     const completeButtons = screen.getAllByText("Mark Complete");
@@ -184,7 +193,7 @@ describe("App", () => {
   });
 
   it("confirms and dismisses Emergency modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     fireEvent.click(screen.getByText("SOS"));
     fireEvent.click(screen.getByText("Confirm"));
@@ -194,7 +203,7 @@ describe("App", () => {
   });
 
   it("cancels Emergency modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     fireEvent.click(screen.getByText("SOS"));
     fireEvent.click(screen.getByText("Cancel"));
@@ -202,7 +211,7 @@ describe("App", () => {
   });
 
   it("opens mobile search toggle", () => {
-    render(<App />);
+    renderApp();
     signIn();
     fireEvent.click(screen.getByLabelText("Search tasks"));
     const searchInputs = screen.getAllByPlaceholderText("Search tasks...");
@@ -210,7 +219,7 @@ describe("App", () => {
   });
 
   it("opens delete from edit modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     // Open edit modal via the detail pane edit button
@@ -223,7 +232,7 @@ describe("App", () => {
   });
 
   it("handles caregiver contact flow in help view", () => {
-    render(<App />);
+    renderApp();
     fireEvent.click(screen.getByText(/need help signing in/i));
     fireEvent.click(screen.getByText("Contact Caregiver"));
     expect(screen.getByText("Contact caregiver?")).toBeInTheDocument();
@@ -232,14 +241,14 @@ describe("App", () => {
   });
 
   it("closes help view", () => {
-    render(<App />);
+    renderApp();
     fireEvent.click(screen.getByText(/need help signing in/i));
     fireEvent.click(screen.getByLabelText("Close sign in help modal"));
     expect(screen.queryByText("Having trouble signing in?")).not.toBeInTheDocument();
   });
 
   it("resets access from help view", () => {
-    render(<App />);
+    renderApp();
     fireEvent.click(screen.getByText(/need help signing in/i));
     fireEvent.click(screen.getByText("Reset Access"));
     expect(screen.queryByText("Having trouble signing in?")).not.toBeInTheDocument();
@@ -247,7 +256,7 @@ describe("App", () => {
   });
 
   it("cancels Add Task modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     fireEvent.click(screen.getByText("Add Task"));
@@ -256,7 +265,7 @@ describe("App", () => {
   });
 
   it("cancels Edit Task modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     fireEvent.click(screen.getByText("Edit Task"));
@@ -265,7 +274,7 @@ describe("App", () => {
   });
 
   it("cancels Delete Task confirm modal", () => {
-    render(<App />);
+    renderApp();
     signIn();
     goToTasks();
     fireEvent.click(screen.getByText("Delete Task"));
