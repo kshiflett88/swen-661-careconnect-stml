@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PriorityBadge } from "../PriorityBadge";
+import { PriorityBadge } from "../../components/PriorityBadge";
 
 describe("PriorityBadge", () => {
   it("renders high priority", () => {

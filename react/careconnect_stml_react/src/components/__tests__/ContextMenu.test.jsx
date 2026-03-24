@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ContextMenu } from "../ContextMenu";
 
@@ -6,10 +5,10 @@ describe("ContextMenu", () => {
   const defaultProps = {
     x: 100,
     y: 200,
-    onEdit: vi.fn(),
-    onMarkComplete: vi.fn(),
-    onDelete: vi.fn(),
-    onClose: vi.fn(),
+    onEdit: jest.fn(),
+    onMarkComplete: jest.fn(),
+    onDelete: jest.fn(),
+    onClose: jest.fn(),
   };
 
   it("renders all three menu items", () => {
@@ -38,28 +37,28 @@ describe("ContextMenu", () => {
   });
 
   it("calls onEdit when Edit task is clicked", () => {
-    const onEdit = vi.fn();
+    const onEdit = jest.fn();
     render(<ContextMenu {...defaultProps} onEdit={onEdit} />);
     fireEvent.click(screen.getByText("Edit task"));
     expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
   it("calls onMarkComplete when Mark Complete is clicked", () => {
-    const onMarkComplete = vi.fn();
+    const onMarkComplete = jest.fn();
     render(<ContextMenu {...defaultProps} onMarkComplete={onMarkComplete} />);
     fireEvent.click(screen.getByText("Mark Complete"));
     expect(onMarkComplete).toHaveBeenCalledTimes(1);
   });
 
   it("calls onDelete when Delete task is clicked", () => {
-    const onDelete = vi.fn();
+    const onDelete = jest.fn();
     render(<ContextMenu {...defaultProps} onDelete={onDelete} />);
     fireEvent.click(screen.getByText("Delete task"));
     expect(onDelete).toHaveBeenCalledTimes(1);
   });
 
   it("calls onClose when Escape is pressed", () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     render(<ContextMenu {...defaultProps} onClose={onClose} />);
     const menu = screen.getByRole("menu");
     fireEvent.keyDown(menu, { key: "Escape" });
@@ -67,7 +66,7 @@ describe("ContextMenu", () => {
   });
 
   it("calls onClose on outside click", () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     render(<ContextMenu {...defaultProps} onClose={onClose} />);
     fireEvent.mouseDown(document.body);
     expect(onClose).toHaveBeenCalledTimes(1);

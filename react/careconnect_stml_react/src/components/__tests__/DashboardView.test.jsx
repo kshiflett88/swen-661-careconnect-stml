@@ -1,4 +1,3 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DashboardView } from "../DashboardView";
 
@@ -33,9 +32,9 @@ const makeTasks = () => [
 describe("DashboardView", () => {
   const defaultProps = {
     tasks: makeTasks(),
-    onOpenTasks: vi.fn(),
-    onMarkComplete: vi.fn(),
-    onQuickAddTask: vi.fn(),
+    onOpenTasks: jest.fn(),
+    onMarkComplete: jest.fn(),
+    onQuickAddTask: jest.fn(),
   };
 
   it("renders Dashboard heading", () => {
@@ -70,7 +69,7 @@ describe("DashboardView", () => {
   });
 
   it("calls onMarkComplete when Mark Complete is clicked", () => {
-    const onMarkComplete = vi.fn();
+    const onMarkComplete = jest.fn();
     render(<DashboardView {...defaultProps} onMarkComplete={onMarkComplete} />);
     const btn = screen.getByText("Mark Complete");
     fireEvent.click(btn);
@@ -118,7 +117,7 @@ describe("DashboardView", () => {
   });
 
   it("renders upcoming tasks with click handler", () => {
-    const onOpenTasks = vi.fn();
+    const onOpenTasks = jest.fn();
     render(<DashboardView {...defaultProps} onOpenTasks={onOpenTasks} />);
     // Click an upcoming task card
     fireEvent.click(screen.getByLabelText(/Open tasks and view Doctor appointment/));
@@ -132,7 +131,7 @@ describe("DashboardView", () => {
   });
 
   it("submits quick add task", () => {
-    const onQuickAddTask = vi.fn();
+    const onQuickAddTask = jest.fn();
     render(<DashboardView {...defaultProps} onQuickAddTask={onQuickAddTask} />);
     fireEvent.change(screen.getByLabelText("What do you need to remember?"), { target: { value: "Buy groceries" } });
     fireEvent.change(screen.getByLabelText("Due Date"), { target: { value: "2026-04-01" } });
@@ -142,7 +141,7 @@ describe("DashboardView", () => {
   });
 
   it("does not submit empty quick add task", () => {
-    const onQuickAddTask = vi.fn();
+    const onQuickAddTask = jest.fn();
     render(<DashboardView {...defaultProps} onQuickAddTask={onQuickAddTask} />);
     fireEvent.click(screen.getByLabelText("Add quick task"));
     expect(onQuickAddTask).not.toHaveBeenCalled();

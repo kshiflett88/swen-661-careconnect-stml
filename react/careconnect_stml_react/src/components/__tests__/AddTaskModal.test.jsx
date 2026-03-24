@@ -1,12 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AddTaskModal } from "../AddTaskModal";
 
 describe("AddTaskModal", () => {
   const defaultProps = {
     isOpen: true,
-    onCancel: vi.fn(),
-    onSave: vi.fn(),
+    onCancel: jest.fn(),
+    onSave: jest.fn(),
   };
 
   it("renders nothing when closed", () => {
@@ -51,7 +50,7 @@ describe("AddTaskModal", () => {
   });
 
   it("calls onSave with form data when valid", () => {
-    const onSave = vi.fn();
+    const onSave = jest.fn();
     render(<AddTaskModal {...defaultProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText("Task Name"), { target: { value: "New task" } });
@@ -71,7 +70,7 @@ describe("AddTaskModal", () => {
   });
 
   it("uses 'Untitled Task' when name is empty", () => {
-    const onSave = vi.fn();
+    const onSave = jest.fn();
     render(<AddTaskModal {...defaultProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText("Due Date"), { target: { value: "2026-03-20" } });
@@ -84,14 +83,14 @@ describe("AddTaskModal", () => {
   });
 
   it("calls onCancel when Cancel is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<AddTaskModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("closes on Escape key", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<AddTaskModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onCancel).toHaveBeenCalledTimes(1);

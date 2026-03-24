@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ContactActionModal } from "../ContactActionModal";
 
 describe("ContactActionModal", () => {
@@ -11,8 +10,8 @@ describe("ContactActionModal", () => {
     confirmLabel: "Call Now",
     variant: "primary",
     icon: "phone",
-    onCancel: vi.fn(),
-    onConfirm: vi.fn(),
+    onCancel: jest.fn(),
+    onConfirm: jest.fn(),
   };
 
   it("renders nothing when closed", () => {
@@ -46,28 +45,28 @@ describe("ContactActionModal", () => {
   });
 
   it("calls onConfirm when confirm button is clicked", () => {
-    const onConfirm = vi.fn();
+    const onConfirm = jest.fn();
     render(<ContactActionModal {...defaultProps} onConfirm={onConfirm} />);
     fireEvent.click(screen.getByText("Call Now"));
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when Cancel is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ContactActionModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when Escape is pressed", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ContactActionModal {...defaultProps} onCancel={onCancel} />);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("calls onCancel when overlay is clicked", () => {
-    const onCancel = vi.fn();
+    const onCancel = jest.fn();
     render(<ContactActionModal {...defaultProps} onCancel={onCancel} />);
     const overlay = document.querySelector(".contact-action-overlay");
     fireEvent.click(overlay);
@@ -90,5 +89,56 @@ describe("ContactActionModal", () => {
   it("has close button with aria-label", () => {
     render(<ContactActionModal {...defaultProps} />);
     expect(screen.getByLabelText("Close contact action confirmation")).toBeInTheDocument();
+  });
+
+  it("calls onCancel when the close button is clicked", () => {
+    const onCancel = jest.fn();
+    render(<ContactActionModal {...defaultProps} onCancel={onCancel} />);
+    fireEvent.click(screen.getByLabelText("Close contact action confirmation"));
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call onCancel when the modal content is clicked", () => {
+    const onCancel = jest.fn();
+    render(<ContactActionModal {...defaultProps} onCancel={onCancel} />);
+    fireEvent.click(screen.getByRole("alertdialog"));
+    expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it("focuses the confirm button when opened", async () => {
+    render(<ContactActionModal {...defaultProps} />);
+    await waitFor(() => expect(screen.getByText("Call Now")).toHaveFocus());
+  });
+
+  it("keeps focus trapped when tabbing forward from the last focusable element", () => {
+    render(<ContactActionModal {...defaultProps} />);
+    const closeButton = screen.getByLabelText("Close contact action confirmation");
+    const confirmButton = screen.getByText("Call Now");
+
+    confirmButton.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+
+    expect(closeButton).toHaveFocus();
+  });
+
+  it("keeps focus trapped when tabbing backward from the first focusable element", () => {
+    render(<ContactActionModal {...defaultProps} />);
+    const closeButton = screen.getByLabelText("Close contact action confirmation");
+    const confirmButton = screen.getByText("Call Now");
+
+    closeButton.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+
+    expect(confirmButton).toHaveFocus();
+  });
+
+  it("renders the message icon variant", () => {
+    render(<ContactActionModal {...defaultProps} icon="message" />);
+    expect(document.querySelector(".contact-action-icon.primary svg path")).toBeInTheDocument();
+  });
+
+  it("renders the alert icon variant", () => {
+    render(<ContactActionModal {...defaultProps} icon="alert" variant="danger" />);
+    expect(document.querySelector(".contact-action-icon.danger svg circle")).toBeInTheDocument();
   });
 });

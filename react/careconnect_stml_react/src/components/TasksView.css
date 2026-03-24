@@ -73,7 +73,7 @@
 .filter-subtext {
   margin-top: 4px;
   font-size: 13px;
-  color: #666666;
+  color: #4a4a4a;
 }
 
 .filter-clear {
@@ -155,13 +155,13 @@
 .meta-row {
   margin-left: 24px;
   margin-bottom: 8px;
-  color: #666666;
+  color: #4a4a4a;
 }
 
 .task-icon {
   width: 16px;
   line-height: 1;
-  color: #777777;
+  color: #4a4a4a;
 }
 
 .task-icon.small {

@@ -151,6 +151,8 @@
 .app-sidebar-nav button {
   text-align: left;
   padding: 10px 12px;
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
 .app-sidebar-nav button:focus-visible {

@@ -1,12 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SignInHelpView } from "../SignInHelpView";
 
 describe("SignInHelpView", () => {
   const defaultProps = {
-    onResetAccess: vi.fn(),
-    onContactCaregiver: vi.fn(),
-    onClose: vi.fn(),
+    onResetAccess: jest.fn(),
+    onContactCaregiver: jest.fn(),
+    onClose: jest.fn(),
     caregiverRequestSent: false,
   };
 
@@ -26,21 +25,21 @@ describe("SignInHelpView", () => {
   });
 
   it("calls onResetAccess when reset button clicked", () => {
-    const onResetAccess = vi.fn();
+    const onResetAccess = jest.fn();
     render(<SignInHelpView {...defaultProps} onResetAccess={onResetAccess} />);
     fireEvent.click(screen.getByText("Reset Access"));
     expect(onResetAccess).toHaveBeenCalledTimes(1);
   });
 
   it("calls onContactCaregiver when contact button clicked", () => {
-    const onContactCaregiver = vi.fn();
+    const onContactCaregiver = jest.fn();
     render(<SignInHelpView {...defaultProps} onContactCaregiver={onContactCaregiver} />);
     fireEvent.click(screen.getByText("Contact Caregiver"));
     expect(onContactCaregiver).toHaveBeenCalledTimes(1);
   });
 
   it("calls onClose when close button clicked", () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     render(<SignInHelpView {...defaultProps} onClose={onClose} />);
     const closeBtn = screen.getByLabelText("Close sign in help modal");
     fireEvent.click(closeBtn);
