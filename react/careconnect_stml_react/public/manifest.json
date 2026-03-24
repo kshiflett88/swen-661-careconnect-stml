@@ -13,6 +13,22 @@
       "sizes": "512x512"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "label": "CareConnect desktop view"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "type": "image/png",
+      "sizes": "390x844",
+      "form_factor": "narrow",
+      "label": "CareConnect mobile view"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#7c3aed",

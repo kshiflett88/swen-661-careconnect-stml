@@ -24,6 +24,22 @@ export function EditTaskModal({ isOpen, onCancel, onSave, onDelete, task }) {
   const modalRef = useRef(null);
 
   useEffect(() => {
+    if (isOpen && task) {
+      const date = new Date(task.dueDateTime);
+      setTaskName(task.title ?? "");
+      setDescription(task.description ?? "");
+      setDueDate(
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+      );
+      setDueTime(
+        `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
+      );
+      setPriority(task.priority ?? "medium");
+      setShowValidation(false);
+    }
+  }, [isOpen, task]);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     const timer = window.setTimeout(() => {

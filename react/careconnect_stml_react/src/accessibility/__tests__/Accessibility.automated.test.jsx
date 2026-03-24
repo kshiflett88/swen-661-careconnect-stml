@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
+import { MemoryRouter } from "react-router-dom";
 import App from "../../App";
 import { AddTaskModal } from "../../components/AddTaskModal";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
@@ -129,7 +130,11 @@ describe("Automated accessibility checks", () => {
 
   test("pre-sign-in app flow remains keyboard accessible", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(
+      <MemoryRouter initialEntries={["/dashboard"]}>
+        <App />
+      </MemoryRouter>
+    );
 
     await user.tab();
     expect(screen.getByRole("button", { name: /sign in with this device/i })).toHaveFocus();

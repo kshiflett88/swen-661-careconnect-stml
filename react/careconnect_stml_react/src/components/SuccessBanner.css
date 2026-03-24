@@ -1,0 +1,59 @@
+.success-banner {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-success-bg, #ecfdf5);
+  color: var(--color-success-text, #065f46);
+  border: 1px solid var(--color-success-border, #6ee7b7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: 0.95rem;
+  font-weight: 500;
+  animation: banner-slide-in 0.3s ease-out;
+  max-width: calc(100vw - 32px);
+}
+
+.success-banner-icon {
+  flex-shrink: 0;
+  color: var(--color-success-icon, #059669);
+}
+
+.success-banner-message {
+  flex: 1;
+  min-width: 0;
+}
+
+.success-banner-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: inherit;
+  opacity: 0.6;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.success-banner-close:hover {
+  opacity: 1;
+}
+
+@keyframes banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
