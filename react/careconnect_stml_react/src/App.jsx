@@ -393,11 +393,7 @@ export default function App() {
           ☰
         </button>
         <span className="toolbar-mobile-title">CareConnect</span>
-        <button
-          className="toolbar-button toolbar-primary toolbar-with-icon"
-          onClick={() => setShowAddTaskModal(true)}
-          aria-label="Add Task"
-        >
+        <button className="toolbar-button toolbar-primary toolbar-with-icon" onClick={() => setShowAddTaskModal(true)}>
           <svg
             className="toolbar-add-icon"
             width="18"
@@ -439,7 +435,6 @@ export default function App() {
         <button
           className={`toolbar-button toolbar-with-icon toolbar-today ${taskFilterMode === "today" ? "toolbar-today-active" : ""}`}
           onClick={handleTodayClick}
-          aria-label="Today"
         >
           <svg
             width="16"
@@ -462,7 +457,6 @@ export default function App() {
             setEmergencyConfirmed(false);
             setShowEmergencyModal(true);
           }}
-          aria-label="SOS"
         >
           <svg
             width="16"
