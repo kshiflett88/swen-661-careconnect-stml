@@ -155,17 +155,18 @@
 .meta-row {
   margin-left: 24px;
   margin-bottom: 8px;
-  color: #666666;
+  color: #4b4b4b;
 }
 
 .task-icon {
   width: 16px;
   line-height: 1;
-  color: #777777;
+  color: #4b4b4b;
 }
 
 .task-icon.small {
   font-size: 0.875rem;
+  color: #4b4b4b;
 }
 
 .task-icon.done {

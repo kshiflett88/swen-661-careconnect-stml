@@ -22,7 +22,9 @@
     "test:unit:watch": "jest --config jest.config.cjs --watch",
     "test:a11y": "jest --config jest.config.cjs src/__tests__/Accessibility.automated.test.tsx",
     "test:e2e": "playwright test",
-    "test:coverage": "jest --config jest.config.cjs --coverage"
+    "test:coverage": "jest --config jest.config.cjs --coverage",
+    "preview": "vite build && vite preview",
+    "lighthouse": "vite build && concurrently -k -s first \"vite preview\" \"wait-on http://localhost:4174 && npx lighthouse http://localhost:4174 --output html --output-path ./lighthouse-report.html --chrome-flags=\\\"--headless\\\" && exit 0\""
   },
   "dependencies": {
     "react": "^19.2.0",

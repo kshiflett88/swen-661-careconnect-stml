@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "../App";
 
 describe("App pre-sign-in flow", () => {
@@ -34,12 +34,14 @@ describe("App pre-sign-in flow", () => {
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });
 
-  test("enters main app after sign in", () => {
+  test("enters main app after sign in", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: /sign in with this device/i }));
 
-    expect(screen.getByRole("button", { name: /add task/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /add task/i })).toBeInTheDocument();
+    });
     expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
   });
 });

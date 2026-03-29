@@ -1,18 +1,21 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import App from "../App";
 
-function signIn() {
+async function signIn() {
   fireEvent.click(screen.getByRole("button", { name: /sign in with this device/i }));
+  await waitFor(() => {
+    expect(screen.getByRole("button", { name: /add task/i })).toBeInTheDocument();
+  });
 }
 
 describe("App post-auth integration", () => {
-  test("adds a task from toolbar Add Task modal", () => {
+  test("adds a task from toolbar Add Task modal", async () => {
     render(<App />);
-    signIn();
+    await signIn();
 
     fireEvent.click(screen.getByRole("button", { name: /^add task$/i }));
 
-    const dialog = screen.getByRole("dialog", { name: /add new task/i });
+    const dialog = await waitFor(() => screen.getByRole("dialog", { name: /add new task/i }));
 
     fireEvent.change(within(dialog).getByLabelText("Task Name"), { target: { value: "Walk in the park" } });
     fireEvent.change(within(dialog).getByLabelText("Description"), { target: { value: "20 minute walk" } });
@@ -22,13 +25,15 @@ describe("App post-auth integration", () => {
 
     fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
 
-    expect(screen.getByText("Walk in the park")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Walk in the park")).toBeInTheDocument();
+    });
     expect(screen.getByRole("heading", { name: "All Tasks" })).toBeInTheDocument();
   });
 
-  test("quick add from dashboard creates a medium-priority task", () => {
+  test("quick add from dashboard creates a medium-priority task", async () => {
     render(<App />);
-    signIn();
+    await signIn();
 
     expect(screen.getByRole("contentinfo")).toHaveTextContent(/Active Tasks:\s*3/i);
 
@@ -43,12 +48,15 @@ describe("App post-auth integration", () => {
     expect(screen.getByText("Call pharmacy")).toBeInTheDocument();
   });
 
-  test("context-menu completion flow supports cancel then confirm", () => {
+  test("context-menu completion flow supports cancel then confirm", async () => {
     render(<App />);
-    signIn();
+    await signIn();
     fireEvent.click(screen.getByRole("button", { name: "Tasks" }));
 
     fireEvent.contextMenu(screen.getAllByText("Take morning medication")[0]);
+    await waitFor(() => {
+      expect(screen.getByRole("menuitem", { name: /mark complete/i })).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByRole("menuitem", { name: /mark complete/i }));
 
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
@@ -56,6 +64,9 @@ describe("App post-auth integration", () => {
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
 
     fireEvent.contextMenu(screen.getAllByText("Take morning medication")[0]);
+    await waitFor(() => {
+      expect(screen.getByRole("menuitem", { name: /mark complete/i })).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByRole("menuitem", { name: /mark complete/i }));
     fireEvent.click(screen.getByRole("button", { name: /complete this action/i }));
 
@@ -63,9 +74,9 @@ describe("App post-auth integration", () => {
     expect(screen.getByLabelText("Take morning medication - Completed")).toBeInTheDocument();
   });
 
-  test("emergency modal confirm and close works", () => {
+  test("emergency modal confirm and close works", async () => {
     render(<App />);
-    signIn();
+    await signIn();
 
     fireEvent.click(screen.getByRole("button", { name: /^sos$/i }));
     expect(screen.getByText(/contact caregiver now\?/i)).toBeInTheDocument();
@@ -77,9 +88,9 @@ describe("App post-auth integration", () => {
     expect(screen.queryByText(/contact caregiver now\?/i)).not.toBeInTheDocument();
   });
 
-  test("delete task confirm removes task from list", () => {
+  test("delete task confirm removes task from list", async () => {
     render(<App />);
-    signIn();
+    await signIn();
     fireEvent.click(screen.getByRole("button", { name: "Tasks" }));
 
     fireEvent.click(screen.getByRole("button", { name: /^delete task$/i }));

@@ -1,16 +1,20 @@
-import { useEffect, useState, type MouseEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type MouseEvent } from "react";
 import { ConfirmDialog } from "./components/ConfirmDialog";
-import { DashboardView } from "./components/DashboardView";
-import { TasksView } from "./components/TasksView";
-import SettingsView from "./components/SettingsView";
-import { ContactsView } from "./components/ContactsView";
-import { ContextMenu } from "./components/ContextMenu";
-import { EmergencyModal } from "./components/EmergencyModal";
-import { AddTaskModal } from "./components/AddTaskModal";
-import { EditTaskModal } from "./components/EditTaskModal";
-import { DeleteTaskConfirmModal } from "./components/DeleteTaskConfirmModal";
 import { SignInView } from "./components/SignInView";
 import { SignInHelpView } from "./components/SignInHelpView";
+
+// Lazy-load views and modals that are not needed on initial render
+const DashboardView = lazy(() => import("./components/DashboardView").then((m) => ({ default: m.DashboardView })));
+const TasksView = lazy(() => import("./components/TasksView").then((m) => ({ default: m.TasksView })));
+const SettingsView = lazy(() => import("./components/SettingsView"));
+const ContactsView = lazy(() => import("./components/ContactsView").then((m) => ({ default: m.ContactsView })));
+const ContextMenu = lazy(() => import("./components/ContextMenu").then((m) => ({ default: m.ContextMenu })));
+const EmergencyModal = lazy(() => import("./components/EmergencyModal").then((m) => ({ default: m.EmergencyModal })));
+const AddTaskModal = lazy(() => import("./components/AddTaskModal").then((m) => ({ default: m.AddTaskModal })));
+const EditTaskModal = lazy(() => import("./components/EditTaskModal").then((m) => ({ default: m.EditTaskModal })));
+const DeleteTaskConfirmModal = lazy(() =>
+  import("./components/DeleteTaskConfirmModal").then((m) => ({ default: m.DeleteTaskConfirmModal }))
+);
 
 type NavPage = "Dashboard" | "Tasks" | "Contacts" | "Settings";
 
@@ -422,6 +426,7 @@ export default function App() {
   })();
 
   return (
+    <Suspense fallback={null}>
     <div className="app-shell" style={{ zoom: textScalePercent / 100 }}>
       <header className="app-toolbar">
         <button className="toolbar-button toolbar-primary toolbar-with-icon" onClick={() => setShowAddTaskModal(true)}>
@@ -440,6 +445,7 @@ export default function App() {
           <span>Add Task</span>
         </button>
         <div className="toolbar-search-wrap">
+          <label htmlFor="toolbar-search-input" className="sr-only">Search tasks</label>
           <span className="toolbar-search-icon" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -447,6 +453,7 @@ export default function App() {
             </svg>
           </span>
           <input
+            id="toolbar-search-input"
             value={searchInputValue}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search tasks..."
@@ -609,5 +616,6 @@ export default function App() {
         }}
       />
     </div>
+    </Suspense>
   );
 }

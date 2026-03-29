@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "../App";
 
 jest.mock("../components/SignInView", () => ({
@@ -206,12 +206,14 @@ describe("App state flow coverage", () => {
     expect(screen.getByText("mock-sign-in")).toBeInTheDocument();
   });
 
-  test("covers post-auth toolbar/nav/task flows and modal handlers", () => {
+  test("covers post-auth toolbar/nav/task flows and modal handlers", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByText("mock-sign-in"));
 
-    expect(screen.getByRole("contentinfo")).toHaveTextContent(/Active Tasks:\s*3/);
+    await waitFor(() => {
+      expect(screen.getByRole("contentinfo")).toHaveTextContent(/Active Tasks:\s*3/);
+    });
 
     fireEvent.click(screen.getByText("mock-dash-complete"));
     expect(screen.getByRole("contentinfo")).toHaveTextContent(/Active Tasks:\s*2/);
@@ -220,7 +222,9 @@ describe("App state flow coverage", () => {
     expect(screen.getByRole("contentinfo")).toHaveTextContent(/Active Tasks:\s*3/);
 
     fireEvent.click(screen.getByText("mock-open-tasks"));
-    expect(screen.getByText(/mock-filter:all\|query:\|count:/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/mock-filter:all\|query:\|count:/i)).toBeInTheDocument();
+    });
 
     fireEvent.change(screen.getByPlaceholderText("Search tasks..."), { target: { value: "med" } });
     expect(screen.getByText(/mock-filter:search\|query:med\|count:/i)).toBeInTheDocument();
@@ -235,26 +239,44 @@ describe("App state flow coverage", () => {
     expect(screen.getByText(/mock-filter:all\|query:\|count:/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Add Task" }));
+    await waitFor(() => {
+      expect(screen.getByText("mock-save-add")).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText("mock-save-add"));
 
     fireEvent.click(screen.getByText("mock-open-context"));
+    await waitFor(() => {
+      expect(screen.getByText("mock-context-complete")).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText("mock-context-complete"));
     fireEvent.click(screen.getByRole("button", { name: "Complete" }));
 
     fireEvent.click(screen.getByText("mock-open-edit"));
+    await waitFor(() => {
+      expect(screen.getByText("mock-save-edit")).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText("mock-save-edit"));
 
     fireEvent.click(screen.getByText("mock-open-delete"));
+    await waitFor(() => {
+      expect(screen.getByText("mock-confirm-delete")).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText("mock-confirm-delete"));
 
     fireEvent.click(screen.getByRole("button", { name: "Contacts" }));
-    expect(screen.getByText("mock-contacts")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("mock-contacts")).toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
-    expect(screen.getByText("mock-settings")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("mock-settings")).toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "SOS" }));
-    expect(screen.getByText("not-confirmed")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("not-confirmed")).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText("mock-emergency-confirm"));
     expect(screen.getByText("confirmed")).toBeInTheDocument();
     fireEvent.click(screen.getByText("mock-emergency-close"));

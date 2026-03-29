@@ -9,4 +9,20 @@ export default defineConfig({
     port: 4173,
     strictPort: true,
   },
+  preview: {
+    port: 4174,
+    strictPort: true,
+  },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+        },
+      },
+    },
+  },
 })
