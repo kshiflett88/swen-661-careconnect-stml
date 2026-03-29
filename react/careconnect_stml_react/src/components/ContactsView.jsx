@@ -109,6 +109,10 @@ export function ContactsView() {
   return (
     <div className="contacts-view">
       <div className="contacts-content">
+        <header className="contacts-page-header">
+          <h1>Contacts</h1>
+          <p>Reach your caregiver, family, doctor, or emergency support quickly.</p>
+        </header>
         <article className="contact-card contact-card-primary">
           <header className="contact-card-header caregiver-header">
             <div className="contact-header-icon caregiver-icon">

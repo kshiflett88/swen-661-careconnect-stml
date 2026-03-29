@@ -55,6 +55,8 @@ export default function App() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
   const [bannerVisible, setBannerVisible] = useState(false);
+  const desktopSearchInputId = "global-task-search";
+  const mobileSearchInputId = "global-task-search-mobile";
 
   const showBanner = useCallback((message) => {
     setBannerMessage(message);
@@ -409,6 +411,9 @@ export default function App() {
           <span>Add Task</span>
         </button>
         <div className="toolbar-search-wrap">
+          <label htmlFor={desktopSearchInputId} className="sr-only">
+            Search tasks
+          </label>
           <span className="toolbar-search-icon" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -416,10 +421,12 @@ export default function App() {
             </svg>
           </span>
           <input
+            id={desktopSearchInputId}
             value={searchInputValue}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search tasks..."
             className="toolbar-search"
+            aria-label="Search tasks"
           />
         </div>
         <button
@@ -477,6 +484,9 @@ export default function App() {
       {mobileSearchOpen && (
         <div style={{ padding: "8px 10px", background: "var(--color-card)", borderBottom: "1px solid var(--color-border)" }}>
           <div className="toolbar-search-wrap" style={{ maxWidth: "100%", display: "block" }}>
+            <label htmlFor={mobileSearchInputId} className="sr-only">
+              Search tasks
+            </label>
             <span className="toolbar-search-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -484,12 +494,14 @@ export default function App() {
               </svg>
             </span>
             <input
+              id={mobileSearchInputId}
               value={searchInputValue}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search tasks..."
               className="toolbar-search"
               style={{ maxWidth: "100%" }}
               autoFocus
+              aria-label="Search tasks"
             />
           </div>
         </div>

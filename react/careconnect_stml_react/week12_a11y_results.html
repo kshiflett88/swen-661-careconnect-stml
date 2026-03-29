@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CareConnect React Accessibility Results</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #142033;
+      --muted: #5c6b82;
+      --border: #d8e0ea;
+      --success: #1f7a45;
+      --success-bg: #e8f6ee;
+      --accent: #0f4c81;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4fb 0%, #f8fbfe 100%);
+      color: var(--text);
+      padding: 40px 24px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 18px 40px rgba(20, 32, 51, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 36px;
+      line-height: 1.15;
+    }
+
+    .sub {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 14px 32px rgba(20, 32, 51, 0.06);
+    }
+
+    .label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .result {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--success-bg);
+      color: var(--success);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .metric {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    ul {
+      margin: 14px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+      color: var(--text);
+      background: #eef3f8;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <p class="eyebrow">Week 12 Accessibility Evidence</p>
+      <h1>CareConnect React Automated Accessibility Results</h1>
+      <p class="sub">
+        This summary captures the latest automated accessibility validation run for the React web application in
+        <code>react/careconnect_stml_react</code>.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <p class="label">Jest Accessibility Suite</p>
+        <div class="result">Passed</div>
+        <p class="metric">17 / 17 tests</p>
+        <ul>
+          <li><code>npm run test:a11y</code></li>
+          <li>Includes <code>jest-axe</code> checks for sign-in, dialogs, modals, menus, and settings</li>
+          <li>Includes keyboard, focus trap, touch target, and contrast guardrails</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <p class="label">Browser Accessibility Suite</p>
+        <div class="result">Passed</div>
+        <p class="metric">15 / 15 tests</p>
+        <ul>
+          <li><code>npm run test:e2e:a11y</code></li>
+          <li>Playwright accessibility smoke tests across Chromium, Firefox, and WebKit</li>
+          <li>Covers sign-in, help dialog, dashboard, tasks, settings, keyboard flow, and responsive guardrails</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="footer">
+      <strong>Suggested screenshot use:</strong> open this file in a browser and capture one full-page screenshot for the
+      “Automated Accessibility Testing” section of the Word document. You can also pair it with the Playwright HTML report
+      and coverage report if your team wants more than one supporting image.
+    </section>
+  </div>
+</body>
+</html>

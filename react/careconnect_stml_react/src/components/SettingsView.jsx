@@ -421,19 +421,20 @@ function InfoIcon() {
 }
 
 function Toggle({ id, label, description, checked, onChange }) {
+  const labelId = `${id}-label`;
   return (
     <div className="toggleRow">
       <div className="toggleText">
-        <label htmlFor={id} className="toggleLabel">
+        <span id={labelId} className="toggleLabel">
           {label}
-        </label>
+        </span>
         <p className="toggleDescription">{description}</p>
       </div>
       <button
         id={id}
         role="switch"
         aria-checked={checked}
-        aria-label={label}
+        aria-labelledby={labelId}
         onClick={() => onChange(!checked)}
         className="toggleButton"
         data-checked={checked}
@@ -494,9 +495,10 @@ export default function SettingsView({ onSignOut }) {
 
           <div className="card">
             <div className="block">
-              <label className="fieldLabel">Text Size</label>
+              <p className="fieldLabel">Text Size</p>
+              <span id="text-size-options-label" className="sr-only">Text size options</span>
               <p className="fieldHelp">Choose how large text appears throughout the application</p>
-              <div className="sizeRow" role="radiogroup" aria-label="Text size options">
+              <div className="sizeRow" role="radiogroup" aria-labelledby="text-size-options-label">
                 {(['small', 'medium', 'large']).map((size) => (
                   <button
                     key={size}
@@ -599,9 +601,9 @@ export default function SettingsView({ onSignOut }) {
           <div className="card">
             <div className="block">
               <div className="topRow">
-                <label className="fieldLabel" style={{ marginBottom: 0 }}>
+                <p className="fieldLabel" style={{ marginBottom: 0 }}>
                   Caregiver Contact
-                </label>
+                </p>
                 <button
                   type="button"
                   onClick={() => setIsEditingCaregiver((prev) => !prev)}
@@ -657,7 +659,7 @@ export default function SettingsView({ onSignOut }) {
             </div>
 
             <div className="block">
-              <label className="fieldLabel">Reset to Defaults</label>
+              <p className="fieldLabel">Reset to Defaults</p>
               <p className="fieldHelp">Clear any active search or filter settings on the Tasks page</p>
               <button type="button" onClick={handleResetFilters} className="actionButton">
                 Reset to Defaults
@@ -673,7 +675,7 @@ export default function SettingsView({ onSignOut }) {
 
           <div className="card">
             <div className="block">
-              <label className="fieldLabel">Sign Out</label>
+              <p className="fieldLabel">Sign Out</p>
               <p className="fieldHelp">
                 End your session and return to the Welcome screen. This is recommended on shared computers.
               </p>
